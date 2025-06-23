@@ -5,10 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
+import { RefreshToken } from './entities/refresh-token.entity';
+import { RefreshTokenRepository } from './repositories/refresh-token.repository';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { FacebookStrategy } from './strategies/facebook.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, RefreshToken]),
     UserModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -16,6 +20,11 @@ import { JwtModule } from '@nestjs/jwt';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    RefreshTokenRepository,
+    GoogleStrategy,
+    FacebookStrategy,
+  ],
 })
 export class AuthModule {}
