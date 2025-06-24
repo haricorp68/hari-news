@@ -9,6 +9,7 @@ import { RefreshToken } from './entities/refresh-token.entity';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { FacebookStrategy } from './strategies/facebook.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FacebookStrategy } from './strategies/facebook.strategy';
     RefreshTokenRepository,
     GoogleStrategy,
     FacebookStrategy,
+    JwtStrategy,
   ],
 })
 export class AuthModule {}

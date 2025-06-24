@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Company } from './company.entity';
 import { User } from 'src/user/entities/user.entity';
-import { CompanyRole } from './company_role.entity';
 
 @Entity()
 export class CompanyStaff {
@@ -14,8 +13,8 @@ export class CompanyStaff {
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => CompanyRole, { onDelete: 'SET NULL', nullable: true })
-  role: CompanyRole;
+  @Column({ type: 'json', nullable: true })
+  attributes: Record<string, any>;
 
   @Column({ default: true })
   is_active: boolean;

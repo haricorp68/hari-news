@@ -6,17 +6,19 @@ import { ErrorsInterceptor } from './common/interceptors/errors.interceptor';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { UserService } from './user/user.service';
+import { Policy } from './policy/policy.entity';
+import { getRepository } from 'typeorm';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalInterceptors(
     new LoggingInterceptor(),
-    new TransformInterceptor(),
-    new ErrorsInterceptor(),
-    new TimeoutInterceptor(),
   );
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(), new AllExceptionsFilter());
   await app.listen(process.env.PORT ?? 3000);
 }
+
 bootstrap();

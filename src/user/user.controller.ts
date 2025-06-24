@@ -6,14 +6,25 @@ import {
   Patch,
   Param,
   Delete,
+  ForbiddenException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { defineAbilityFor } from '../common/casl-ability.factory';
+import { PolicyService } from 'src/policy/policy.service';
+import { CheckAbility } from '../common/decorators/check-ability.decorator';
+import { CaslAbilityGuard } from '../common/guards/casl-ability.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly policyService: PolicyService,
+  ) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -21,22 +32,33 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  async findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @CheckAbility('read', 'user')
+  async findOne(@CurrentUser() user, @Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @CheckAbility('update', 'user')
+  async update(
+    @CurrentUser() user,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @CheckAbility('delete', 'user')
+  async remove(@CurrentUser() user, @Param('id') id: string) {
     return this.userService.remove(+id);
   }
 }

@@ -13,6 +13,7 @@ import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { ShareModule } from './share/share.module';
+import { PolicyModule } from './policy/policy.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ShareModule } from './share/share.module';
     CommentModule,
     ReactionModule,
     ShareModule,
+    PolicyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
