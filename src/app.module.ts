@@ -7,6 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
+import { CommunityModule } from './community/community.module';
+import { CompanyModule } from './company/company.module';
+import { PostModule } from './post/post.module';
+import { CommentModule } from './comment/comment.module';
+import { ReactionModule } from './reaction/reaction.module';
+import { ShareModule } from './share/share.module';
 
 @Module({
   imports: [
@@ -23,6 +29,12 @@ import { RefreshToken } from './auth/entities/refresh-token.entity';
     }),
     AuthModule,
     UserModule,
+    CommunityModule,
+    CompanyModule,
+    PostModule,
+    CommentModule,
+    ReactionModule,
+    ShareModule,
   ],
   controllers: [AppController],
   providers: [AppService],
