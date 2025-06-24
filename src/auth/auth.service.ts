@@ -3,10 +3,8 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginAuthDto } from './dto/create-auth.dto';
 import * as bcrypt from 'bcryptjs';
@@ -16,36 +14,22 @@ import { RefreshTokenRepository } from './repositories/refresh-token.repository'
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly jwtService: JwtService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
-    const { email, password } = createUserDto;
-    const existingUser = await this.userRepository.findOne({
-      where: { email },
-    });
-    if (existingUser) {
-      throw new BadRequestException('Email already exists');
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepository.create({
-      email,
-      password: hashedPassword,
-    });
-    await this.userRepository.save(user);
-    return { message: 'User registered successfully' };
+    const user = await this.userService.create(createUserDto);
+    return { message: 'User registered successfully', user };
   }
 
   async login(loginDto: LoginAuthDto, device?: string, ip?: string, userAgent?: string) {
-    const { email, password } = loginDto;
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
+    const user = await this.userService.findByEmail(loginDto.email, true) as import('../user/entities/user.entity').User | null;
+    if (!user || !user.password) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -73,7 +57,7 @@ export class AuthService {
   }
 
   async refreshToken(userId: number, refreshToken: string) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userService.findOne(userId, true) as import('../user/entities/user.entity').User | null;
     if (!user) {
       throw new UnauthorizedException('Invalid user');
     }
@@ -107,17 +91,18 @@ export class AuthService {
   }
 
   async oauthLogin(oauthUser: any) {
-    // oauthUser: { provider, providerId, email, name, avatar }
     if (!oauthUser.email) {
       throw new UnauthorizedException('No email from OAuth provider');
     }
-    let user = await this.userRepository.findOne({ where: { email: oauthUser.email } });
+    let user = await this.userService.findByEmail(oauthUser.email, true) as import('../user/entities/user.entity').User | null;
     if (!user) {
-      user = this.userRepository.create({
+      user = await this.userService.create({
         email: oauthUser.email,
-        password: '', // Không có password cho OAuth
-      });
-      await this.userRepository.save(user);
+        password: '',
+      }) as import('../user/entities/user.entity').User;
+    }
+    if (!user) {
+      throw new UnauthorizedException('Cannot create user from OAuth');
     }
     const payload = { sub: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload, {
@@ -140,9 +125,8 @@ export class AuthService {
   }
 
   private parseExpiresIn(expiresIn: string): number {
-    // supports s, m, h, d (e.g. 3600s, 7d)
     const match = expiresIn.match(/(\d+)([smhd])/);
-    if (!match) return 7 * 24 * 60 * 60 * 1000; // default 7d
+    if (!match) return 7 * 24 * 60 * 60 * 1000;
     const value = parseInt(match[1], 10);
     const unit = match[2];
     switch (unit) {
