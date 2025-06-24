@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Policy } from './policy.entity';
+import { Policy } from './entities/policy.entity';
 
 @Injectable()
 export class PolicyService {
@@ -12,17 +12,13 @@ export class PolicyService {
 
   async getPoliciesForUser(userId: number | string) {
     return this.policyRepository.find({
-      where: [
-        { subjectType: 'user', subjectId: String(userId) },
-      ],
+      where: [{ subjectType: 'user', subjectId: String(userId) }],
     });
   }
 
   async getPoliciesForRole(role: string) {
     return this.policyRepository.find({
-      where: [
-        { subjectType: 'role', subjectId: role },
-      ],
+      where: [{ subjectType: 'role', subjectId: role }],
     });
   }
 }

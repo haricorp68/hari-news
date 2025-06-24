@@ -32,7 +32,7 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @UseGuards(JwtAuthGuard)
   async findAll() {
     return this.userService.findAll();
   }

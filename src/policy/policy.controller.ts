@@ -10,7 +10,7 @@ import {
 import { PolicyService } from './policy.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Policy } from './policy.entity';
+import { Policy } from './entities/policy.entity';
 
 @Controller('policy')
 export class PolicyController {

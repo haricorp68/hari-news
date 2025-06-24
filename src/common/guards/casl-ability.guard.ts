@@ -19,19 +19,53 @@ export class CaslAbilityGuard implements CanActivate {
     const user = request.user;
     const params = request.params;
     const body = request.body;
+    const method = request.method;
+
+    console.log('=== CASL GUARD DEBUG ===');
+    console.log('Action:', action);
+    console.log('Resource:', resource);
+    console.log('Method:', method);
+    console.log('User from request:', user);
+    console.log('Params:', params);
+    console.log('Body:', body);
 
     // Lấy policies cho user
-    const policies = await this.policyService.getPoliciesForUser(user.id);
+    const policies = await this.policyService.getPoliciesForUser(user.userId || user.id);
+    console.log('Policies found for user:', policies);
+
     const ability = defineAbilityFor(user, policies);
+    console.log('Ability built:', ability);
 
-    // Chuẩn bị resource object (tuỳ use-case, có thể lấy từ params/body)
-    let resourceObj: any = {};
+    // Chuẩn bị resource object dựa trên HTTP method và context
+    let resourceObj: any = { __caslSubjectType__: resource };
+    
     if (resource === 'user') {
-      resourceObj = { id: +params.id, ...body, __caslSubjectType__: 'user' };
+      if (method === 'GET' && params.id) {
+        // GET specific user - check access to specific user
+        resourceObj = { id: +params.id, __caslSubjectType__: 'user' };
+      } else if (method === 'GET' && !params.id) {
+        // GET users list - check access to user resource type
+        resourceObj = { __caslSubjectType__: 'user' };
+      } else if (method === 'POST') {
+        // CREATE user - check access to user resource type
+        resourceObj = { ...body, __caslSubjectType__: 'user' };
+      } else if (method === 'PATCH' && params.id) {
+        // UPDATE specific user - check access to specific user
+        resourceObj = { id: +params.id, ...body, __caslSubjectType__: 'user' };
+      } else if (method === 'DELETE' && params.id) {
+        // DELETE specific user - check access to specific user
+        resourceObj = { id: +params.id, __caslSubjectType__: 'user' };
+      }
     }
-    // Có thể mở rộng cho các resource khác
+    // Có thể mở rộng cho các resource khác tương tự
 
-    if (!ability.can(action, resourceObj)) {
+    console.log('Resource object to check:', resourceObj);
+    
+    const canAccess = ability.can(action, resourceObj);
+    console.log('Can access result:', canAccess);
+    console.log('=== END DEBUG ===');
+
+    if (!canAccess) {
       throw new ForbiddenException('Bạn không có quyền thực hiện thao tác này');
     }
     return true;

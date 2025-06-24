@@ -14,6 +14,24 @@ import { CommentModule } from './comment/comment.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { ShareModule } from './share/share.module';
 import { PolicyModule } from './policy/policy.module';
+import { Policy } from './policy/entities/policy.entity';
+import { Company } from './company/entities/company.entity';
+import { CompanyStaff } from './company/entities/company_staff.entity';
+import { Community } from './community/entities/community.entity';
+import { CommunityMember } from './community/entities/community_member.entity';
+import { CommunityRole } from './community/entities/community_role.entity';
+import { CommunityPermission } from './community/entities/community_permission.entity';
+import { CommunityRolePermission } from './community/entities/community_role_permission.entity';
+import { UserPost } from './post/entities/user_post.entity';
+import { CommunityPost } from './post/entities/community_post.entity';
+import { CompanyPost } from './post/entities/company_post.entity';
+import { PersonalPostDetail } from './post/entities/personal_post_detail.entity';
+import { NewsPostDetail } from './post/entities/news_post_detail.entity';
+import { NewsPostBlock } from './post/entities/news_post_block.entity';
+import { PostMedia } from './post/entities/post_media.entity';
+import { Comment } from './comment/entities/comment.entity';
+import { Reaction } from './reaction/entities/reaction.entity';
+import { Share } from './share/entities/share.entity';
 
 @Module({
   imports: [
@@ -25,7 +43,28 @@ import { PolicyModule } from './policy/policy.module';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
       database: process.env.DB_DATABASE || 'hari_news',
-      entities: [User, RefreshToken],
+      entities: [
+        User,
+        RefreshToken,
+        Policy,
+        Company,
+        CompanyStaff,
+        Community,
+        CommunityMember,
+        CommunityRole,
+        CommunityPermission,
+        CommunityRolePermission,
+        UserPost,
+        CommunityPost,
+        CompanyPost,
+        PersonalPostDetail,
+        NewsPostDetail,
+        NewsPostBlock,
+        PostMedia,
+        Comment,
+        Reaction,
+        Share,
+      ],
       synchronize: true,
     }),
     AuthModule,

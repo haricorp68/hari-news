@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
 import { UserService } from '../user/user.service';
-import { Policy } from '../policy/policy.entity';
+import { Policy } from '../policy/entities/policy.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PolicyService } from '../policy/policy.service';
 
@@ -51,4 +51,4 @@ async function bootstrap() {
   await app.close();
 }
 
-bootstrap(); 
+bootstrap();
