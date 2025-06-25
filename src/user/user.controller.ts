@@ -6,8 +6,8 @@ import {
   Patch,
   Param,
   Delete,
-  ForbiddenException,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -28,8 +28,21 @@ export class UserController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async findAll() {
-    return this.userService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  ) {
+    const { data, total } = await this.userService.paginate({ page, pageSize });
+    return {
+      data,
+      message: 'Lấy danh sách user thành công!',
+      metadata: {
+        page: Number(page),
+        pageSize: Number(pageSize),
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
   }
 
   @Get(':id')

@@ -62,4 +62,16 @@ export class UserService {
     await this.userRepository.delete(id);
     return { deleted: true };
   }
+
+  async paginate({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }) {
+    const [users, total] = await this.userRepository.findAndCount({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      order: { id: 'DESC' },
+    });
+    return {
+      data: users.map(({ password, ...rest }) => rest),
+      total,
+    };
+  }
 }
