@@ -44,7 +44,24 @@
               "path": ["auth", "login"]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Lưu accessToken vào biến môi trường Postman",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    if (json.access_token) {",
+                  "        pm.environment.set(\"accessToken\", json.access_token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Refresh Token",
@@ -93,6 +110,9 @@
           "name": "Get All Users",
           "request": {
             "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/user",
               "host": ["{{baseUrl}}"],
@@ -105,6 +125,9 @@
           "name": "Get User By Id",
           "request": {
             "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/user/{{userId}}",
               "host": ["{{baseUrl}}"],
@@ -118,7 +141,8 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
             "body": {
               "mode": "raw",
@@ -136,6 +160,9 @@
           "name": "Delete User",
           "request": {
             "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/user/{{userId}}",
               "host": ["{{baseUrl}}"],
@@ -172,6 +199,9 @@
           "name": "Get All Communities",
           "request": {
             "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/community",
               "host": ["{{baseUrl}}"],
@@ -184,6 +214,9 @@
           "name": "Get Community By Id",
           "request": {
             "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/community/{{communityId}}",
               "host": ["{{baseUrl}}"],
@@ -197,7 +230,8 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
             "body": {
               "mode": "raw",
@@ -215,6 +249,9 @@
           "name": "Delete Community",
           "request": {
             "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/community/{{communityId}}",
               "host": ["{{baseUrl}}"],
@@ -251,6 +288,9 @@
           "name": "Get All Companies",
           "request": {
             "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/company",
               "host": ["{{baseUrl}}"],
@@ -263,6 +303,9 @@
           "name": "Get Company By Id",
           "request": {
             "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/company/{{companyId}}",
               "host": ["{{baseUrl}}"],
@@ -276,7 +319,8 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
             "body": {
               "mode": "raw",
@@ -294,6 +338,9 @@
           "name": "Delete Company",
           "request": {
             "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/company/{{companyId}}",
               "host": ["{{baseUrl}}"],
@@ -330,6 +377,9 @@
           "name": "Get All Posts",
           "request": {
             "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/post",
               "host": ["{{baseUrl}}"],
@@ -342,6 +392,9 @@
           "name": "Get Post By Id",
           "request": {
             "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/post/{{postId}}",
               "host": ["{{baseUrl}}"],
@@ -355,7 +408,8 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
             "body": {
               "mode": "raw",
@@ -373,6 +427,9 @@
           "name": "Delete Post",
           "request": {
             "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "url": {
               "raw": "{{baseUrl}}/post/{{postId}}",
               "host": ["{{baseUrl}}"],

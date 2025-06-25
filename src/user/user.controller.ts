@@ -13,18 +13,13 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { defineAbilityFor } from '../common/casl-ability.factory';
-import { PolicyService } from 'src/policy/policy.service';
 import { CheckAbility } from '../common/decorators/check-ability.decorator';
 import { CaslAbilityGuard } from '../common/guards/casl-ability.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly policyService: PolicyService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
