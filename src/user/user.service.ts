@@ -4,11 +4,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { User } from './entities/user.entity';
+import { UserConfigService } from './user-config.service';
+import { Like } from 'typeorm';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly userConfigService: UserConfigService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -22,6 +25,10 @@ export class UserService {
       password: hashedPassword,
     });
     const saved = await this.userRepository.save(user);
+    
+    // Tạo config mặc định cho user mới
+    await this.userConfigService.createUserConfig(saved.id);
+    
     const { password, ...result } = saved;
     return result;
   }
@@ -63,8 +70,48 @@ export class UserService {
     return { deleted: true };
   }
 
-  async paginate({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }) {
+  async paginate({ 
+    page = 1, 
+    pageSize = 10, 
+    filters = {} 
+  }: { 
+    page?: number; 
+    pageSize?: number; 
+    filters?: any 
+  }) {
+    const where: any = {};
+    
+    // Xây dựng where clause động
+    if (filters.email) {
+      where.email = Like(`%${filters.email}%`);
+    }
+    if (filters.name) {
+      where.name = Like(`%${filters.name}%`);
+    }
+    if (filters.phone) {
+      where.phone = Like(`%${filters.phone}%`);
+    }
+    if (filters.city) {
+      where.city = Like(`%${filters.city}%`);
+    }
+    if (filters.isActive !== undefined) {
+      where.isActive = filters.isActive === 'true' || filters.isActive === true;
+    }
+    if (filters.isVerified !== undefined) {
+      where.isVerified = filters.isVerified === 'true' || filters.isVerified === true;
+    }
+    if (filters.status) {
+      where.status = filters.status;
+    }
+    if (filters.role) {
+      where.role = filters.role;
+    }
+    if (filters.gender) {
+      where.gender = filters.gender;
+    }
+    
     const [users, total] = await this.userRepository.findAndCount({
+      where,
       skip: (page - 1) * pageSize,
       take: pageSize,
       order: { id: 'DESC' },

@@ -31,8 +31,10 @@ export class UserController {
   async findAll(
     @Query('page') page: number = 1,
     @Query('pageSize') pageSize: number = 10,
+    @Query() query: any,
   ) {
-    const { data, total } = await this.userService.paginate({ page, pageSize });
+    const { page: _p, pageSize: _ps, ...filters } = query;
+    const { data, total } = await this.userService.paginate({ page, pageSize, filters });
     return {
       data,
       message: 'Lấy danh sách user thành công!',
@@ -41,6 +43,7 @@ export class UserController {
         pageSize: Number(pageSize),
         total,
         totalPages: Math.ceil(total / pageSize),
+        filters,
       },
     };
   }

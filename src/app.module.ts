@@ -32,6 +32,7 @@ import { PostMedia } from './post/entities/post_media.entity';
 import { Comment } from './comment/entities/comment.entity';
 import { Reaction } from './reaction/entities/reaction.entity';
 import { Share } from './share/entities/share.entity';
+import { UserConfig } from './user/entities/user-config.entity';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { Share } from './share/entities/share.entity';
         Comment,
         Reaction,
         Share,
+        UserConfig,
       ],
       synchronize: true,
     }),
