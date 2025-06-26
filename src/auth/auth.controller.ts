@@ -21,8 +21,11 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginAuthDto) {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginAuthDto, @Req() req: Request) {
+    const device = (req.headers['x-device'] as string) || 'unknown';
+    const ip = req.ip || req.socket?.remoteAddress || '';
+    const userAgent = (req.headers['user-agent'] as string) || '';
+    return this.authService.login(loginDto, device, ip, userAgent);
   }
 
   @Post('refresh-token')
