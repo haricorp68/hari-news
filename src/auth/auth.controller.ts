@@ -11,6 +11,12 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginAuthDto } from './dto/create-auth.dto';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -53,5 +59,32 @@ export class AuthController {
   async facebookAuthCallback(@Req() req: Request) {
     // req.user chứa thông tin user từ FacebookStrategy
     return this.authService.oauthLogin(req.user);
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
+  }
+
+  @Post('send-email-verification')
+  @UseGuards(JwtAuthGuard)
+  async sendEmailVerification(@CurrentUser() user) {
+    return this.authService.sendEmailVerification(user.userId || user.id);
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body() dto: VerifyEmailDto) {
+    return this.authService.verifyEmail(dto);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(@CurrentUser() user, @Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword(user.userId || user.id, dto);
   }
 }

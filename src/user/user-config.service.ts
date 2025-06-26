@@ -86,4 +86,12 @@ export class UserConfigService {
   async getAllUserConfigs(): Promise<UserConfig[]> {
     return this.userConfigRepository.find();
   }
+
+  async findByResetToken(token: string): Promise<UserConfig | null> {
+    return this.userConfigRepository.findOne({ where: { passwordResetToken: token } });
+  }
+
+  async findByEmailVerificationToken(token: string): Promise<UserConfig | null> {
+    return this.userConfigRepository.findOne({ where: { emailVerificationToken: token } });
+  }
 } 

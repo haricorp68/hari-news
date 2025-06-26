@@ -10,6 +10,12 @@ import { LoginAuthDto } from './dto/create-auth.dto';
 import * as bcrypt from 'bcryptjs';
 import { RefreshTokenType } from './entities/refresh-token.entity';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UserConfigService } from '../user/user-config.service';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +23,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly jwtService: JwtService,
+    private readonly userConfigService: UserConfigService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
@@ -136,5 +143,69 @@ export class AuthService {
       case 'd': return value * 24 * 60 * 60 * 1000;
       default: return 7 * 24 * 60 * 60 * 1000;
     }
+  }
+
+  // Forgot password: gửi email chứa token reset
+  async forgotPassword({ email }: ForgotPasswordDto) {
+    const user = await this.userService.findByEmail(email);
+    if (!user) throw new BadRequestException('Email not found');
+    const token = randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 1000 * 60 * 30); // 30 phút
+    await this.userConfigService.updateUserConfig(user.id, {
+      passwordResetToken: token,
+      passwordResetExpiresAt: expires,
+    });
+    // TODO: Gửi email chứa link reset password với token này
+    return { message: 'Đã gửi email đặt lại mật khẩu (giả lập)', token };
+  }
+
+  // Đặt lại mật khẩu bằng token
+  async resetPassword({ token, newPassword }: ResetPasswordDto) {
+    const config = await this.userConfigService.findByResetToken(token);
+    if (!config || !config.passwordResetExpiresAt || config.passwordResetExpiresAt < new Date()) {
+      throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
+    }
+    await this.userService.update(config.userId, { password: newPassword });
+    await this.userConfigService.updateUserConfig(config.userId, {
+      passwordResetToken: undefined,
+      passwordResetExpiresAt: undefined,
+    });
+    return { message: 'Đặt lại mật khẩu thành công!' };
+  }
+
+  // Gửi email xác thực
+  async sendEmailVerification(userId: number) {
+    const token = randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24h
+    await this.userConfigService.updateUserConfig(userId, {
+      emailVerificationToken: token,
+      emailVerificationExpiresAt: expires,
+    });
+    // TODO: Gửi email xác thực với token này
+    return { message: 'Đã gửi email xác thực (giả lập)', token };
+  }
+
+  // Xác thực email
+  async verifyEmail({ token }: VerifyEmailDto) {
+    const config = await this.userConfigService.findByEmailVerificationToken(token);
+    if (!config || !config.emailVerificationExpiresAt || config.emailVerificationExpiresAt < new Date()) {
+      throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
+    }
+    await this.userService.update(config.userId, { isVerified: true });
+    await this.userConfigService.updateUserConfig(config.userId, {
+      emailVerificationToken: undefined,
+      emailVerificationExpiresAt: undefined,
+    });
+    return { message: 'Xác thực email thành công!' };
+  }
+
+  // Đổi mật khẩu khi đã đăng nhập
+  async changePassword(userId: number, { oldPassword, newPassword }: ChangePasswordDto) {
+    const user = await this.userService.findOne(userId, true) as any;
+    if (!user || !user.password) throw new BadRequestException('User not found');
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) throw new BadRequestException('Mật khẩu cũ không đúng');
+    await this.userService.update(userId, { password: newPassword });
+    return { message: 'Đổi mật khẩu thành công!' };
   }
 }
