@@ -8,11 +8,12 @@ import { PolicyModule } from 'src/policy/policy.module';
 import { UserConfig } from './entities/user-config.entity';
 import { UserConfigService } from './user-config.service';
 import { UserConfigController } from './user-config.controller';
+import { UserConfigRepository } from './repositories/user-config.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserConfig]), PolicyModule],
   controllers: [UserController, UserConfigController],
-  providers: [UserService, UserConfigService, UserRepository],
-  exports: [UserService, UserConfigService, UserRepository],
+  providers: [UserService, UserConfigService, UserRepository, UserConfigRepository],
+  exports: [UserService, UserConfigService, UserRepository, UserConfigRepository],
 })
 export class UserModule {}
