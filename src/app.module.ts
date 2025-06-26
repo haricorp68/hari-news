@@ -20,8 +20,6 @@ import { CompanyStaff } from './company/entities/company_staff.entity';
 import { Community } from './community/entities/community.entity';
 import { CommunityMember } from './community/entities/community_member.entity';
 import { CommunityRole } from './community/entities/community_role.entity';
-import { CommunityPermission } from './community/entities/community_permission.entity';
-import { CommunityRolePermission } from './community/entities/community_role_permission.entity';
 import { UserPost } from './post/entities/user_post.entity';
 import { CommunityPost } from './post/entities/community_post.entity';
 import { CompanyPost } from './post/entities/company_post.entity';
@@ -53,8 +51,6 @@ import { UserConfig } from './user/entities/user-config.entity';
         Community,
         CommunityMember,
         CommunityRole,
-        CommunityPermission,
-        CommunityRolePermission,
         UserPost,
         CommunityPost,
         CompanyPost,
