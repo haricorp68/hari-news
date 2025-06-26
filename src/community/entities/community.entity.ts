@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Community {
@@ -16,9 +22,6 @@ export class Community {
 
   @Column({ nullable: true })
   cover_image: string;
-
-  @Column()
-  owner_id: number;
 
   @CreateDateColumn()
   created_at: Date;
