@@ -8,6 +8,8 @@ import { CommunityRepository } from './repositories/community.repository';
 import { CommunityRoleService } from './community-role.service';
 import { PolicyService } from 'src/policy/policy.service';
 import { PolicyModule } from 'src/policy/policy.module';
+import { CommunityMemberService } from './community-member.service';
+import { CommunityMemberRepository } from './repositories/community_member.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Community]), PolicyModule],
@@ -18,7 +20,9 @@ import { PolicyModule } from 'src/policy/policy.module';
     PolicyService,
     CommunityRoleRepository,
     CommunityRepository,
+    CommunityMemberService,
+    CommunityMemberRepository,
   ],
-  exports: [CommunityService, CommunityRoleService, CommunityRoleRepository],
+  exports: [CommunityService, CommunityRoleService, CommunityRoleRepository, CommunityMemberService, CommunityMemberRepository],
 })
 export class CommunityModule {}

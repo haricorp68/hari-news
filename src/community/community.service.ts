@@ -6,20 +6,34 @@ import { UpdateCommunityRoleDto } from './dto/update-community-role.dto';
 import { CommunityRepository } from './repositories/community.repository';
 import { Like } from 'typeorm';
 import { CommunityRoleService } from './community-role.service';
+import { CommunityMemberService } from './community-member.service';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class CommunityService {
   constructor(
     private readonly communityRepository: CommunityRepository,
     private readonly communityRoleService: CommunityRoleService,
+    private readonly communityMemberService: CommunityMemberService,
   ) {}
 
-  async create(createCommunityDto: CreateCommunityDto) {
+  async create(createCommunityDto: CreateCommunityDto & { creatorId: number }) {
     const community = this.communityRepository.create(createCommunityDto);
     const savedCommunity = await this.communityRepository.save(community);
-    await this.communityRoleService.createDefaultRolesForCommunity(
-      savedCommunity,
-    );
+    const roles =
+      await this.communityRoleService.createDefaultRolesForCommunity(
+        savedCommunity,
+      );
+
+    // Gán user tạo vào role owner
+    const ownerRole = roles.find((r) => r.is_owner);
+    if (ownerRole) {
+      await this.communityMemberService.addMember(
+        savedCommunity,
+        { id: createCommunityDto.creatorId } as User,
+        ownerRole,
+      );
+    }
     return savedCommunity;
   }
 

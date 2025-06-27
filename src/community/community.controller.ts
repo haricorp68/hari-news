@@ -15,14 +15,27 @@ import { UpdateCommunityDto } from './dto/update-community.dto';
 import { CreateCommunityRoleDto } from './dto/create-community-role.dto';
 import { UpdateCommunityRoleDto } from './dto/update-community-role.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Controller('community')
 export class CommunityController {
   constructor(private readonly communityService: CommunityService) {}
 
   @Post()
-  create(@Body() createCommunityDto: CreateCommunityDto) {
-    return this.communityService.create(createCommunityDto);
+  @UseGuards(JwtAuthGuard)
+  create(
+    @CurrentUser() user: { userId: number },
+
+    @Body() createCommunityDto: CreateCommunityDto,
+  ) {
+    console.log(
+      '🔍 ~ create ~ src/community/community.controller.ts:26 ~ user:',
+      user,
+    );
+    return this.communityService.create({
+      ...createCommunityDto,
+      creatorId: user.userId,
+    });
   }
 
   @Get()
@@ -33,7 +46,11 @@ export class CommunityController {
     @Query() query: any,
   ) {
     const { page: _p, pageSize: _ps, ...filters } = query;
-    const { data, total, lastPage } = await this.communityService.paginate({ page, pageSize, filters });
+    const { data, total, lastPage } = await this.communityService.paginate({
+      page,
+      pageSize,
+      filters,
+    });
     return {
       data,
       message: 'Lấy danh sách community thành công!',
