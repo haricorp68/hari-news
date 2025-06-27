@@ -10,15 +10,24 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { UserService } from './user/user.service';
 import { Policy } from './policy/entities/policy.entity';
 import { getRepository } from 'typeorm';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
   app.useGlobalFilters(new HttpExceptionFilter(), new AllExceptionsFilter());
+
+  // Cấu hình CORS cho phép credentials
+  app.enableCors({
+    origin: process.env.FRONTEND_URL, // Set this to your frontend domain as needed
+    credentials: true,
+  });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 

@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Req, UseGuards, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginAuthDto } from './dto/create-auth.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -21,11 +21,32 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginAuthDto, @Req() req: Request) {
+  async login(
+    @Body() loginDto: LoginAuthDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const device = (req.headers['x-device'] as string) || 'unknown';
     const ip = req.ip || req.socket?.remoteAddress || '';
     const userAgent = (req.headers['user-agent'] as string) || '';
-    return this.authService.login(loginDto, device, ip, userAgent);
+    const result = await this.authService.login(loginDto, device, ip, userAgent);
+    // Set token vào httpOnly cookie
+    res.cookie('accessToken', result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ngày hoặc tuỳ config
+      path: '/',
+    });
+    // Có thể trả về user info hoặc chỉ status
+    return { message: 'Login successful' };
   }
 
   @Post('refresh-token')
