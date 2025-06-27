@@ -1,36 +1,121 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { UpdateCommunityDto } from './dto/update-community.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CommunityRole } from './entities/community_role.entity';
-import { Community } from './entities/community.entity';
-import { Repository } from 'typeorm';
 import { CreateCommunityRoleDto } from './dto/create-community-role.dto';
-import { CommunityRoleRepository } from './repositories/community_role.repository';
+import { UpdateCommunityRoleDto } from './dto/update-community-role.dto';
+import { CommunityRepository } from './repositories/community.repository';
+import { Like } from 'typeorm';
+import { CommunityRoleService } from './community-role.service';
 
 @Injectable()
 export class CommunityService {
   constructor(
-    private readonly communityRoleRepository: CommunityRoleRepository,
+    private readonly communityRepository: CommunityRepository,
+    private readonly communityRoleService: CommunityRoleService,
   ) {}
 
-  create(createCommunityDto: CreateCommunityDto) {
-    return 'This action adds a new community';
+  async create(createCommunityDto: CreateCommunityDto) {
+    const community = this.communityRepository.create(createCommunityDto);
+    const savedCommunity = await this.communityRepository.save(community);
+    await this.communityRoleService.createDefaultRolesForCommunity(
+      savedCommunity,
+    );
+    return savedCommunity;
   }
 
-  findAll() {
-    return `This action returns all community`;
+  async findAll(query: { page?: number; limit?: number; name?: string }) {
+    const page = query.page && query.page > 0 ? query.page : 1;
+    const limit = query.limit && query.limit > 0 ? query.limit : 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+    if (query.name) {
+      where.name =
+        typeof query.name === 'string' ? Like(`%${query.name}%`) : undefined;
+    }
+
+    const [data, total] = await this.communityRepository.findAndCount({
+      where,
+      skip,
+      take: limit,
+      order: { id: 'DESC' },
+    });
+    return {
+      data,
+      total,
+      page,
+      limit,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} community`;
+  async findOne(id: number) {
+    return this.communityRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateCommunityDto: UpdateCommunityDto) {
-    return `This action updates a #${id} community`;
+  async update(id: number, updateCommunityDto: UpdateCommunityDto) {
+    const community = await this.communityRepository.findOne({ where: { id } });
+    if (!community) throw new Error('Community not found');
+    Object.assign(community, updateCommunityDto);
+    return this.communityRepository.save(community);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} community`;
+  async remove(id: number) {
+    const result = await this.communityRepository.delete(id);
+    return { deleted: (result.affected || 0) > 0 };
+  }
+
+  async createCommunityRole(dto: CreateCommunityRoleDto) {
+    const community = await this.communityRepository.findOne({
+      where: { id: dto.communityId },
+    });
+    if (!community) {
+      throw new Error('Community not found');
+    }
+    return this.communityRoleService.create(dto, community);
+  }
+
+  async findAllCommunityRoles(communityId: number) {
+    return this.communityRoleService.findAll(communityId);
+  }
+
+  async findOneCommunityRole(id: number) {
+    return this.communityRoleService.findOne(id);
+  }
+
+  async updateCommunityRole(id: number, dto: UpdateCommunityRoleDto) {
+    return this.communityRoleService.update(id, dto);
+  }
+
+  async removeCommunityRole(id: number) {
+    return this.communityRoleService.remove(id);
+  }
+
+  async paginate({
+    page = 1,
+    pageSize = 10,
+    filters = {},
+  }: {
+    page?: number;
+    pageSize?: number;
+    filters?: any;
+  }) {
+    const skip = (page - 1) * pageSize;
+    const where: any = {};
+    if (filters.name) {
+      where.name = Like(`%${filters.name}%`);
+    }
+    // Có thể bổ sung filter cho các trường khác ở đây
+    const [data, total] = await this.communityRepository.findAndCount({
+      where,
+      skip,
+      take: pageSize,
+      order: { id: 'DESC' },
+    });
+    return {
+      data,
+      total,
+      lastPage: Math.ceil(total / pageSize),
+    };
   }
 }
