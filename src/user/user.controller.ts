@@ -48,6 +48,16 @@ export class UserController {
     };
   }
 
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUser() user) {
+    const userProfile = await this.userService.findOne(user.userId || user.id);
+    return {
+      user: userProfile,
+      message: 'Lấy thông tin profile thành công!',
+    };
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('read', 'user')

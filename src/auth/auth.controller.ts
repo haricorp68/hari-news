@@ -49,6 +49,21 @@ export class AuthController {
     return { message: 'Login successful' };
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getCurrentUser(@CurrentUser() user) {
+    return this.authService.getCurrentUser(user.userId || user.id);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Res({ passthrough: true }) res: Response) {
+    // Clear cookies
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return { message: 'Logout successful' };
+  }
+
   @Post('refresh-token')
   async refreshToken(@Body() body: { userId: number; refreshToken: string }) {
     return this.authService.refreshToken(body.userId, body.refreshToken);

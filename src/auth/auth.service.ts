@@ -16,6 +16,7 @@ import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserConfigService } from '../user/user-config.service';
 import { randomBytes } from 'crypto';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -31,12 +32,23 @@ export class AuthService {
     return { message: 'User registered successfully', user };
   }
 
-  async login(loginDto: LoginAuthDto, device?: string, ip?: string, userAgent?: string) {
-    const user = await this.userService.findByEmail(loginDto.email, true) as import('../user/entities/user.entity').User | null;
+  async login(
+    loginDto: LoginAuthDto,
+    device?: string,
+    ip?: string,
+    userAgent?: string,
+  ) {
+    const user = (await this.userService.findByEmail(
+      loginDto.email,
+      true,
+    )) as User | null;
     if (!user || !user.password) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -50,7 +62,10 @@ export class AuthService {
       expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
     });
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-    const expiredAt = new Date(Date.now() + this.parseExpiresIn(process.env.JWT_REFRESH_EXPIRES_IN || '7d'));
+    const expiredAt = new Date(
+      Date.now() +
+        this.parseExpiresIn(process.env.JWT_REFRESH_EXPIRES_IN || '7d'),
+    );
     await this.refreshTokenRepository.createAndSave({
       user,
       token: hashedRefreshToken,
@@ -64,15 +79,22 @@ export class AuthService {
   }
 
   async refreshToken(userId: number, refreshToken: string) {
-    const user = await this.userService.findOne(userId, true) as import('../user/entities/user.entity').User | null;
+    const user = (await this.userService.findOne(userId, true)) as User;
     if (!user) {
       throw new UnauthorizedException('Invalid user');
     }
-    const tokens = await this.refreshTokenRepository.findByUser(userId, RefreshTokenType.LOCAL);
+    const tokens = await this.refreshTokenRepository.findByUser(
+      userId,
+      RefreshTokenType.LOCAL,
+    );
     let found = false;
     for (const tokenEntity of tokens) {
       const match = await bcrypt.compare(refreshToken, tokenEntity.token);
-      if (match && (!tokenEntity.expiredAt || tokenEntity.expiredAt > new Date()) && !tokenEntity.revokedAt) {
+      if (
+        match &&
+        (!tokenEntity.expiredAt || tokenEntity.expiredAt > new Date()) &&
+        !tokenEntity.revokedAt
+      ) {
         found = true;
         break;
       }
@@ -94,19 +116,25 @@ export class AuthService {
   }
 
   async revokeAllRefreshTokensForUser(userId: number) {
-    return this.refreshTokenRepository.revokeAllForUser(userId, RefreshTokenType.LOCAL);
+    return this.refreshTokenRepository.revokeAllForUser(
+      userId,
+      RefreshTokenType.LOCAL,
+    );
   }
 
   async oauthLogin(oauthUser: any) {
     if (!oauthUser.email) {
       throw new UnauthorizedException('No email from OAuth provider');
     }
-    let user = await this.userService.findByEmail(oauthUser.email, true) as import('../user/entities/user.entity').User | null;
+    let user = (await this.userService.findByEmail(
+      oauthUser.email,
+      true,
+    )) as User;
     if (!user) {
-      user = await this.userService.create({
+      user = (await this.userService.create({
         email: oauthUser.email,
         password: '',
-      }) as import('../user/entities/user.entity').User;
+      })) as User;
     }
     if (!user) {
       throw new UnauthorizedException('Cannot create user from OAuth');
@@ -121,7 +149,10 @@ export class AuthService {
       expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
     });
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-    const expiredAt = new Date(Date.now() + this.parseExpiresIn(process.env.JWT_REFRESH_EXPIRES_IN || '7d'));
+    const expiredAt = new Date(
+      Date.now() +
+        this.parseExpiresIn(process.env.JWT_REFRESH_EXPIRES_IN || '7d'),
+    );
     await this.refreshTokenRepository.createAndSave({
       user,
       token: hashedRefreshToken,
@@ -137,11 +168,16 @@ export class AuthService {
     const value = parseInt(match[1], 10);
     const unit = match[2];
     switch (unit) {
-      case 's': return value * 1000;
-      case 'm': return value * 60 * 1000;
-      case 'h': return value * 60 * 60 * 1000;
-      case 'd': return value * 24 * 60 * 60 * 1000;
-      default: return 7 * 24 * 60 * 60 * 1000;
+      case 's':
+        return value * 1000;
+      case 'm':
+        return value * 60 * 1000;
+      case 'h':
+        return value * 60 * 60 * 1000;
+      case 'd':
+        return value * 24 * 60 * 60 * 1000;
+      default:
+        return 7 * 24 * 60 * 60 * 1000;
     }
   }
 
@@ -162,7 +198,11 @@ export class AuthService {
   // Đặt lại mật khẩu bằng token
   async resetPassword({ token, newPassword }: ResetPasswordDto) {
     const config = await this.userConfigService.findByResetToken(token);
-    if (!config || !config.passwordResetExpiresAt || config.passwordResetExpiresAt < new Date()) {
+    if (
+      !config ||
+      !config.passwordResetExpiresAt ||
+      config.passwordResetExpiresAt < new Date()
+    ) {
       throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
     }
     await this.userService.update(config.userId, { password: newPassword });
@@ -187,8 +227,13 @@ export class AuthService {
 
   // Xác thực email
   async verifyEmail({ token }: VerifyEmailDto) {
-    const config = await this.userConfigService.findByEmailVerificationToken(token);
-    if (!config || !config.emailVerificationExpiresAt || config.emailVerificationExpiresAt < new Date()) {
+    const config =
+      await this.userConfigService.findByEmailVerificationToken(token);
+    if (
+      !config ||
+      !config.emailVerificationExpiresAt ||
+      config.emailVerificationExpiresAt < new Date()
+    ) {
       throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
     }
     await this.userService.update(config.userId, { isVerified: true });
@@ -200,12 +245,34 @@ export class AuthService {
   }
 
   // Đổi mật khẩu khi đã đăng nhập
-  async changePassword(userId: number, { oldPassword, newPassword }: ChangePasswordDto) {
-    const user = await this.userService.findOne(userId, true) as any;
-    if (!user || !user.password) throw new BadRequestException('User not found');
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) throw new BadRequestException('Mật khẩu cũ không đúng');
-    await this.userService.update(userId, { password: newPassword });
-    return { message: 'Đổi mật khẩu thành công!' };
+  async changePassword(
+    userId: number,
+    { oldPassword, newPassword }: ChangePasswordDto,
+  ) {
+    const user = (await this.userService.findOne(userId, true)) as User;
+    if (!user || !user.password) {
+      throw new UnauthorizedException('User not found');
+    }
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isOldPasswordValid) {
+      throw new UnauthorizedException('Old password is incorrect');
+    }
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await this.userService.update(userId, { password: hashedNewPassword });
+    // Revoke all refresh tokens for security
+    await this.revokeAllRefreshTokensForUser(userId);
+    return { message: 'Password changed successfully' };
+  }
+
+  async getCurrentUser(userId: number) {
+    const user = await this.userService.findOne(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    // User đã được loại bỏ password từ userService.findOne
+    return {
+      user,
+      message: 'Lấy thông tin người dùng thành công',
+    };
   }
 }
