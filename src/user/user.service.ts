@@ -25,10 +25,10 @@ export class UserService {
       password: hashedPassword,
     });
     const saved = await this.userRepository.save(user);
-    
+
     // Tạo config mặc định cho user mới
     await this.userConfigService.createUserConfig(saved.id);
-    
+
     const { password, ...result } = saved;
     return result;
   }
@@ -38,7 +38,10 @@ export class UserService {
     return users.map(({ password, ...rest }) => rest);
   }
 
-  async findOne(id: number, withPassword = false): Promise<User | Omit<User, 'password'> | null> {
+  async findOne(
+    id: number,
+    withPassword = false,
+  ): Promise<User | Omit<User, 'password'> | null> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) return null;
     if (withPassword) return user;
@@ -46,7 +49,10 @@ export class UserService {
     return result as Omit<User, 'password'>;
   }
 
-  async findByEmail(email: string, withPassword = false): Promise<User | Omit<User, 'password'> | null> {
+  async findByEmail(
+    email: string,
+    withPassword = false,
+  ): Promise<User | Omit<User, 'password'> | null> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) return null;
     if (withPassword) return user;
@@ -70,17 +76,17 @@ export class UserService {
     return { deleted: true };
   }
 
-  async paginate({ 
-    page = 1, 
-    pageSize = 10, 
-    filters = {} 
-  }: { 
-    page?: number; 
-    pageSize?: number; 
-    filters?: any 
+  async paginate({
+    page = 1,
+    pageSize = 10,
+    filters = {},
+  }: {
+    page?: number;
+    pageSize?: number;
+    filters?: any;
   }) {
     const where: any = {};
-    
+
     // Xây dựng where clause động
     if (filters.email) {
       where.email = Like(`%${filters.email}%`);
@@ -98,7 +104,8 @@ export class UserService {
       where.isActive = filters.isActive === 'true' || filters.isActive === true;
     }
     if (filters.isVerified !== undefined) {
-      where.isVerified = filters.isVerified === 'true' || filters.isVerified === true;
+      where.isVerified =
+        filters.isVerified === 'true' || filters.isVerified === true;
     }
     if (filters.status) {
       where.status = filters.status;
@@ -109,7 +116,7 @@ export class UserService {
     if (filters.gender) {
       where.gender = filters.gender;
     }
-    
+
     const [users, total] = await this.userRepository.findAndCount({
       where,
       skip: (page - 1) * pageSize,

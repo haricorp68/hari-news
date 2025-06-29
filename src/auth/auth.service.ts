@@ -133,6 +133,7 @@ export class AuthService {
     if (!user) {
       user = (await this.userService.create({
         email: oauthUser.email,
+        name: oauthUser.name,
         password: '',
       })) as User;
     }
