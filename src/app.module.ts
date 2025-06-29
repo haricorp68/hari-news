@@ -14,6 +14,7 @@ import { CommentModule } from './comment/comment.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { ShareModule } from './share/share.module';
 import { PolicyModule } from './policy/policy.module';
+import { RedisModule } from './cache/redis.module';
 import { Policy } from './policy/entities/policy.entity';
 import { Company } from './company/entities/company.entity';
 import { CompanyStaff } from './company/entities/company_staff.entity';
@@ -65,6 +66,7 @@ import { UserConfig } from './user/entities/user-config.entity';
       ],
       synchronize: true,
     }),
+    RedisModule,
     AuthModule,
     UserModule,
     CommunityModule,

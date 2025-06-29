@@ -12,6 +12,15 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --requirepass redis_password
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
   app:
     build: .
     ports:
@@ -22,11 +31,15 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_DATABASE: hari_news
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_password
       JWT_SECRET: your_jwt_secret_key
       JWT_EXPIRES_IN: 3600s
       JWT_REFRESH_EXPIRES_IN: 7d
     depends_on:
       - db
+      - redis
 
   pgadmin:
     image: dpage/pgadmin4
@@ -40,4 +53,5 @@ services:
       - db
 
 volumes:
-  db_data: 
+  db_data:
+  redis_data: 
