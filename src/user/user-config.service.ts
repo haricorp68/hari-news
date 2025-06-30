@@ -102,12 +102,4 @@ export class UserConfigService {
       where: { passwordResetToken: token },
     });
   }
-
-  async findByEmailVerificationToken(
-    token: string,
-  ): Promise<UserConfig | null> {
-    return this.userConfigRepository.findOne({
-      where: { emailVerificationToken: token },
-    });
-  }
 }

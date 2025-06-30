@@ -18,6 +18,10 @@ export class CreateUserDto {
   @MinLength(2)
   name: string;
 
+  @IsString()
+  @IsOptional()
+  token?: string;
+
   @IsBoolean()
   @IsOptional()
   isVerified?: boolean = false;

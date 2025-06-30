@@ -20,6 +20,7 @@ import { User } from '../user/entities/user.entity';
 import { sendEmailVerificationDto } from './dto/send-email-verification.dto';
 import { RedisService } from 'src/cache';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -30,10 +31,30 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userConfigService: UserConfigService,
     private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
-    const user = await this.userService.create(createUserDto);
+    const { email, token, ...rest } = createUserDto;
+    const tokenKey = `email_verification:${email}`;
+    // Lấy token từ Redis
+    const data = await this.redisService.getCache(tokenKey);
+    if (!data) {
+      throw new BadRequestException('Bạn cần xác thực email trước khi đăng ký!');
+    }
+    let parsed: any;
+    try {
+      parsed = JSON.parse(data);
+    } catch {
+      throw new BadRequestException('Token không hợp lệ!');
+    }
+    if (!parsed.token || parsed.token !== token) {
+      throw new BadRequestException('Token xác thực email không đúng hoặc đã hết hạn!');
+    }
+    // Xóa token khỏi Redis sau khi dùng
+    await this.redisService.del(tokenKey);
+    // Đăng ký user, set isVerified=true
+    const user = await this.userService.create({ email, ...rest, isVerified: true });
     return { message: 'User registered successfully', user };
   }
 
@@ -221,15 +242,28 @@ export class AuthService {
 
   // Gửi email xác thực
   async sendEmailVerification({ email }: sendEmailVerificationDto) {
+    // Kiểm tra email đã tồn tại chưa
+    const existed = await this.userService.findByEmail(email);
+    if (existed) {
+      throw new BadRequestException('Email đã tồn tại trong hệ thống!');
+    }
+    const tokenKey = `email_verification:${email}`;
+    const cooldownKey = `email_verification_cooldown:${email}`;
+    // Nếu đang cooldown thì báo lỗi
+    const isCooldown = await this.redisService.getCache(cooldownKey);
+    if (isCooldown) {
+      const ttl = await this.redisService.ttl(cooldownKey);
+      throw new BadRequestException({
+        message: 'Bạn vừa yêu cầu xác thực, vui lòng chờ 1 phút trước khi gửi lại!',
+        retryAfter: ttl,
+      });
+    }
+    // Tạo token mới, lưu vào Redis 10 phút
     const token = randomBytes(32).toString('hex');
-    const expires = 60 * 60 * 24; // 24h (giây)
-    const cacheKey = `email_verification:${email}`;
-    await this.redisService.setCache(
-      cacheKey,
-      JSON.stringify({ token }),
-      expires,
-    );
-    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
+    await this.redisService.setCache(tokenKey, JSON.stringify({ token }), 600); // TTL 10 phút
+    await this.redisService.setCache(cooldownKey, '1', 60); // TTL 1 phút
+    const frontendUrl = this.configService.get('FRONTEND_URL');
+    const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
 
     await this.mailerService.sendMail({
       to: email,
@@ -241,37 +275,6 @@ export class AuthService {
       },
     });
     return { message: 'Đã gửi email xác thực', token };
-  }
-
-  // Xác thực email
-  async verifyEmail({ token }: VerifyEmailDto) {
-    // Tìm email tương ứng với token trong Redis
-    // Duyệt qua các key email_verification:*
-    const redis = this.redisService['redis'];
-    const keys = await redis.keys('email_verification:*');
-    let email = null;
-    for (const key of keys) {
-      const value = await redis.get(key);
-      try {
-        const data = JSON.parse(value);
-        if (data.token === token) {
-          email = key.replace('email_verification:', '');
-          break;
-        }
-      } catch {}
-    }
-    if (!email) {
-      throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
-    }
-    // Xác thực user
-    const user = await this.userService.findByEmail(email);
-    if (!user) {
-      throw new BadRequestException('User không tồn tại');
-    }
-    await this.userService.update(user.id, { isVerified: true });
-    // Xóa token khỏi Redis
-    await redis.del(`email_verification:${email}`);
-    return { message: 'Xác thực email thành công!' };
   }
 
   // Đổi mật khẩu khi đã đăng nhập

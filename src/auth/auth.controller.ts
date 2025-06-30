@@ -122,11 +122,6 @@ export class AuthController {
     return this.authService.sendEmailVerification(dto);
   }
 
-  @Post('verify-email')
-  async verifyEmail(@Body() dto: VerifyEmailDto) {
-    return this.authService.verifyEmail(dto);
-  }
-
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   async changePassword(@CurrentUser() user, @Body() dto: ChangePasswordDto) {

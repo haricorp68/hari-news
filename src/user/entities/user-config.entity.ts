@@ -50,15 +50,9 @@ export class UserConfig {
   @Column({ nullable: true })
   passwordResetExpiresAt: Date;
 
-  @Column({ nullable: true })
-  emailVerificationToken: string;
-
-  @Column({ nullable: true })
-  emailVerificationExpiresAt: Date;
-
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
-} 
+}
