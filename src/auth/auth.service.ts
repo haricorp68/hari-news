@@ -17,14 +17,19 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserConfigService } from '../user/user-config.service';
 import { randomBytes } from 'crypto';
 import { User } from '../user/entities/user.entity';
+import { sendEmailVerificationDto } from './dto/send-email-verification.dto';
+import { RedisService } from 'src/cache';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly redisService: RedisService,
     private readonly userService: UserService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly jwtService: JwtService,
     private readonly userConfigService: UserConfigService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
@@ -215,33 +220,57 @@ export class AuthService {
   }
 
   // Gửi email xác thực
-  async sendEmailVerification(userId: number) {
+  async sendEmailVerification({ email }: sendEmailVerificationDto) {
     const token = randomBytes(32).toString('hex');
-    const expires = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24h
-    await this.userConfigService.updateUserConfig(userId, {
-      emailVerificationToken: token,
-      emailVerificationExpiresAt: expires,
+    const expires = 60 * 60 * 24; // 24h (giây)
+    const cacheKey = `email_verification:${email}`;
+    await this.redisService.setCache(
+      cacheKey,
+      JSON.stringify({ token }),
+      expires,
+    );
+    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Xác thực email tài khoản',
+      template: 'email-verification',
+      context: {
+        verifyUrl,
+        year: new Date().getFullYear(),
+      },
     });
-    // TODO: Gửi email xác thực với token này
-    return { message: 'Đã gửi email xác thực (giả lập)', token };
+    return { message: 'Đã gửi email xác thực', token };
   }
 
   // Xác thực email
   async verifyEmail({ token }: VerifyEmailDto) {
-    const config =
-      await this.userConfigService.findByEmailVerificationToken(token);
-    if (
-      !config ||
-      !config.emailVerificationExpiresAt ||
-      config.emailVerificationExpiresAt < new Date()
-    ) {
+    // Tìm email tương ứng với token trong Redis
+    // Duyệt qua các key email_verification:*
+    const redis = this.redisService['redis'];
+    const keys = await redis.keys('email_verification:*');
+    let email = null;
+    for (const key of keys) {
+      const value = await redis.get(key);
+      try {
+        const data = JSON.parse(value);
+        if (data.token === token) {
+          email = key.replace('email_verification:', '');
+          break;
+        }
+      } catch {}
+    }
+    if (!email) {
       throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
     }
-    await this.userService.update(config.userId, { isVerified: true });
-    await this.userConfigService.updateUserConfig(config.userId, {
-      emailVerificationToken: undefined,
-      emailVerificationExpiresAt: undefined,
-    });
+    // Xác thực user
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User không tồn tại');
+    }
+    await this.userService.update(user.id, { isVerified: true });
+    // Xóa token khỏi Redis
+    await redis.del(`email_verification:${email}`);
     return { message: 'Xác thực email thành công!' };
   }
 

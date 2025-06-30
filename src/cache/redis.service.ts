@@ -196,4 +196,20 @@ export class RedisService {
   getClient(): Redis {
     return this.redisClient;
   }
-} 
+
+  async setCache(key: string, value: string, ttl?: number): Promise<void> {
+    if (ttl) {
+      await this.redisClient.set(key, value, 'EX', ttl);
+    } else {
+      await this.redisClient.set(key, value);
+    }
+  }
+
+  async getCache(key: string): Promise<string | null> {
+    return this.redisClient.get(key);
+  }
+
+  async incrementCounter(key: string): Promise<number> {
+    return this.redisClient.incr(key);
+  }
+}

@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Req, UseGuards, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Req,
+  UseGuards,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginAuthDto } from './dto/create-auth.dto';
@@ -10,6 +18,7 @@ import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { sendEmailVerificationDto } from './dto/send-email-verification.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -29,7 +38,12 @@ export class AuthController {
     const device = (req.headers['x-device'] as string) || 'unknown';
     const ip = req.ip || req.socket?.remoteAddress || '';
     const userAgent = (req.headers['user-agent'] as string) || '';
-    const result = await this.authService.login(loginDto, device, ip, userAgent);
+    const result = await this.authService.login(
+      loginDto,
+      device,
+      ip,
+      userAgent,
+    );
     // Set token vào httpOnly cookie
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
@@ -104,9 +118,8 @@ export class AuthController {
   }
 
   @Post('send-email-verification')
-  @UseGuards(JwtAuthGuard)
-  async sendEmailVerification(@CurrentUser() user) {
-    return this.authService.sendEmailVerification(user.userId || user.id);
+  async sendEmailVerification(@Body() dto: sendEmailVerificationDto) {
+    return this.authService.sendEmailVerification(dto);
   }
 
   @Post('verify-email')
