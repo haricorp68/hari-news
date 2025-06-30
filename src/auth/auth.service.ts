@@ -40,7 +40,9 @@ export class AuthService {
     // Lấy token từ Redis
     const data = await this.redisService.getCache(tokenKey);
     if (!data) {
-      throw new BadRequestException('Bạn cần xác thực email trước khi đăng ký!');
+      throw new BadRequestException(
+        'Bạn cần xác thực email trước khi đăng ký!',
+      );
     }
     let parsed: any;
     try {
@@ -49,13 +51,19 @@ export class AuthService {
       throw new BadRequestException('Token không hợp lệ!');
     }
     if (!parsed.token || parsed.token !== token) {
-      throw new BadRequestException('Token xác thực email không đúng hoặc đã hết hạn!');
+      throw new BadRequestException(
+        'Token xác thực email không đúng hoặc đã hết hạn!',
+      );
     }
     // Xóa token khỏi Redis sau khi dùng
     await this.redisService.del(tokenKey);
     // Đăng ký user, set isVerified=true
-    const user = await this.userService.create({ email, ...rest, isVerified: true });
-    return { message: 'User registered successfully', user };
+    const user = await this.userService.create({
+      email,
+      ...rest,
+      isVerified: true,
+    });
+    return { message: 'User registered successfully' };
   }
 
   async login(
@@ -254,12 +262,13 @@ export class AuthService {
     if (isCooldown) {
       const ttl = await this.redisService.ttl(cooldownKey);
       throw new BadRequestException({
-        message: 'Bạn vừa yêu cầu xác thực, vui lòng chờ 1 phút trước khi gửi lại!',
+        message:
+          'Bạn vừa yêu cầu xác thực, vui lòng chờ 1 phút trước khi gửi lại!',
         retryAfter: ttl,
       });
     }
     // Tạo token mới, lưu vào Redis 10 phút
-    const token = randomBytes(32).toString('hex');
+    const token = Math.floor(100000 + Math.random() * 900000).toString();
     await this.redisService.setCache(tokenKey, JSON.stringify({ token }), 600); // TTL 10 phút
     await this.redisService.setCache(cooldownKey, '1', 60); // TTL 1 phút
     const frontendUrl = this.configService.get('FRONTEND_URL');
@@ -274,7 +283,7 @@ export class AuthService {
         year: new Date().getFullYear(),
       },
     });
-    return { message: 'Đã gửi email xác thực', token };
+    return { message: 'Đã gửi email xác thực' };
   }
 
   // Đổi mật khẩu khi đã đăng nhập

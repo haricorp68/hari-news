@@ -31,10 +31,24 @@ export class TransformInterceptor<T> implements NestInterceptor<T, any> {
             ? 'Data deleted successfully'
             : 'Request successful');
 
-        // Nếu controller trả về object có cả data và message thì lấy message đó
-        if (result && typeof result === 'object' && 'data' in result && 'message' in result) {
+        // Nếu object có message và các field khác, gom các field khác vào data
+        if (
+          result &&
+          typeof result === 'object' &&
+          'message' in result &&
+          Object.keys(result).length > 1
+        ) {
+          const { message: msg, ...rest } = result;
+          message = msg;
+          data = rest;
+        } else if (result && typeof result === 'object' && 'data' in result && 'message' in result) {
           data = result.data;
           message = result.message;
+        } else if (result && typeof result === 'object' && 'message' in result && Object.keys(result).length === 1) {
+          data = undefined;
+          message = result.message;
+        } else {
+          data = result;
         }
 
         let metadata = '';
@@ -45,7 +59,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, any> {
           status: 'success',
           statusCode,
           message,
-          data,
+          ...(data !== undefined ? { data } : {}),
           metadata,
           timestamp: new Date().toISOString(),
         };
