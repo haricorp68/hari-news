@@ -34,7 +34,11 @@ export class UserController {
     @Query() query: any,
   ) {
     const { page: _p, pageSize: _ps, ...filters } = query;
-    const { data, total } = await this.userService.paginate({ page, pageSize, filters });
+    const { data, total } = await this.userService.paginate({
+      page,
+      pageSize,
+      filters,
+    });
     return {
       data,
       message: 'Lấy danh sách user thành công!',
@@ -67,7 +71,7 @@ export class UserController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
-  @CheckAbility('update', 'user')
+  // @CheckAbility('update', 'user')
   async update(
     @CurrentUser() user,
     @Param('id') id: string,

@@ -63,7 +63,7 @@ export class AuthService {
       ...rest,
       isVerified: true,
     });
-    return { message: 'User registered successfully' };
+    return user;
   }
 
   async login(
@@ -226,8 +226,22 @@ export class AuthService {
       passwordResetToken: token,
       passwordResetExpiresAt: expires,
     });
-    // TODO: Gửi email chứa link reset password với token này
-    return { message: 'Đã gửi email đặt lại mật khẩu (giả lập)', token };
+    
+    // Gửi email chứa link reset password
+    const frontendUrl = this.configService.get('FRONTEND_URL');
+    const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Đặt lại mật khẩu - Hari News',
+      template: 'reset-password',
+      context: {
+        resetUrl,
+        year: new Date().getFullYear(),
+      },
+    });
+    
+    return {};
   }
 
   // Đặt lại mật khẩu bằng token
@@ -245,7 +259,7 @@ export class AuthService {
       passwordResetToken: undefined,
       passwordResetExpiresAt: undefined,
     });
-    return { message: 'Đặt lại mật khẩu thành công!' };
+    return {};
   }
 
   // Gửi email xác thực
@@ -283,7 +297,7 @@ export class AuthService {
         year: new Date().getFullYear(),
       },
     });
-    return { message: 'Đã gửi email xác thực' };
+    return {};
   }
 
   // Đổi mật khẩu khi đã đăng nhập
@@ -303,7 +317,7 @@ export class AuthService {
     await this.userService.update(userId, { password: hashedNewPassword });
     // Revoke all refresh tokens for security
     await this.revokeAllRefreshTokensForUser(userId);
-    return { message: 'Password changed successfully' };
+    return {};
   }
 
   async getCurrentUser(userId: number) {
@@ -312,9 +326,6 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
     // User đã được loại bỏ password từ userService.findOne
-    return {
-      user,
-      message: 'Lấy thông tin người dùng thành công',
-    };
+    return { user };
   }
 }

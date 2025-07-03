@@ -14,7 +14,6 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -26,7 +25,8 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto);
+    const user = await this.authService.register(createUserDto);
+    return { message: 'User registered successfully' };
   }
 
   @Post('login')
@@ -59,14 +59,16 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ngày hoặc tuỳ config
       path: '/',
     });
-    // Có thể trả về user info hoặc chỉ status
     return { message: 'Login successful' };
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getCurrentUser(@CurrentUser() user) {
-    return this.authService.getCurrentUser(user.userId || user.id);
+    const result = await this.authService.getCurrentUser(
+      user.userId || user.id,
+    );
+    return { message: 'Lấy thông tin người dùng thành công', ...result };
   }
 
   @Post('logout')
@@ -80,7 +82,11 @@ export class AuthController {
 
   @Post('refresh-token')
   async refreshToken(@Body() body: { userId: number; refreshToken: string }) {
-    return this.authService.refreshToken(body.userId, body.refreshToken);
+    const result = await this.authService.refreshToken(
+      body.userId,
+      body.refreshToken,
+    );
+    return { message: 'Refresh token successful', ...result };
   }
 
   // Google OAuth
@@ -92,7 +98,8 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(@Req() req: Request) {
     // req.user chứa thông tin user từ GoogleStrategy
-    return this.authService.oauthLogin(req.user);
+    const result = await this.authService.oauthLogin(req.user);
+    return { message: 'Login with Google successful', ...result };
   }
 
   // Facebook OAuth
@@ -104,27 +111,32 @@ export class AuthController {
   @UseGuards(AuthGuard('facebook'))
   async facebookAuthCallback(@Req() req: Request) {
     // req.user chứa thông tin user từ FacebookStrategy
-    return this.authService.oauthLogin(req.user);
+    const result = await this.authService.oauthLogin(req.user);
+    return { message: 'Login with Facebook successful', ...result };
   }
 
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(dto);
+    await this.authService.forgotPassword(dto);
+    return { message: 'Đã gửi email đặt lại mật khẩu' };
   }
 
   @Post('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.authService.resetPassword(dto);
+    await this.authService.resetPassword(dto);
+    return { message: 'Đặt lại mật khẩu thành công!' };
   }
 
   @Post('send-email-verification')
   async sendEmailVerification(@Body() dto: sendEmailVerificationDto) {
-    return this.authService.sendEmailVerification(dto);
+    await this.authService.sendEmailVerification(dto);
+    return { message: 'Đã gửi email xác thực' };
   }
 
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   async changePassword(@CurrentUser() user, @Body() dto: ChangePasswordDto) {
-    return this.authService.changePassword(user.userId || user.id, dto);
+    await this.authService.changePassword(user.userId || user.id, dto);
+    return { message: 'Password changed successfully' };
   }
 }

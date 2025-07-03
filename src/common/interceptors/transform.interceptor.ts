@@ -59,7 +59,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, any> {
           status: 'success',
           statusCode,
           message,
-          ...(data !== undefined ? { data } : {}),
+          data: data !== undefined ? data : null,
           metadata,
           timestamp: new Date().toISOString(),
         };
