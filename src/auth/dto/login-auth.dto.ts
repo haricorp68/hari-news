@@ -1,6 +1,10 @@
-import { IsEmail, IsString, MinLength } from 'class-validator';
-
-export class CreateAuthDto {}
+import {
+  IsBoolean,
+  IsEmail,
+  IsString,
+  MinLength,
+  IsOptional,
+} from 'class-validator';
 
 export class LoginAuthDto {
   @IsEmail()

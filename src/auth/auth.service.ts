@@ -6,7 +6,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { LoginAuthDto } from './dto/create-auth.dto';
 import * as bcrypt from 'bcryptjs';
 import { RefreshTokenType } from './entities/refresh-token.entity';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
@@ -21,6 +20,8 @@ import { sendEmailVerificationDto } from './dto/send-email-verification.dto';
 import { RedisService } from 'src/cache';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { RegisterAuthDto } from './dto/register-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async register(createUserDto: CreateUserDto) {
+  async register(createUserDto: RegisterAuthDto) {
     const { email, token, ...rest } = createUserDto;
     const tokenKey = `email_verification:${email}`;
     // Lấy token từ Redis
@@ -86,7 +87,7 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: process.env.JWT_EXPIRES_IN,
@@ -141,7 +142,7 @@ export class AuthService {
     } catch (e) {
       throw new UnauthorizedException('Expired or invalid refresh token');
     }
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: process.env.JWT_EXPIRES_IN,
@@ -174,7 +175,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Cannot create user from OAuth');
     }
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: process.env.JWT_EXPIRES_IN,
@@ -226,7 +227,7 @@ export class AuthService {
       passwordResetToken: token,
       passwordResetExpiresAt: expires,
     });
-    
+
     // Gửi email chứa link reset password
     const frontendUrl = this.configService.get('FRONTEND_URL');
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
@@ -240,7 +241,7 @@ export class AuthService {
         year: new Date().getFullYear(),
       },
     });
-    
+
     return {};
   }
 

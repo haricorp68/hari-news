@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, OnModuleInit } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -8,14 +8,39 @@ import { UserConfigService } from './user-config.service';
 import { Like } from 'typeorm';
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userConfigService: UserConfigService,
   ) {}
 
+  async onModuleInit() {
+    const userById = await this.userRepository.findOne({ where: { id: 1 } });
+    const userByEmail = await this.userRepository.findByEmail(
+      'superadmin@hari.com',
+    );
+    if (!userById && !userByEmail) {
+      const hashedPassword = await bcrypt.hash('123qwe', 10);
+      const superadmin = this.userRepository.create({
+        id: 1,
+        email: 'superadmin@hari.com',
+        password: hashedPassword,
+        name: 'Super Admin',
+        role: 'superadmin',
+        isActive: true,
+        isVerified: true,
+        status: 'active',
+      });
+      await this.userRepository.save(superadmin);
+      await this.userConfigService.createUserConfig(1);
+      console.log('Super admin created successfully!');
+    } else {
+      console.log('Super admin already used!');
+    }
+  }
+
   async create(createUserDto: CreateUserDto) {
-    const { token, ...userData } = createUserDto;
+    const userData = createUserDto;
     const existing = await this.userRepository.findByEmail(userData.email);
     if (existing) {
       throw new BadRequestException('Email already exists');

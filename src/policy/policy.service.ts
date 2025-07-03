@@ -1,9 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PolicyRepository } from './repositories/policy.repository';
+import { CreatePolicyDto } from './dto/create-policy.dto';
+import { UpdatePolicyDto } from './dto/update-policy.dto';
 
 @Injectable()
-export class PolicyService {
+export class PolicyService implements OnModuleInit {
   constructor(private readonly policyRepository: PolicyRepository) {}
+
+  async onModuleInit() {
+    // Tạo policy cao nhất cho superadmin nếu chưa có
+    const exists = await this.policyRepository.findOne({
+      where: {
+        subjectType: 'role',
+        subjectId: 'superadmin',
+        action: 'manage',
+        resource: 'all',
+      },
+    });
+    if (!exists) {
+      await this.policyRepository.save({
+        subjectType: 'role',
+        subjectId: 'superadmin',
+        action: 'manage',
+        resource: 'all',
+        condition: {},
+        description: 'Superadmin toàn quyền',
+      });
+      console.log('Policy for supper admin inited successfully!');
+    } else {
+      console.log('Policy for supper admin already in use!');
+    }
+  }
+
+  async findAll() {
+    return this.policyRepository.find();
+  }
+
+  async findOne(id: number) {
+    return this.policyRepository.findOne({ where: { id } });
+  }
+
+  async create(dto: CreatePolicyDto) {
+    const policy = this.policyRepository.create(dto);
+    return this.policyRepository.save(policy);
+  }
+
+  async update(id: number, dto: UpdatePolicyDto) {
+    await this.policyRepository.update(id, dto);
+    return this.policyRepository.findOne({ where: { id } });
+  }
+
+  async remove(id: number) {
+    await this.policyRepository.delete(id);
+  }
 
   async getPoliciesForUser(userId: number | string) {
     return this.policyRepository.find({
@@ -12,9 +61,12 @@ export class PolicyService {
   }
 
   async getPoliciesForRole(role: string) {
-    return this.policyRepository.find({
+    const all = await this.policyRepository.find({
       where: [{ subjectType: 'role', subjectId: role }],
     });
+    return all.filter(
+      (p) => !p.condition || Object.keys(p.condition).length === 0,
+    );
   }
 
   async createPolicy(data: {

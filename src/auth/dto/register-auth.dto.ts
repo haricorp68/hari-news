@@ -6,7 +6,7 @@ import {
   IsOptional,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class RegisterAuthDto {
   @IsEmail()
   email: string;
 
@@ -17,6 +17,10 @@ export class CreateUserDto {
   @IsString()
   @MinLength(2)
   name: string;
+
+  @IsString()
+  @IsOptional()
+  token?: string;
 
   @IsBoolean()
   @IsOptional()

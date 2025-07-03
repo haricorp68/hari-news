@@ -8,43 +8,42 @@ import {
   Delete,
 } from '@nestjs/common';
 import { PolicyService } from './policy.service';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Policy } from './entities/policy.entity';
+import { CreatePolicyDto } from './dto/create-policy.dto';
+import { UpdatePolicyDto } from './dto/update-policy.dto';
 
 @Controller('policy')
 export class PolicyController {
   constructor(
     private readonly policyService: PolicyService,
-    @InjectRepository(Policy)
-    private readonly policyRepository: Repository<Policy>,
   ) {}
 
   @Get()
   async findAll() {
-    return this.policyRepository.find();
+    const data = await this.policyService.findAll();
+    return { message: 'Lấy danh sách policy thành công!', data };
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.policyRepository.findOne({ where: { id: +id } });
+    const data = await this.policyService.findOne(+id);
+    return { message: 'Lấy policy thành công!', data };
   }
 
   @Post()
-  async create(@Body() body: Partial<Policy>) {
-    const policy = this.policyRepository.create(body);
-    return this.policyRepository.save(policy);
+  async create(@Body() body: CreatePolicyDto) {
+    const data = await this.policyService.create(body);
+    return { message: 'Tạo policy thành công!', data };
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() body: Partial<Policy>) {
-    await this.policyRepository.update(+id, body);
-    return this.policyRepository.findOne({ where: { id: +id } });
+  async update(@Param('id') id: string, @Body() body: UpdatePolicyDto) {
+    const data = await this.policyService.update(+id, body);
+    return { message: 'Cập nhật policy thành công!', data };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    await this.policyRepository.delete(+id);
-    return { deleted: true };
+    await this.policyService.remove(+id);
+    return { message: 'Xóa policy thành công!', data: null };
   }
 }

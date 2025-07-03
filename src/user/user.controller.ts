@@ -22,6 +22,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @CheckAbility('create', 'user')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
@@ -63,15 +65,14 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
-  @CheckAbility('read', 'user')
-  async findOne(@CurrentUser() user, @Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
-  // @CheckAbility('update', 'user')
+  @CheckAbility('update', 'user')
   async update(
     @CurrentUser() user,
     @Param('id') id: string,

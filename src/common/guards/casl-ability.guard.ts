@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { CHECK_ABILITY_KEY } from '../decorators/check-ability.decorator';
 import { PolicyService } from '../../policy/policy.service';
@@ -12,7 +17,8 @@ export class CaslAbilityGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const { action, resource } = this.reflector.get(CHECK_ABILITY_KEY, context.getHandler()) || {};
+    const { action, resource } =
+      this.reflector.get(CHECK_ABILITY_KEY, context.getHandler()) || {};
     if (!action || !resource) return true;
 
     const request = context.switchToHttp().getRequest();
@@ -29,8 +35,32 @@ export class CaslAbilityGuard implements CanActivate {
     console.log('Params:', params);
     console.log('Body:', body);
 
-    // Lấy policies cho user
-    const policies = await this.policyService.getPoliciesForUser(user.userId || user.id);
+    // Lấy policies cho user và role
+    const userId = user.userId || user.id;
+    console.log(
+      '🔍 ~ canActivate ~ src/common/guards/casl-ability.guard.ts:39 ~ user:',
+      user,
+    );
+
+    console.log(
+      '🔍 ~ canActivate ~ src/common/guards/casl-ability.guard.ts:39 ~ userId:',
+      userId,
+    );
+
+    const userPolicies = await this.policyService.getPoliciesForUser(userId);
+    console.log(
+      '🔍 ~ canActivate ~ src/common/guards/casl-ability.guard.ts:34 ~ userPolicies:',
+      userPolicies,
+    );
+
+    const rolePolicies = user.role
+      ? await this.policyService.getPoliciesForRole(user.role)
+      : [];
+    console.log(
+      '🔍 ~ canActivate ~ src/common/guards/casl-ability.guard.ts:51 ~ rolePolicies:',
+      rolePolicies,
+    );
+    const policies = [...userPolicies, ...rolePolicies];
     console.log('Policies found for user:', policies);
 
     const ability = defineAbilityFor(user, policies);
@@ -38,7 +68,7 @@ export class CaslAbilityGuard implements CanActivate {
 
     // Chuẩn bị resource object dựa trên HTTP method và context
     let resourceObj: any = { __caslSubjectType__: resource };
-    
+
     if (resource === 'user') {
       if (method === 'GET' && params.id) {
         // GET specific user - check access to specific user
@@ -60,7 +90,7 @@ export class CaslAbilityGuard implements CanActivate {
     // Có thể mở rộng cho các resource khác tương tự
 
     console.log('Resource object to check:', resourceObj);
-    
+
     const canAccess = ability.can(action, resourceObj);
     console.log('Can access result:', canAccess);
     console.log('=== END DEBUG ===');
@@ -70,4 +100,4 @@ export class CaslAbilityGuard implements CanActivate {
     }
     return true;
   }
-} 
+}
