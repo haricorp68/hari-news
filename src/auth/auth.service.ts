@@ -5,13 +5,11 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { RefreshTokenType } from './entities/refresh-token.entity';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserConfigService } from '../user/user-config.service';
 import { randomBytes } from 'crypto';
@@ -228,6 +226,10 @@ export class AuthService {
       passwordResetExpiresAt: expires,
     });
 
+    // Lưu token vào Redis cache
+    const cacheKey = `reset_password:${token}`;
+    await this.redisService.setCache(cacheKey, JSON.stringify({ userId: user.id, expires: expires.toISOString() }), 1800); // TTL 30 phút
+
     // Gửi email chứa link reset password
     const frontendUrl = this.configService.get('FRONTEND_URL');
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
@@ -247,19 +249,41 @@ export class AuthService {
 
   // Đặt lại mật khẩu bằng token
   async resetPassword({ token, newPassword }: ResetPasswordDto) {
-    const config = await this.userConfigService.findByResetToken(token);
-    if (
-      !config ||
-      !config.passwordResetExpiresAt ||
-      config.passwordResetExpiresAt < new Date()
-    ) {
-      throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
+    const cacheKey = `reset_password:${token}`;
+    let userId: number | undefined = undefined;
+    // Thử lấy từ cache trước
+    const cached = await this.redisService.getCache(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        userId = parsed.userId;
+        // Kiểm tra hạn sử dụng
+        if (parsed.expires && new Date(parsed.expires) < new Date()) {
+          throw new BadRequestException('Token đã hết hạn');
+        }
+      } catch {
+        // Nếu lỗi parse, bỏ qua cache
+      }
     }
-    await this.userService.update(config.userId, { password: newPassword });
-    await this.userConfigService.updateUserConfig(config.userId, {
+    // Nếu không có trong cache, lấy từ DB
+    if (!userId) {
+      const config = await this.userConfigService.findByResetToken(token);
+      if (
+        !config ||
+        !config.passwordResetExpiresAt ||
+        config.passwordResetExpiresAt < new Date()
+      ) {
+        throw new BadRequestException('Token không hợp lệ hoặc đã hết hạn');
+      }
+      userId = config.userId;
+    }
+    await this.userService.update(userId, { password: newPassword });
+    await this.userConfigService.updateUserConfig(userId, {
       passwordResetToken: undefined,
       passwordResetExpiresAt: undefined,
     });
+    // Xoá cache sau khi dùng
+    await this.redisService.del(cacheKey);
     return {};
   }
 

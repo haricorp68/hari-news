@@ -6,12 +6,11 @@ import { User } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
 import { UserConfig } from './entities/user-config.entity';
 import { UserConfigService } from './user-config.service';
-import { UserConfigController } from './user-config.controller';
 import { UserConfigRepository } from './repositories/user-config.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserConfig])],
-  controllers: [UserController, UserConfigController],
+  controllers: [UserController],
   providers: [
     UserService,
     UserConfigService,
