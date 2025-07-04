@@ -96,10 +96,20 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthCallback(@Req() req: Request) {
-    // req.user chứa thông tin user từ GoogleStrategy
+  async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
     const result = await this.authService.oauthLogin(req.user);
-    return { message: 'Login with Google successful', ...result };
+    const html = `<html><body><script>
+window.opener.postMessage(
+  {
+    type: 'oauth-success',
+    accessToken: '${result.accessToken}',
+    refreshToken: '${result.refreshToken}'
+  },
+  '*'
+);
+window.close();
+</script></body></html>`;
+    res.send(html);
   }
 
   // Facebook OAuth
@@ -109,10 +119,36 @@ export class AuthController {
 
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
-  async facebookAuthCallback(@Req() req: Request) {
-    // req.user chứa thông tin user từ FacebookStrategy
+  async facebookAuthCallback(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.authService.oauthLogin(req.user);
-    return { message: 'Login with Facebook successful', ...result };
+    res.cookie('accessToken', result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+    res.type('html').send(`
+      <html>
+        <head>
+          <title>Đăng nhập thành công</title>
+          <script>
+            window.opener && window.opener.postMessage('oauth-success', '*');
+            setTimeout(() => { window.close(); }, 1000);
+          </script>
+        </head>
+      </html>
+    `);
   }
 
   @Post('forgot-password')
@@ -138,5 +174,39 @@ export class AuthController {
   async changePassword(@CurrentUser() user, @Body() dto: ChangePasswordDto) {
     await this.authService.changePassword(user.userId || user.id, dto);
     return { message: 'Password changed successfully' };
+  }
+
+  @Post('set-cookie')
+  async setCookie(
+    @Body() body: { accessToken: string; refreshToken: string },
+
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // res.cookie('accessToken', body.accessToken, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: 'lax', // hoặc 'none' nếu dùng HTTPS và cross-domain
+    //   path: '/',
+    // });
+    // res.cookie('refreshToken', body.refreshToken, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: 'lax',
+    //   path: '/',
+    // });
+    res.cookie('accessToken', body.accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'none', // hoặc 'none' nếu dùng HTTPS và cross-domain
+      path: '/',
+    });
+    res.cookie('refreshToken', body.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'none',
+      path: '/',
+    });
+
+    return { message: 'Set cookie thành công' };
   }
 }
