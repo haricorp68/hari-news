@@ -81,10 +81,20 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(@CurrentUser() user, @Body() updateUserDto: UpdateUserDto) {
+    const updated = await this.userService.update(user.userId || user.id, updateUserDto);
+    return {
+      data: updated,
+      message: 'Cập nhật profile thành công!',
+    };
+  }
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('delete', 'user')
-  async remove(@CurrentUser() user, @Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
 }
