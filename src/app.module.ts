@@ -32,9 +32,27 @@ import { Comment } from './comment/entities/comment.entity';
 import { Reaction } from './reaction/entities/reaction.entity';
 import { Share } from './share/entities/share.entity';
 import { UserConfig } from './user/entities/user-config.entity';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'medium',
+        ttl: 10000,
+        limit: 20,
+      },
+      {
+        name: 'long',
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',

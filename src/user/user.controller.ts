@@ -77,18 +77,20 @@ export class UserController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('update', 'user')
-  async update(
-    @CurrentUser() user,
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
 
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
-  async updateProfile(@CurrentUser() user, @Body() updateUserDto: UpdateUserDto) {
-    const updated = await this.userService.update(user.userId || user.id, updateUserDto);
+  async updateProfile(
+    @CurrentUser() user,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const updated = await this.userService.update(
+      user.userId || user.id,
+      updateUserDto,
+    );
     return {
       data: updated,
       message: 'Cập nhật profile thành công!',
@@ -116,7 +118,7 @@ export class UserController {
   @Get(':userId/config')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('read', 'user')
-  async getUserConfig(@CurrentUser() user, @Param('userId') userId: string) {
+  async getUserConfig(@Param('userId') userId: string) {
     const config = await this.userConfigService.getUserConfig(+userId);
     return {
       data: config,
@@ -127,7 +129,7 @@ export class UserController {
   @Post(':userId/config')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('create', 'user')
-  async createUserConfig(@CurrentUser() user, @Param('userId') userId: string) {
+  async createUserConfig(@Param('userId') userId: string) {
     const config = await this.userConfigService.createUserConfig(+userId);
     return {
       data: config,
@@ -139,11 +141,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('update', 'user')
   async updateUserConfig(
-    @CurrentUser() user,
     @Param('userId') userId: string,
     @Body() configData: any,
   ) {
-    const config = await this.userConfigService.updateUserConfig(+userId, configData);
+    const config = await this.userConfigService.updateUserConfig(
+      +userId,
+      configData,
+    );
     return {
       data: config,
       message: 'Cập nhật cấu hình user thành công!',
@@ -154,11 +158,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('update', 'user')
   async updatePreferences(
-    @CurrentUser() user,
     @Param('userId') userId: string,
     @Body() preferences: any,
   ) {
-    const config = await this.userConfigService.updatePreferences(+userId, preferences);
+    const config = await this.userConfigService.updatePreferences(
+      +userId,
+      preferences,
+    );
     return {
       data: config,
       message: 'Cập nhật preferences thành công!',
@@ -169,11 +175,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('update', 'user')
   async updateSocialLinks(
-    @CurrentUser() user,
     @Param('userId') userId: string,
     @Body() socialLinks: any,
   ) {
-    const config = await this.userConfigService.updateSocialLinks(+userId, socialLinks);
+    const config = await this.userConfigService.updateSocialLinks(
+      +userId,
+      socialLinks,
+    );
     return {
       data: config,
       message: 'Cập nhật social links thành công!',
@@ -184,11 +192,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('update', 'user')
   async enableTwoFactor(
-    @CurrentUser() user,
     @Param('userId') userId: string,
     @Body() body: { secret: string },
   ) {
-    const config = await this.userConfigService.enableTwoFactor(+userId, body.secret);
+    const config = await this.userConfigService.enableTwoFactor(
+      +userId,
+      body.secret,
+    );
     return {
       data: config,
       message: 'Bật 2FA thành công!',
@@ -198,7 +208,7 @@ export class UserController {
   @Post(':userId/config/2fa/disable')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('update', 'user')
-  async disableTwoFactor(@CurrentUser() user, @Param('userId') userId: string) {
+  async disableTwoFactor(@Param('userId') userId: string) {
     const config = await this.userConfigService.disableTwoFactor(+userId);
     return {
       data: config,
@@ -209,11 +219,64 @@ export class UserController {
   @Delete(':userId/config')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('delete', 'user')
-  async deleteUserConfig(@CurrentUser() user, @Param('userId') userId: string) {
+  async deleteUserConfig(@Param('userId') userId: string) {
     const deleted = await this.userConfigService.deleteUserConfig(+userId);
     return {
       data: { deleted },
-      message: deleted ? 'Xóa cấu hình user thành công!' : 'Không tìm thấy cấu hình user!',
+      message: deleted
+        ? 'Xóa cấu hình user thành công!'
+        : 'Không tìm thấy cấu hình user!',
+    };
+  }
+
+  @Get('config/self')
+  @UseGuards(JwtAuthGuard)
+  async getMyConfig(@CurrentUser() user) {
+    const config = await this.userConfigService.getUserConfig(
+      user.userId || user.id,
+    );
+    return {
+      message: 'Lấy cấu hình user thành công!',
+      config,
+    };
+  }
+
+  @Post('config/self')
+  @UseGuards(JwtAuthGuard)
+  async createMyConfig(@CurrentUser() user) {
+    const config = await this.userConfigService.createUserConfig(
+      user.userId || user.id,
+    );
+    return {
+      message: 'Tạo cấu hình user thành công!',
+      config,
+    };
+  }
+
+  @Patch('config/self')
+  @UseGuards(JwtAuthGuard)
+  async updateMyConfig(@CurrentUser() user, @Body() configData: any) {
+    const config = await this.userConfigService.updateUserConfig(
+      user.userId || user.id,
+      configData,
+    );
+    return {
+      message: 'Cập nhật cấu hình user thành công!',
+      config,
+    };
+  }
+
+  @Delete('config/self')
+  @UseGuards(JwtAuthGuard)
+  async deleteMyConfig(@CurrentUser() user) {
+    const deleted = await this.userConfigService.deleteUserConfig(
+      user.userId || user.id,
+    );
+    return {
+      data: { deleted },
+      message: deleted
+        ? 'Xóa cấu hình user thành công!'
+        : 'Không tìm thấy cấu hình user!',
     };
   }
 }
