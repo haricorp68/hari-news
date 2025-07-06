@@ -16,6 +16,7 @@ import { CreateCommunityRoleDto } from './dto/create-community-role.dto';
 import { UpdateCommunityRoleDto } from './dto/update-community-role.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('community')
 export class CommunityController {

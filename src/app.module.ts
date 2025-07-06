@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { ExecutionContext, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -32,9 +32,41 @@ import { Comment } from './comment/entities/comment.entity';
 import { Reaction } from './reaction/entities/reaction.entity';
 import { Share } from './share/entities/share.entity';
 import { UserConfig } from './user/entities/user-config.entity';
+import {
+  hours,
+  minutes,
+  seconds,
+  ThrottlerGuard,
+  ThrottlerModule,
+} from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [
+        { name: 'short', limit: 5, ttl: seconds(10) },
+        {
+          name: 'medium',
+          limit: 20,
+          ttl: minutes(1),
+        },
+        { name: 'long', limit: 200, ttl: hours(1) },
+      ],
+      errorMessage: 'Rate limiting actived!',
+      storage: new ThrottlerStorageRedisService(),
+      getTracker: (req: Record<string, any>, context: ExecutionContext) => {
+        return req.headers['x-tenant-id'];
+      },
+      generateKey: (
+        context: ExecutionContext,
+        trackerString: string,
+        throttlerName: string,
+      ) => {
+        return `${throttlerName}:${trackerString}`;
+      },
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -78,6 +110,12 @@ import { UserConfig } from './user/entities/user-config.entity';
     PolicyModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

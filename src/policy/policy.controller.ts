@@ -10,12 +10,11 @@ import {
 import { PolicyService } from './policy.service';
 import { CreatePolicyDto } from './dto/create-policy.dto';
 import { UpdatePolicyDto } from './dto/update-policy.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('policy')
 export class PolicyController {
-  constructor(
-    private readonly policyService: PolicyService,
-  ) {}
+  constructor(private readonly policyService: PolicyService) {}
 
   @Get()
   async findAll() {

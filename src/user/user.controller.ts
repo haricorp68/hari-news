@@ -17,6 +17,7 @@ import { CheckAbility } from '../common/decorators/check-ability.decorator';
 import { CaslAbilityGuard } from '../common/guards/casl-ability.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserConfigService } from './user-config.service';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('user')
 export class UserController {
