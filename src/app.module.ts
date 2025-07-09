@@ -49,10 +49,10 @@ import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis'
         { name: 'short', limit: 5, ttl: seconds(10) },
         {
           name: 'medium',
-          limit: 20,
+          limit: 200,
           ttl: minutes(1),
         },
-        { name: 'long', limit: 200, ttl: hours(1) },
+        { name: 'long', limit: 2000, ttl: hours(1) },
       ],
       errorMessage: 'Rate limiting actived!',
       storage: new ThrottlerStorageRedisService(),

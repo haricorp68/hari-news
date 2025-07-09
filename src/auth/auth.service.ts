@@ -353,4 +353,50 @@ export class AuthService {
     // User đã được loại bỏ password từ userService.findOne
     return { user };
   }
+
+  async refreshTokenByCookie(refreshToken: string) {
+    let payload: any;
+    try {
+      payload = this.jwtService.verify(refreshToken, { secret: process.env.JWT_SECRET });
+    } catch (e) {
+      throw new UnauthorizedException('Expired or invalid refresh token');
+    }
+    const userId = payload.sub;
+    const user = await this.userService.findOne(userId, true);
+    if (!user) {
+      throw new UnauthorizedException('Invalid user');
+    }
+    // Kiểm tra refreshToken có hợp lệ trong DB không
+    const tokens = await this.refreshTokenRepository.findByUser(userId, RefreshTokenType.LOCAL);
+    let found = false;
+    for (const tokenEntity of tokens) {
+      const match = await bcrypt.compare(refreshToken, tokenEntity.token);
+      if (
+        match &&
+        (!tokenEntity.expiredAt || tokenEntity.expiredAt > new Date()) &&
+        !tokenEntity.revokedAt
+      ) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+    // Cấp accessToken mới
+    const newAccessToken = this.jwtService.sign({ sub: user.id, email: user.email, role: user.role }, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+    return { accessToken: newAccessToken };
+  }
+
+  async checkEmailExist(email: string) {
+    const user = await this.userService.findByEmail(email);
+    return !!user;
+  }
+  async checkNameExist(name: string) {
+    const user = await this.userService.findByName(name);
+    return !!user;
+  }
 }

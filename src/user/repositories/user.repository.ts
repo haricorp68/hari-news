@@ -49,6 +49,10 @@ export class UserRepository extends Repository<User> {
     return this.findOne({ where: { id } });
   }
 
+  async findByName(name: string) {
+    return this.findOne({ where: { name } });
+  }
+
   // Ví dụ: lấy user kèm profile mở rộng (nếu có bảng profile riêng)
   // async findWithProfile(id: number) {
   //   return this.findOne({ where: { id }, relations: ['profile'] });

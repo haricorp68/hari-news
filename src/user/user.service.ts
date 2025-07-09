@@ -45,6 +45,12 @@ export class UserService implements OnModuleInit {
     if (existing) {
       throw new BadRequestException('Email already exists');
     }
+    if (userData.name) {
+      const nameExists = await this.userRepository.findByName(userData.name);
+      if (nameExists) {
+        throw new BadRequestException('Name already exists');
+      }
+    }
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = this.userRepository.create({
       ...userData,
@@ -84,6 +90,10 @@ export class UserService implements OnModuleInit {
     if (withPassword) return user;
     const { password, ...result } = user;
     return result as Omit<User, 'password'>;
+  }
+
+  async findByName(name: string): Promise<User | null> {
+    return this.userRepository.findByName(name);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

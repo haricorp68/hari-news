@@ -75,7 +75,11 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  async logout(@Res({ passthrough: true }) res: Response) {
+  async logout(@CurrentUser() user, @Res({ passthrough: true }) res: Response) {
+    // Thu hồi refresh token
+    await this.authService.revokeAllRefreshTokensForUser(
+      user.userId || user.id,
+    );
     // Clear cookies
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
@@ -83,12 +87,24 @@ export class AuthController {
   }
 
   @Post('refresh-token')
-  async refreshToken(@Body() body: { userId: number; refreshToken: string }) {
-    const result = await this.authService.refreshToken(
-      body.userId,
-      body.refreshToken,
-    );
-    return { message: 'Refresh token successful', ...result };
+  async refreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = req.cookies['refreshToken'];
+    if (!refreshToken) {
+      return { message: 'No refresh token found', data: null };
+    }
+    const result = await this.authService.refreshTokenByCookie(refreshToken);
+    // Set lại accessToken mới vào cookie
+    res.cookie('accessToken', result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+    return { message: 'Refresh token successful' };
   }
 
   // Google OAuth
@@ -210,5 +226,18 @@ window.close();
     });
 
     return { message: 'Set cookie thành công' };
+  }
+
+  @Post('check-exist')
+  async checkExist(@Body() body: { email?: string; name?: string }) {
+    const emailExists = body.email ? await this.authService.checkEmailExist(body.email) : false;
+    const nameExists = body.name ? await this.authService.checkNameExist(body.name) : false;
+    if (body.email && !body.name && emailExists) {
+      return { emailExists, message: 'Mail đã tồn tại' };
+    }
+    if (body.name && !body.email && nameExists) {
+      return { nameExists, message: 'Tên đã tồn tại' };
+    }
+    return { emailExists, nameExists };
   }
 }
