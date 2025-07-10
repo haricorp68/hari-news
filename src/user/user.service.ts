@@ -15,14 +15,12 @@ export class UserService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const userById = await this.userRepository.findOne({ where: { id: 1 } });
     const userByEmail = await this.userRepository.findByEmail(
       'superadmin@hari.com',
     );
-    if (!userById && !userByEmail) {
+    if (!userByEmail) {
       const hashedPassword = await bcrypt.hash('123qwe', 10);
       const superadmin = this.userRepository.create({
-        id: 1,
         email: 'superadmin@hari.com',
         password: hashedPassword,
         name: 'Super Admin',
@@ -31,11 +29,11 @@ export class UserService implements OnModuleInit {
         isVerified: true,
         status: 'active',
       });
-      await this.userRepository.save(superadmin);
-      await this.userConfigService.createUserConfig(1);
+      const savedSuperadmin = await this.userRepository.save(superadmin);
+      await this.userConfigService.createUserConfig(savedSuperadmin.id);
       console.log('Super admin created successfully!');
     } else {
-      console.log('Super admin already used!');
+      console.log('Super admin already exists!');
     }
   }
 
@@ -71,7 +69,7 @@ export class UserService implements OnModuleInit {
   }
 
   async findOne(
-    id: number,
+    id: string,
     withPassword = false,
   ): Promise<User | Omit<User, 'password'> | null> {
     const user = await this.userRepository.findOne({ where: { id } });
@@ -96,7 +94,7 @@ export class UserService implements OnModuleInit {
     return this.userRepository.findByName(name);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
@@ -107,7 +105,7 @@ export class UserService implements OnModuleInit {
     return result;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.userRepository.delete(id);
     return { deleted: true };
   }

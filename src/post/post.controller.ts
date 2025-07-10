@@ -54,6 +54,6 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @Get('self/user-feed/:id')
   getSelfUserFeedDetail(@CurrentUser() user, @Param('id') id: string) {
-    return this.postService.getUserSelfFeedPostDetail(user.userId, Number(id));
+    return this.postService.getUserSelfFeedPostDetail(user.userId, id);
   }
 }

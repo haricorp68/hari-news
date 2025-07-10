@@ -36,7 +36,7 @@ export class PolicyService implements OnModuleInit {
     return this.policyRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.policyRepository.findOne({ where: { id } });
   }
 
@@ -45,16 +45,16 @@ export class PolicyService implements OnModuleInit {
     return this.policyRepository.save(policy);
   }
 
-  async update(id: number, dto: UpdatePolicyDto) {
+  async update(id: string, dto: UpdatePolicyDto) {
     await this.policyRepository.update(id, dto);
     return this.policyRepository.findOne({ where: { id } });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.policyRepository.delete(id);
   }
 
-  async getPoliciesForUser(userId: number | string) {
+  async getPoliciesForUser(userId: string | string) {
     return this.policyRepository.find({
       where: [{ subjectType: 'user', subjectId: String(userId) }],
     });

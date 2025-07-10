@@ -24,21 +24,28 @@ export class ReactionService {
   ) {}
 
   async validatePost(postType: PostType, postId: string): Promise<boolean> {
-    const id = Number(postId);
-    if (isNaN(id)) return false;
+    const id = postId;
     switch (postType) {
       case PostType.USER_FEED:
         return !!(await this.userFeedPostRepository.findOne({ where: { id } }));
       case PostType.COMPANY_FEED:
-        return !!(await this.companyFeedPostRepository.findOne({ where: { id } }));
+        return !!(await this.companyFeedPostRepository.findOne({
+          where: { id },
+        }));
       case PostType.COMMUNITY_FEED:
-        return !!(await this.communityFeedPostRepository.findOne({ where: { id } }));
+        return !!(await this.communityFeedPostRepository.findOne({
+          where: { id },
+        }));
       case PostType.USER_NEWS:
         return !!(await this.userNewsPostRepository.findOne({ where: { id } }));
       case PostType.COMPANY_NEWS:
-        return !!(await this.companyNewsPostRepository.findOne({ where: { id } }));
+        return !!(await this.companyNewsPostRepository.findOne({
+          where: { id },
+        }));
       case PostType.COMMUNITY_NEWS:
-        return !!(await this.communityNewsPostRepository.findOne({ where: { id } }));
+        return !!(await this.communityNewsPostRepository.findOne({
+          where: { id },
+        }));
       default:
         return false;
     }

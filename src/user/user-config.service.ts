@@ -6,11 +6,11 @@ import { UserConfig } from './entities/user-config.entity';
 export class UserConfigService {
   constructor(private readonly userConfigRepository: UserConfigRepository) {}
 
-  async getUserConfig(userId: number): Promise<UserConfig | null> {
+  async getUserConfig(userId: string): Promise<UserConfig | null> {
     return this.userConfigRepository.findOne({ where: { userId } });
   }
 
-  async createUserConfig(userId: number): Promise<UserConfig> {
+  async createUserConfig(userId: string): Promise<UserConfig> {
     const defaultConfig = this.userConfigRepository.create({
       userId,
       preferences: {
@@ -26,7 +26,7 @@ export class UserConfigService {
   }
 
   async updateUserConfig(
-    userId: number,
+    userId: string,
     configData: Partial<UserConfig>,
   ): Promise<UserConfig | null> {
     const existingConfig = await this.userConfigRepository.findOne({
@@ -46,7 +46,7 @@ export class UserConfigService {
   }
 
   async updatePreferences(
-    userId: number,
+    userId: string,
     preferences: any,
   ): Promise<UserConfig | null> {
     const config = await this.getUserConfig(userId);
@@ -59,7 +59,7 @@ export class UserConfigService {
   }
 
   async updateSocialLinks(
-    userId: number,
+    userId: string,
     socialLinks: any,
   ): Promise<UserConfig | null> {
     const config = await this.getUserConfig(userId);
@@ -72,7 +72,7 @@ export class UserConfigService {
   }
 
   async enableTwoFactor(
-    userId: number,
+    userId: string,
     secret: string,
   ): Promise<UserConfig | null> {
     return this.updateUserConfig(userId, {
@@ -81,14 +81,14 @@ export class UserConfigService {
     });
   }
 
-  async disableTwoFactor(userId: number): Promise<UserConfig | null> {
+  async disableTwoFactor(userId: string): Promise<UserConfig | null> {
     return this.updateUserConfig(userId, {
       twoFactorSecret: undefined,
       twoFactorEnabled: false,
     });
   }
 
-  async deleteUserConfig(userId: number): Promise<boolean> {
+  async deleteUserConfig(userId: string): Promise<boolean> {
     const result = await this.userConfigRepository.delete({ userId });
     return (result.affected || 0) > 0;
   }

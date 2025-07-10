@@ -25,7 +25,7 @@ export class CommunityController {
   @Post()
   @UseGuards(JwtAuthGuard)
   create(
-    @CurrentUser() user: { userId: number },
+    @CurrentUser() user: { userId: string },
 
     @Body() createCommunityDto: CreateCommunityDto,
   ) {
@@ -67,7 +67,7 @@ export class CommunityController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.communityService.findOne(+id);
+    return this.communityService.findOne(id);
   }
 
   @Patch(':id')
@@ -75,22 +75,22 @@ export class CommunityController {
     @Param('id') id: string,
     @Body() updateCommunityDto: UpdateCommunityDto,
   ) {
-    return this.communityService.update(+id, updateCommunityDto);
+    return this.communityService.update(id, updateCommunityDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.communityService.remove(+id);
+    return this.communityService.remove(id);
   }
 
   @Get(':communityId/roles')
   async getRoles(@Param('communityId') communityId: string) {
-    return this.communityService.findAllCommunityRoles(+communityId);
+    return this.communityService.findAllCommunityRoles(communityId);
   }
 
   @Get('role/:id')
   async getRole(@Param('id') id: string) {
-    return this.communityService.findOneCommunityRole(+id);
+    return this.communityService.findOneCommunityRole(id);
   }
 
   @Post('role')
@@ -103,11 +103,11 @@ export class CommunityController {
     @Param('id') id: string,
     @Body() updateDto: UpdateCommunityRoleDto,
   ) {
-    return this.communityService.updateCommunityRole(+id, updateDto);
+    return this.communityService.updateCommunityRole(id, updateDto);
   }
 
   @Delete('role/:id')
   async deleteRole(@Param('id') id: string) {
-    return this.communityService.removeCommunityRole(+id);
+    return this.communityService.removeCommunityRole(id);
   }
 }

@@ -72,14 +72,14 @@ export class UserController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+    return this.userService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('update', 'user')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+    return this.userService.update(id, updateUserDto);
   }
 
   @Patch('profile')
@@ -102,6 +102,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
   @CheckAbility('delete', 'user')
   async remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    return this.userService.remove(id);
   }
 }

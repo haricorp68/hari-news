@@ -12,15 +12,15 @@ export class ShareService {
     return `This action returns all share`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} share`;
   }
 
-  update(id: number, updateShareDto: UpdateShareDto) {
+  update(id: string, updateShareDto: UpdateShareDto) {
     return `This action updates a #${id} share`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} share`;
   }
 }

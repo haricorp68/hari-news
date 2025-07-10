@@ -17,7 +17,7 @@ export class CommunityService {
     private readonly communityMemberService: CommunityMemberService,
   ) {}
 
-  async create(createCommunityDto: CreateCommunityDto & { creatorId: number }) {
+  async create(createCommunityDto: CreateCommunityDto & { creatorId: string }) {
     const community = this.communityRepository.create(createCommunityDto);
     const savedCommunity = await this.communityRepository.save(community);
     const roles =
@@ -63,18 +63,18 @@ export class CommunityService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.communityRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateCommunityDto: UpdateCommunityDto) {
+  async update(id: string, updateCommunityDto: UpdateCommunityDto) {
     const community = await this.communityRepository.findOne({ where: { id } });
     if (!community) throw new Error('Community not found');
     Object.assign(community, updateCommunityDto);
     return this.communityRepository.save(community);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const result = await this.communityRepository.delete(id);
     return { deleted: (result.affected || 0) > 0 };
   }
@@ -89,19 +89,19 @@ export class CommunityService {
     return this.communityRoleService.create(dto, community);
   }
 
-  async findAllCommunityRoles(communityId: number) {
+  async findAllCommunityRoles(communityId: string) {
     return this.communityRoleService.findAll(communityId);
   }
 
-  async findOneCommunityRole(id: number) {
+  async findOneCommunityRole(id: string) {
     return this.communityRoleService.findOne(id);
   }
 
-  async updateCommunityRole(id: number, dto: UpdateCommunityRoleDto) {
+  async updateCommunityRole(id: string, dto: UpdateCommunityRoleDto) {
     return this.communityRoleService.update(id, dto);
   }
 
-  async removeCommunityRole(id: number) {
+  async removeCommunityRole(id: string) {
     return this.communityRoleService.remove(id);
   }
 

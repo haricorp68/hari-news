@@ -24,7 +24,7 @@ export class PolicyController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const data = await this.policyService.findOne(+id);
+    const data = await this.policyService.findOne(id);
     return { message: 'Lấy policy thành công!', data };
   }
 
@@ -36,13 +36,13 @@ export class PolicyController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdatePolicyDto) {
-    const data = await this.policyService.update(+id, body);
+    const data = await this.policyService.update(id, body);
     return { message: 'Cập nhật policy thành công!', data };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    await this.policyService.remove(+id);
+    await this.policyService.remove(id);
     return { message: 'Xóa policy thành công!', data: null };
   }
 }

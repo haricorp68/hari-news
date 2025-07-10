@@ -30,7 +30,7 @@ export class PostService {
     private readonly postMediaRepo: PostMediaRepository,
   ) {}
 
-  async createUserFeedPost(userId: number, dto: CreateUserFeedPostDto) {
+  async createUserFeedPost(userId: string, dto: CreateUserFeedPostDto) {
     const post = this.userFeedPostRepo.create({
       user: { id: userId },
       caption: dto.caption,
@@ -95,7 +95,7 @@ export class PostService {
   }
 
   async getUserSelfFeedPosts(
-    userId: number,
+    userId: string,
     limit = 20,
     offset = 0,
   ): Promise<UserFeedPostResponseDto[]> {
@@ -122,8 +122,8 @@ export class PostService {
   }
 
   async getUserSelfFeedPostDetail(
-    userId: number,
-    postId: number,
+    userId: string,
+    postId: string,
   ): Promise<UserFeedPostResponseDto | null> {
     const post = await this.userFeedPostRepo.getUserFeedPostDetail(
       userId,

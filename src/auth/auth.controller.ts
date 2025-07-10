@@ -230,8 +230,12 @@ window.close();
 
   @Post('check-exist')
   async checkExist(@Body() body: { email?: string; name?: string }) {
-    const emailExists = body.email ? await this.authService.checkEmailExist(body.email) : false;
-    const nameExists = body.name ? await this.authService.checkNameExist(body.name) : false;
+    const emailExists = body.email
+      ? await this.authService.checkEmailExist(body.email)
+      : false;
+    const nameExists = body.name
+      ? await this.authService.checkNameExist(body.name)
+      : false;
     if (body.email && !body.name && emailExists) {
       return { emailExists, message: 'Mail đã tồn tại' };
     }

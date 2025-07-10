@@ -20,28 +20,28 @@ export class CommunityRoleService {
     return this.communityRoleRepository.save(role);
   }
 
-  async findAll(communityId: number) {
+  async findAll(communityId: string) {
     return this.communityRoleRepository.find({
       where: { community: { id: communityId } },
       relations: ['community'],
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.communityRoleRepository.findOne({
       where: { id },
       relations: ['community'],
     });
   }
 
-  async update(id: number, dto: UpdateCommunityRoleDto) {
+  async update(id: string, dto: UpdateCommunityRoleDto) {
     const role = await this.communityRoleRepository.findOne({ where: { id } });
     if (!role) throw new Error('Role not found');
     Object.assign(role, dto);
     return this.communityRoleRepository.save(role);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const result = await this.communityRoleRepository.delete(id);
     return { deleted: (result.affected || 0) > 0 };
   }

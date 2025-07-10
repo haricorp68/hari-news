@@ -111,7 +111,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async refreshToken(userId: number, refreshToken: string) {
+  async refreshToken(userId: string, refreshToken: string) {
     const user = (await this.userService.findOne(userId, true)) as User;
     if (!user) {
       throw new UnauthorizedException('Invalid user');
@@ -148,7 +148,7 @@ export class AuthService {
     return { accessToken };
   }
 
-  async revokeAllRefreshTokensForUser(userId: number) {
+  async revokeAllRefreshTokensForUser(userId: string) {
     return this.refreshTokenRepository.revokeAllForUser(
       userId,
       RefreshTokenType.LOCAL,
@@ -228,7 +228,11 @@ export class AuthService {
 
     // Lưu token vào Redis cache
     const cacheKey = `reset_password:${token}`;
-    await this.redisService.setCache(cacheKey, JSON.stringify({ userId: user.id, expires: expires.toISOString() }), 1800); // TTL 30 phút
+    await this.redisService.setCache(
+      cacheKey,
+      JSON.stringify({ userId: user.id, expires: expires.toISOString() }),
+      1800,
+    ); // TTL 30 phút
 
     // Gửi email chứa link reset password
     const frontendUrl = this.configService.get('FRONTEND_URL');
@@ -250,7 +254,7 @@ export class AuthService {
   // Đặt lại mật khẩu bằng token
   async resetPassword({ token, newPassword }: ResetPasswordDto) {
     const cacheKey = `reset_password:${token}`;
-    let userId: number | undefined = undefined;
+    let userId: string | undefined = undefined;
     // Thử lấy từ cache trước
     const cached = await this.redisService.getCache(cacheKey);
     if (cached) {
@@ -327,7 +331,7 @@ export class AuthService {
 
   // Đổi mật khẩu khi đã đăng nhập
   async changePassword(
-    userId: number,
+    userId: string,
     { oldPassword, newPassword }: ChangePasswordDto,
   ) {
     const user = (await this.userService.findOne(userId, true)) as User;
@@ -345,7 +349,7 @@ export class AuthService {
     return {};
   }
 
-  async getCurrentUser(userId: number) {
+  async getCurrentUser(userId: string) {
     const user = await this.userService.findOne(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -357,7 +361,9 @@ export class AuthService {
   async refreshTokenByCookie(refreshToken: string) {
     let payload: any;
     try {
-      payload = this.jwtService.verify(refreshToken, { secret: process.env.JWT_SECRET });
+      payload = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_SECRET,
+      });
     } catch (e) {
       throw new UnauthorizedException('Expired or invalid refresh token');
     }
@@ -367,7 +373,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid user');
     }
     // Kiểm tra refreshToken có hợp lệ trong DB không
-    const tokens = await this.refreshTokenRepository.findByUser(userId, RefreshTokenType.LOCAL);
+    const tokens = await this.refreshTokenRepository.findByUser(
+      userId,
+      RefreshTokenType.LOCAL,
+    );
     let found = false;
     for (const tokenEntity of tokens) {
       const match = await bcrypt.compare(refreshToken, tokenEntity.token);
@@ -384,10 +393,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
     // Cấp accessToken mới
-    const newAccessToken = this.jwtService.sign({ sub: user.id, email: user.email, role: user.role }, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
+    const newAccessToken = this.jwtService.sign(
+      { sub: user.id, email: user.email, role: user.role },
+      {
+        secret: process.env.JWT_SECRET,
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      },
+    );
     return { accessToken: newAccessToken };
   }
 

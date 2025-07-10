@@ -7,7 +7,9 @@ import { CommunityRole } from './entities/community_role.entity';
 
 @Injectable()
 export class CommunityMemberService {
-  constructor(private readonly communityMemberRepository: CommunityMemberRepository) {}
+  constructor(
+    private readonly communityMemberRepository: CommunityMemberRepository,
+  ) {}
 
   async addMember(community: Community, user: User, role: CommunityRole) {
     const member = this.communityMemberRepository.create({
@@ -19,22 +21,24 @@ export class CommunityMemberService {
     return this.communityMemberRepository.save(member);
   }
 
-  async findAllByCommunity(communityId: number) {
+  async findAllByCommunity(communityId: string) {
     return this.communityMemberRepository.find({
       where: { community: { id: communityId } },
       relations: ['community', 'user', 'role'],
     });
   }
 
-  async findAllByUser(userId: number) {
+  async findAllByUser(userId: string) {
     return this.communityMemberRepository.find({
       where: { user: { id: userId } },
       relations: ['community', 'user', 'role'],
     });
   }
 
-  async updateRole(memberId: number, role: CommunityRole) {
-    const member = await this.communityMemberRepository.findOne({ where: { id: memberId } });
+  async updateRole(memberId: string, role: CommunityRole) {
+    const member = await this.communityMemberRepository.findOne({
+      where: { id: memberId },
+    });
     if (!member) throw new Error('Member not found');
     member.role = role;
     return this.communityMemberRepository.save(member);
@@ -44,4 +48,4 @@ export class CommunityMemberService {
     const result = await this.communityMemberRepository.delete(memberId);
     return { deleted: (result.affected || 0) > 0 };
   }
-} 
+}
