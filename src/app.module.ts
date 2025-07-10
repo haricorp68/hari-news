@@ -21,12 +21,6 @@ import { CompanyStaff } from './company/entities/company_staff.entity';
 import { Community } from './community/entities/community.entity';
 import { CommunityMember } from './community/entities/community_member.entity';
 import { CommunityRole } from './community/entities/community_role.entity';
-import { UserPost } from './post/entities/user_post.entity';
-import { CommunityPost } from './post/entities/community_post.entity';
-import { CompanyPost } from './post/entities/company_post.entity';
-import { PersonalPostDetail } from './post/entities/personal_post_detail.entity';
-import { NewsPostDetail } from './post/entities/news_post_detail.entity';
-import { NewsPostBlock } from './post/entities/news_post_block.entity';
 import { PostMedia } from './post/entities/post_media.entity';
 import { Comment } from './comment/entities/comment.entity';
 import { Reaction } from './reaction/entities/reaction.entity';
@@ -41,6 +35,13 @@ import {
 } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
+import { CommunityFeedPost } from './post/entities/community_feed_post.entity';
+import { CommunityNewsPost } from './post/entities/community_news_post.entity';
+import { CompanyFeedPost } from './post/entities/company_feed_post.entity';
+import { CompanyNewsPost } from './post/entities/company_news_post.entity';
+import { PostBlock } from './post/entities/post_block.entity';
+import { UserFeedPost } from './post/entities/user_feed_post.entity';
+import { UserNewsPost } from './post/entities/user_news_post.entity';
 
 @Module({
   imports: [
@@ -84,17 +85,19 @@ import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis'
         Community,
         CommunityMember,
         CommunityRole,
-        UserPost,
-        CommunityPost,
-        CompanyPost,
-        PersonalPostDetail,
-        NewsPostDetail,
-        NewsPostBlock,
         PostMedia,
         Comment,
         Reaction,
         Share,
         UserConfig,
+        CommunityFeedPost,
+        CommunityNewsPost,
+        CompanyFeedPost,
+        CompanyNewsPost,
+        PostBlock,
+        PostMedia,
+        UserFeedPost,
+        UserNewsPost,
       ],
       synchronize: true,
     }),

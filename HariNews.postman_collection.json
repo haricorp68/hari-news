@@ -1,256 +1,737 @@
 {
-  "info": {
-    "_postman_id": "hari-news-collection-001",
-    "name": "HariNews",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "variable": [
-    { "key": "base_url", "value": "http://localhost:3000/api" },
-    { "key": "accessToken", "value": "" },
-    { "key": "refreshToken", "value": "" },
-    { "key": "userId", "value": "" },
-    { "key": "email", "value": "" },
-    { "key": "password", "value": "" },
-    { "key": "token", "value": "" }
-  ],
-  "item": [
-    {
-      "name": "Auth",
-      "item": [
-        {
-          "name": "Register",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/auth/register", "host": [ "{{base_url}}" ], "path": [ "auth", "register" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"name\": \"Test User\",\n  \"token\": \"{{token}}\"\n}" }
-          }
-        },
-        {
-          "name": "Login",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/auth/login", "host": [ "{{base_url}}" ], "path": [ "auth", "login" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}" }
-          }
-        },
-        {
-          "name": "Me (Get current user)",
-          "request": {
-            "method": "GET",
-            "header": [ { "key": "Cookie", "value": "accessToken={{accessToken}}; refreshToken={{refreshToken}}" } ],
-            "url": { "raw": "{{base_url}}/auth/me", "host": [ "{{base_url}}" ], "path": [ "auth", "me" ] }
-          }
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Cookie", "value": "accessToken={{accessToken}}; refreshToken={{refreshToken}}" } ],
-            "url": { "raw": "{{base_url}}/auth/logout", "host": [ "{{base_url}}" ], "path": [ "auth", "logout" ] }
-          }
-        },
-        {
-          "name": "Refresh Token",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/auth/refresh-token", "host": [ "{{base_url}}" ], "path": [ "auth", "refresh-token" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
-          }
-        },
-        {
-          "name": "Forgot Password",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/auth/forgot-password", "host": [ "{{base_url}}" ], "path": [ "auth", "forgot-password" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\"\n}" }
-          }
-        },
-        {
-          "name": "Reset Password",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/auth/reset-password", "host": [ "{{base_url}}" ], "path": [ "auth", "reset-password" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{token}}\",\n  \"newPassword\": \"newpassword123\"\n}" }
-          }
-        },
-        {
-          "name": "Send Email Verification",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/auth/send-email-verification", "host": [ "{{base_url}}" ], "path": [ "auth", "send-email-verification" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\"\n}" }
-          }
-        },
-        {
-          "name": "Change Password",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/auth/change-password", "host": [ "{{base_url}}" ], "path": [ "auth", "change-password" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"oldPassword\": \"oldpass\",\n  \"newPassword\": \"newpass\"\n}" }
-          }
-        },
-        {
-          "name": "Set Cookie",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/auth/set-cookie", "host": [ "{{base_url}}" ], "path": [ "auth", "set-cookie" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"accessToken\": \"{{accessToken}}\",\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
-          }
-        }
-      ]
-    },
-    {
-      "name": "User",
-      "item": [
-        {
-          "name": "Create User",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/user", "host": [ "{{base_url}}" ], "path": [ "user" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"name\": \"Test User\"\n}" }
-          }
-        },
-        {
-          "name": "Get All Users",
-          "request": {
-            "method": "GET",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/user", "host": [ "{{base_url}}" ], "path": [ "user" ] }
-          }
-        },
-        {
-          "name": "Get User Profile",
-          "request": {
-            "method": "GET",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/user/profile", "host": [ "{{base_url}}" ], "path": [ "user", "profile" ] }
-          }
-        },
-        {
-          "name": "Get User By Id",
-          "request": {
-            "method": "GET",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/user/:id", "host": [ "{{base_url}}" ], "path": [ "user", ":id" ] }
-          }
-        },
-        {
-          "name": "Update User By Id",
-          "request": {
-            "method": "PATCH",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/user/:id", "host": [ "{{base_url}}" ], "path": [ "user", ":id" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"New Name\"\n}" }
-          }
-        },
-        {
-          "name": "Update User Profile",
-          "request": {
-            "method": "PATCH",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/user/profile", "host": [ "{{base_url}}" ], "path": [ "user", "profile" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"New Name\"\n}" }
-          }
-        },
-        {
-          "name": "Delete User By Id",
-          "request": {
-            "method": "DELETE",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/user/:id", "host": [ "{{base_url}}" ], "path": [ "user", ":id" ] }
-          }
-        },
-        {
-          "name": "Get My User Config",
-          "request": {
-            "method": "GET",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/user/config/self", "host": [ "{{base_url}}" ], "path": [ "user", "config", "self" ] }
-          }
-        },
-        {
-          "name": "Update My User Config",
-          "request": {
-            "method": "PATCH",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/user/config/self", "host": [ "{{base_url}}" ], "path": [ "user", "config", "self" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"privacyLevel\": \"public\"\n}" }
-          }
-        },
-        {
-          "name": "Delete My User Config",
-          "request": {
-            "method": "DELETE",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/user/config/self", "host": [ "{{base_url}}" ], "path": [ "user", "config", "self" ] }
-          }
-        },
-        {
-          "name": "Update Privacy Level",
-          "request": {
-            "method": "PATCH",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/user/config/self/privacy-level", "host": [ "{{base_url}}" ], "path": [ "user", "config", "self", "privacy-level" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"privacyLevel\": \"public\"\n}" }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Policy",
-      "item": [
-        {
-          "name": "Get All Policies",
-          "request": {
-            "method": "GET",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/policy", "host": [ "{{base_url}}" ], "path": [ "policy" ] }
-          }
-        },
-        {
-          "name": "Get Policy By Id",
-          "request": {
-            "method": "GET",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/policy/:id", "host": [ "{{base_url}}" ], "path": [ "policy", ":id" ] }
-          }
-        },
-        {
-          "name": "Create Policy",
-          "request": {
-            "method": "POST",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/policy", "host": [ "{{base_url}}" ], "path": [ "policy" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"subjectType\": \"user\",\n  \"subjectId\": \"1\",\n  \"action\": \"read\",\n  \"resource\": \"post\",\n  \"condition\": {},\n  \"description\": \"User can read post\"\n}" }
-          }
-        },
-        {
-          "name": "Update Policy By Id",
-          "request": {
-            "method": "PATCH",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
-            "url": { "raw": "{{base_url}}/policy/:id", "host": [ "{{base_url}}" ], "path": [ "policy", ":id" ] },
-            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Updated description\"\n}" }
-          }
-        },
-        {
-          "name": "Delete Policy By Id",
-          "request": {
-            "method": "DELETE",
-            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
-            "url": { "raw": "{{base_url}}/policy/:id", "host": [ "{{base_url}}" ], "path": [ "policy", ":id" ] }
-          }
-        }
-      ]
-    }
-  ]
-} 
+	"info": {
+		"_postman_id": "39d92457-61ad-4334-8c29-77cc89858e9e",
+		"name": "HariNews",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "34266281"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"name\": \"Test User\",\n  \"token\": \"{{token}}\"\n}"
+						},
+						"url": "{{base_url}}/auth/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+						},
+						"url": "{{base_url}}/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "Me (Get current user)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/auth/me"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "accessToken={{accessToken}}; refreshToken={{refreshToken}}"
+							}
+						],
+						"url": "{{base_url}}/auth/logout"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": "{{base_url}}/auth/refresh-token"
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{email}}\"\n}"
+						},
+						"url": "{{base_url}}/auth/check-exist"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"{{token}}\",\n  \"newPassword\": \"123qwe\"\n}"
+						},
+						"url": "{{base_url}}/auth/reset-password"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Email Verification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\"\n}"
+						},
+						"url": "{{base_url}}/auth/send-email-verification"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"oldPassword\": \"oldpass\",\n  \"newPassword\": \"newpass\"\n}"
+						},
+						"url": "{{base_url}}/auth/change-password"
+					},
+					"response": []
+				},
+				{
+					"name": "Set Cookie",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accessToken\": \"{{accessToken}}\",\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": "{{base_url}}/auth/set-cookie"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"name\": \"Test User\"\n}"
+						},
+						"url": "{{base_url}}/user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": "{{base_url}}/user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": "{{base_url}}/user/profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User By Id",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"New Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"avatar\":\"https://picsum.photos/300/300\"\n}"
+						},
+						"url": "{{base_url}}/user/profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My User Config",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": "{{base_url}}/user/config/self"
+					},
+					"response": []
+				},
+				{
+					"name": "Update My User Config",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"privacyLevel\": \"public\"\n}"
+						},
+						"url": "{{base_url}}/user/config/self"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete My User Config",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": "{{base_url}}/user/config/self"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Privacy Level",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"privacyLevel\": \"public\"\n}"
+						},
+						"url": "{{base_url}}/user/config/self/privacy-level"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Policy",
+			"item": [
+				{
+					"name": "Get All Policies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": "{{base_url}}/policy"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Policy By Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/policy/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"policy",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Policy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subjectType\": \"user\",\n  \"subjectId\": \"1\",\n  \"action\": \"read\",\n  \"resource\": \"post\",\n  \"condition\": {},\n  \"description\": \"User can read post\"\n}"
+						},
+						"url": "{{base_url}}/policy"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Policy By Id",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Updated description\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/policy/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"policy",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Policy By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/policy/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"policy",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post",
+			"item": [
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "Create User Feed",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{accessToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"caption\": \"Hôm nay trời đẹp quá! Đi dạo công viên thật tuyệt vời.\",\n  \"media\": [\n    {\n      \"url\": \"https://picsum.photos/800/600?random=1\",\n      \"type\": \"image\",\n      \"order\": 1\n    },\n    {\n      \"url\": \"https://picsum.photos/800/600?random=2\", \n      \"type\": \"image\",\n      \"order\": 2\n    }\n  ]\n}"
+								},
+								"url": "{{base_url}}/post/user-feed"
+							},
+							"response": []
+						},
+						{
+							"name": "Create User News",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{accessToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"caption\": \"Hôm nay trời đẹp quá! Đi dạo công viên thật tuyệt vời.\",\n  \"media\": [\n    {\n      \"url\": \"https://picsum.photos/800/600?random=1\",\n      \"type\": \"image\",\n      \"order\": 1\n    },\n    {\n      \"url\": \"https://picsum.photos/800/600?random=2\", \n      \"type\": \"image\",\n      \"order\": 2\n    }\n  ]\n}"
+								},
+								"url": "{{base_url}}/post/feed"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Company",
+					"item": [
+						{
+							"name": "Create Company Feed",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{accessToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"caption\": \"Hôm nay trời đẹp quá! Đi dạo công viên thật tuyệt vời.\",\n  \"media\": [\n    {\n      \"url\": \"https://picsum.photos/800/600?random=1\",\n      \"type\": \"image\",\n      \"order\": 1\n    },\n    {\n      \"url\": \"https://picsum.photos/800/600?random=2\", \n      \"type\": \"image\",\n      \"order\": 2\n    }\n  ]\n}"
+								},
+								"url": "{{base_url}}/post/feed"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Company News",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{accessToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"caption\": \"Hôm nay trời đẹp quá! Đi dạo công viên thật tuyệt vời.\",\n  \"media\": [\n    {\n      \"url\": \"https://picsum.photos/800/600?random=1\",\n      \"type\": \"image\",\n      \"order\": 1\n    },\n    {\n      \"url\": \"https://picsum.photos/800/600?random=2\", \n      \"type\": \"image\",\n      \"order\": 2\n    }\n  ]\n}"
+								},
+								"url": "{{base_url}}/post/feed"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Community",
+					"item": [
+						{
+							"name": "Create Community Feed",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{accessToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"caption\": \"Hôm nay trời đẹp quá! Đi dạo công viên thật tuyệt vời.\",\n  \"media\": [\n    {\n      \"url\": \"https://picsum.photos/800/600?random=1\",\n      \"type\": \"image\",\n      \"order\": 1\n    },\n    {\n      \"url\": \"https://picsum.photos/800/600?random=2\", \n      \"type\": \"image\",\n      \"order\": 2\n    }\n  ]\n}"
+								},
+								"url": "{{base_url}}/post/feed"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Community News",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{accessToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"caption\": \"Hôm nay trời đẹp quá! Đi dạo công viên thật tuyệt vời.\",\n  \"media\": [\n    {\n      \"url\": \"https://picsum.photos/800/600?random=1\",\n      \"type\": \"image\",\n      \"order\": 1\n    },\n    {\n      \"url\": \"https://picsum.photos/800/600?random=2\", \n      \"type\": \"image\",\n      \"order\": 2\n    }\n  ]\n}"
+								},
+								"url": "{{base_url}}/post/feed"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "email",
+			"value": ""
+		},
+		{
+			"key": "password",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}

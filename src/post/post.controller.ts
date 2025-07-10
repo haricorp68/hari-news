@@ -1,34 +1,59 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Get,
+  Query,
+  Param,
+} from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreateUserFeedPostDto } from './dto/create-user-feed-post.dto';
+import { CreateCommunityFeedPostDto } from './dto/create-community-feed-post.dto';
+import { CreateCompanyFeedPostDto } from './dto/create-company-feed-post.dto';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { User } from '../user/entities/user.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
+  @UseGuards(JwtAuthGuard)
+  @Post('user-feed')
+  createUserFeed(@CurrentUser() user, @Body() dto: CreateUserFeedPostDto) {
+    return this.postService.createUserFeedPost(user.userId, dto);
   }
 
-  @Get()
-  findAll() {
-    return this.postService.findAll();
+  @UseGuards(JwtAuthGuard)
+  @Post('community-feed')
+  createCommunityFeed(@Body() dto: CreateCommunityFeedPostDto) {
+    return this.postService.createCommunityFeedPost(dto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  @Post('company-feed')
+  createCompanyFeed(@Body() dto: CreateCompanyFeedPostDto) {
+    return this.postService.createCompanyFeedPost(dto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(+id, updatePostDto);
+  @UseGuards(JwtAuthGuard)
+  @Get('self/user-feed')
+  getSelfUserFeed(
+    @CurrentUser() user,
+    @Query('limit') limit = 20,
+    @Query('offset') offset = 0,
+  ) {
+    return this.postService.getUserSelfFeedPosts(
+      user.userId,
+      Number(limit),
+      Number(offset),
+    );
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Get('self/user-feed/:id')
+  getSelfUserFeedDetail(@CurrentUser() user, @Param('id') id: string) {
+    return this.postService.getUserSelfFeedPostDetail(user.userId, Number(id));
   }
 }

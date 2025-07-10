@@ -15,7 +15,6 @@ export class CommunityRoleService {
     const role = this.communityRoleRepository.create({
       name: dto.name,
       description: dto.description,
-      is_owner: dto.is_owner ?? false,
       community: community,
     });
     return this.communityRoleRepository.save(role);
@@ -53,8 +52,8 @@ export class CommunityRoleService {
       { name: 'member', description: 'Thành viên cộng đồng', is_owner: false },
       { name: 'moderator', description: 'Quản lý cộng đồng', is_owner: false },
     ];
-    const roles = defaultRoles.map(role =>
-      this.communityRoleRepository.create({ ...role, community })
+    const roles = defaultRoles.map((role) =>
+      this.communityRoleRepository.create({ ...role, community }),
     );
     const savedRoles = await this.communityRoleRepository.save(roles);
 
@@ -91,4 +90,4 @@ export class CommunityRoleService {
     }
     return savedRoles;
   }
-} 
+}

@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { MediaType } from '../enums/post.enums';
 
 @Entity()
 export class PostMedia {
@@ -6,7 +7,7 @@ export class PostMedia {
   id: number;
 
   @Column()
-  post_type: string; // 'user', 'community', 'company'
+  post_type: string; // 'user_feed', 'community_feed', 'company_feed', 'user_news', 'community_news', 'company_news'
 
   @Column()
   post_id: number;
@@ -14,8 +15,8 @@ export class PostMedia {
   @Column()
   url: string;
 
-  @Column()
-  type: string; // 'image', 'video'
+  @Column({ type: 'enum', enum: MediaType })
+  type: MediaType; // 'image', 'video'
 
   @Column()
   order: number;

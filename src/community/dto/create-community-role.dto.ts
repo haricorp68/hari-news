@@ -9,10 +9,6 @@ export class CreateCommunityRoleDto {
   @IsString()
   description?: string;
 
-  @IsOptional()
-  @IsBoolean()
-  is_owner?: boolean;
-
   @IsNotEmpty()
   communityId: number;
-} 
+}
