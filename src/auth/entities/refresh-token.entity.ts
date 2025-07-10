@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
 export enum RefreshTokenType {
@@ -8,7 +15,7 @@ export enum RefreshTokenType {
 
 @Entity()
 export class RefreshToken {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @ManyToOne(() => User, (user) => user.refreshTokens, { onDelete: 'CASCADE' })
@@ -26,7 +33,11 @@ export class RefreshToken {
   @Column({ nullable: true })
   userAgent: string;
 
-  @Column({ type: 'enum', enum: RefreshTokenType, default: RefreshTokenType.LOCAL })
+  @Column({
+    type: 'enum',
+    enum: RefreshTokenType,
+    default: RefreshTokenType.LOCAL,
+  })
   type: RefreshTokenType;
 
   @CreateDateColumn()
@@ -37,4 +48,4 @@ export class RefreshToken {
 
   @Column({ type: 'timestamp', nullable: true })
   revokedAt: Date;
-} 
+}

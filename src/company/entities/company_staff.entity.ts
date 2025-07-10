@@ -4,8 +4,8 @@ import { User } from 'src/user/entities/user.entity';
 
 @Entity()
 export class CompanyStaff {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Company, { onDelete: 'CASCADE' })
   company: Company;

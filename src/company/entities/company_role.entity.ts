@@ -3,8 +3,8 @@ import { Company } from './company.entity';
 
 @Entity()
 export class CompanyRole {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Company, { onDelete: 'CASCADE' })
   company: Company;

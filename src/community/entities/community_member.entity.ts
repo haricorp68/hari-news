@@ -5,8 +5,8 @@ import { CommunityRole } from './community_role.entity';
 
 @Entity()
 export class CommunityMember {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Community, { onDelete: 'CASCADE' })
   community: Community;

@@ -31,7 +31,7 @@ export enum EntityType {
 @Index(['postType', 'postId', 'entityType', 'entityId'])
 @Index(['userId', 'postType', 'postId', 'entityType', 'entityId'], { unique: true })
 export class Reaction {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({

@@ -10,8 +10,8 @@ import { Community } from './community.entity';
 
 @Entity()
 export class CommunityRole {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Community, { onDelete: 'CASCADE' })
   community: Community;

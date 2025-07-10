@@ -9,8 +9,8 @@ export enum BlockType {
 
 @Entity()
 export class PostBlock {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   post_type: string; // 'user_news', 'community_news', 'company_news'

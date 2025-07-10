@@ -3,8 +3,8 @@ import { User } from 'src/user/entities/user.entity';
 
 @Entity()
 export class Share {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user: User;

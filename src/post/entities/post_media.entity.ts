@@ -3,8 +3,8 @@ import { MediaType } from '../enums/post.enums';
 
 @Entity()
 export class PostMedia {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   post_type: string; // 'user_feed', 'community_feed', 'company_feed', 'user_news', 'community_news', 'company_news'

@@ -6,8 +6,8 @@ import {
 } from 'typeorm';
 
 export abstract class BasePost {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ default: false })
   is_deleted: boolean;

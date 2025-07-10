@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Community {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;

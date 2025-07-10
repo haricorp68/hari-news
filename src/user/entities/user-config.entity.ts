@@ -11,8 +11,8 @@ import { User } from './user.entity';
 
 @Entity('user_config')
 export class UserConfig {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })

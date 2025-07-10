@@ -3,8 +3,8 @@ import { User } from 'src/user/entities/user.entity';
 
 @Entity()
 export class Comment {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   user_post_id: number;
