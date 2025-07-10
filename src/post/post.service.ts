@@ -17,6 +17,9 @@ import { CommunityFeedPostRepository } from './repositories/community_feed_post.
 import { CompanyFeedPostRepository } from './repositories/company_feed_post.repository';
 import { PostMediaRepository } from './repositories/post_media.repository';
 import { MediaType } from './enums/post.enums';
+import { UserFeedPostResponseDto } from './dto/user-feed-post-response.dto';
+import { CommunityFeedPostResponseDto } from './dto/community-feed-post-response.dto';
+import { CompanyFeedPostResponseDto } from './dto/company-feed-post-response.dto';
 
 @Injectable()
 export class PostService {
@@ -91,11 +94,114 @@ export class PostService {
     return { id: post.id, type: 'company_feed' };
   }
 
-  async getUserSelfFeedPosts(userId: number, limit = 20, offset = 0) {
-    return this.userFeedPostRepo.getUserFeedPosts(userId, limit, offset);
+  async getUserSelfFeedPosts(userId: number, limit = 20, offset = 0): Promise<UserFeedPostResponseDto[]> {
+    const posts = await this.userFeedPostRepo.getUserFeedPosts(userId, limit, offset);
+    return posts.map(post => ({
+      id: post.id,
+      caption: post.caption,
+      created_at: post.created_at,
+      media: (post['media'] || []).map(m => ({
+        url: m.url,
+        type: m.type,
+        order: m.order,
+      })),
+      user: {
+        name: post.user?.name,
+        avatar: post.user?.avatar,
+      },
+    }));
   }
 
-  async getUserSelfFeedPostDetail(userId: number, postId: number) {
-    return this.userFeedPostRepo.getUserFeedPostDetail(userId, postId);
+  async getUserSelfFeedPostDetail(userId: number, postId: number): Promise<UserFeedPostResponseDto | null> {
+    const post = await this.userFeedPostRepo.getUserFeedPostDetail(userId, postId);
+    if (!post) return null;
+    return {
+      id: post.id,
+      caption: post.caption,
+      created_at: post.created_at,
+      media: (post['media'] || []).map(m => ({
+        url: m.url,
+        type: m.type,
+        order: m.order,
+      })),
+      user: {
+        name: post.user?.name,
+        avatar: post.user?.avatar,
+      },
+    };
+  }
+
+  async getCommunityFeedPosts(communityId: number, limit = 20, offset = 0): Promise<CommunityFeedPostResponseDto[]> {
+    const posts = await this.communityFeedPostRepo.getCommunityFeedPosts(communityId, limit, offset);
+    return posts.map(post => ({
+      id: post.id,
+      caption: post.caption,
+      created_at: post.created_at,
+      media: (post['media'] || []).map(m => ({
+        url: m.url,
+        type: m.type,
+        order: m.order,
+      })),
+      community: {
+        name: post.community?.name,
+        avatar: post.community?.avatar,
+      },
+    }));
+  }
+
+  async getCommunityFeedPostDetail(communityId: number, postId: number): Promise<CommunityFeedPostResponseDto | null> {
+    const post = await this.communityFeedPostRepo.getCommunityFeedPostDetail(communityId, postId);
+    if (!post) return null;
+    return {
+      id: post.id,
+      caption: post.caption,
+      created_at: post.created_at,
+      media: (post['media'] || []).map(m => ({
+        url: m.url,
+        type: m.type,
+        order: m.order,
+      })),
+      community: {
+        name: post.community?.name,
+        avatar: post.community?.avatar,
+      },
+    };
+  }
+
+  async getCompanyFeedPosts(companyId: number, limit = 20, offset = 0): Promise<CompanyFeedPostResponseDto[]> {
+    const posts = await this.companyFeedPostRepo.getCompanyFeedPosts(companyId, limit, offset);
+    return posts.map(post => ({
+      id: post.id,
+      caption: post.caption,
+      created_at: post.created_at,
+      media: (post['media'] || []).map(m => ({
+        url: m.url,
+        type: m.type,
+        order: m.order,
+      })),
+      company: {
+        name: post.company?.name,
+        avatar: post.company?.avatar,
+      },
+    }));
+  }
+
+  async getCompanyFeedPostDetail(companyId: number, postId: number): Promise<CompanyFeedPostResponseDto | null> {
+    const post = await this.companyFeedPostRepo.getCompanyFeedPostDetail(companyId, postId);
+    if (!post) return null;
+    return {
+      id: post.id,
+      caption: post.caption,
+      created_at: post.created_at,
+      media: (post['media'] || []).map(m => ({
+        url: m.url,
+        type: m.type,
+        order: m.order,
+      })),
+      company: {
+        name: post.company?.name,
+        avatar: post.company?.avatar,
+      },
+    };
   }
 }
