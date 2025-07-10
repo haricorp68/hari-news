@@ -1,32 +1,74 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
+import { User } from '../../user/entities/user.entity';
+import { PostType } from '../../post/enums/post.enums';
 
-@Entity()
+export enum ReactionType {
+  LIKE = 'like',
+  DISLIKE = 'dislike',
+  LOVE = 'love',
+  HAHA = 'haha',
+  SAD = 'sad',
+  ANGRY = 'angry',
+  MEH = 'meh',
+}
+
+export enum EntityType {
+  USER = 'user',
+  COMPANY = 'company',
+  COMMUNITY = 'community',
+}
+
+@Entity('reactions')
+@Index(['postType', 'postId', 'entityType', 'entityId'])
+@Index(['userId', 'postType', 'postId', 'entityType', 'entityId'], { unique: true })
 export class Reaction {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
+
+  @Column({
+    type: 'enum',
+    enum: ReactionType,
+    default: ReactionType.LIKE,
+  })
+  type: ReactionType;
+
+  @Column({
+    type: 'enum',
+    enum: PostType,
+  })
+  postType: PostType;
+
+  @Column('uuid')
+  postId: string;
+
+  @Column({
+    type: 'enum',
+    enum: EntityType,
+  })
+  entityType: EntityType;
+
+  @Column('uuid')
+  entityId: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ nullable: true })
-  user_post_id: number;
-
-  @Column({ nullable: true })
-  community_post_id: number;
-
-  @Column({ nullable: true })
-  company_post_id: number;
-
-  @Column({ nullable: true })
-  comment_id: number;
-
-  @Column()
-  type: string; // 'like', 'love', 'haha', ...
+  @Column('uuid')
+  userId: string;
 
   @CreateDateColumn()
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updatedAt: Date;
 }

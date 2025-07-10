@@ -94,13 +94,22 @@ export class PostService {
     return { id: post.id, type: 'company_feed' };
   }
 
-  async getUserSelfFeedPosts(userId: number, limit = 20, offset = 0): Promise<UserFeedPostResponseDto[]> {
-    const posts = await this.userFeedPostRepo.getUserFeedPosts(userId, limit, offset);
-    return posts.map(post => ({
+  async getUserSelfFeedPosts(
+    userId: number,
+    limit = 20,
+    offset = 0,
+  ): Promise<UserFeedPostResponseDto[]> {
+    const posts = await this.userFeedPostRepo.getUserFeedPosts(
+      userId,
+      limit,
+      offset,
+    );
+    return posts.map((post) => ({
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
-      media: (post['media'] || []).map(m => ({
+      updated_at: post.updated_at,
+      media: (post['media'] || []).map((m) => ({
         url: m.url,
         type: m.type,
         order: m.order,
@@ -112,14 +121,21 @@ export class PostService {
     }));
   }
 
-  async getUserSelfFeedPostDetail(userId: number, postId: number): Promise<UserFeedPostResponseDto | null> {
-    const post = await this.userFeedPostRepo.getUserFeedPostDetail(userId, postId);
+  async getUserSelfFeedPostDetail(
+    userId: number,
+    postId: number,
+  ): Promise<UserFeedPostResponseDto | null> {
+    const post = await this.userFeedPostRepo.getUserFeedPostDetail(
+      userId,
+      postId,
+    );
     if (!post) return null;
     return {
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
-      media: (post['media'] || []).map(m => ({
+      updated_at: post.updated_at,
+      media: (post['media'] || []).map((m) => ({
         url: m.url,
         type: m.type,
         order: m.order,
@@ -131,13 +147,21 @@ export class PostService {
     };
   }
 
-  async getCommunityFeedPosts(communityId: number, limit = 20, offset = 0): Promise<CommunityFeedPostResponseDto[]> {
-    const posts = await this.communityFeedPostRepo.getCommunityFeedPosts(communityId, limit, offset);
-    return posts.map(post => ({
+  async getCommunityFeedPosts(
+    communityId: number,
+    limit = 20,
+    offset = 0,
+  ): Promise<CommunityFeedPostResponseDto[]> {
+    const posts = await this.communityFeedPostRepo.getCommunityFeedPosts(
+      communityId,
+      limit,
+      offset,
+    );
+    return posts.map((post) => ({
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
-      media: (post['media'] || []).map(m => ({
+      media: (post['media'] || []).map((m) => ({
         url: m.url,
         type: m.type,
         order: m.order,
@@ -149,14 +173,20 @@ export class PostService {
     }));
   }
 
-  async getCommunityFeedPostDetail(communityId: number, postId: number): Promise<CommunityFeedPostResponseDto | null> {
-    const post = await this.communityFeedPostRepo.getCommunityFeedPostDetail(communityId, postId);
+  async getCommunityFeedPostDetail(
+    communityId: number,
+    postId: number,
+  ): Promise<CommunityFeedPostResponseDto | null> {
+    const post = await this.communityFeedPostRepo.getCommunityFeedPostDetail(
+      communityId,
+      postId,
+    );
     if (!post) return null;
     return {
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
-      media: (post['media'] || []).map(m => ({
+      media: (post['media'] || []).map((m) => ({
         url: m.url,
         type: m.type,
         order: m.order,
@@ -168,13 +198,21 @@ export class PostService {
     };
   }
 
-  async getCompanyFeedPosts(companyId: number, limit = 20, offset = 0): Promise<CompanyFeedPostResponseDto[]> {
-    const posts = await this.companyFeedPostRepo.getCompanyFeedPosts(companyId, limit, offset);
-    return posts.map(post => ({
+  async getCompanyFeedPosts(
+    companyId: number,
+    limit = 20,
+    offset = 0,
+  ): Promise<CompanyFeedPostResponseDto[]> {
+    const posts = await this.companyFeedPostRepo.getCompanyFeedPosts(
+      companyId,
+      limit,
+      offset,
+    );
+    return posts.map((post) => ({
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
-      media: (post['media'] || []).map(m => ({
+      media: (post['media'] || []).map((m) => ({
         url: m.url,
         type: m.type,
         order: m.order,
@@ -186,14 +224,20 @@ export class PostService {
     }));
   }
 
-  async getCompanyFeedPostDetail(companyId: number, postId: number): Promise<CompanyFeedPostResponseDto | null> {
-    const post = await this.companyFeedPostRepo.getCompanyFeedPostDetail(companyId, postId);
+  async getCompanyFeedPostDetail(
+    companyId: number,
+    postId: number,
+  ): Promise<CompanyFeedPostResponseDto | null> {
+    const post = await this.companyFeedPostRepo.getCompanyFeedPostDetail(
+      companyId,
+      postId,
+    );
     if (!post) return null;
     return {
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
-      media: (post['media'] || []).map(m => ({
+      media: (post['media'] || []).map((m) => ({
         url: m.url,
         type: m.type,
         order: m.order,

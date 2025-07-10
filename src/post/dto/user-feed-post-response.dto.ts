@@ -13,6 +13,7 @@ export class UserFeedPostResponseDto {
   id: number;
   caption: string;
   created_at: Date;
+  updated_at: Date;
   media: UserFeedPostMediaResponseDto[];
   user: UserFeedPostUserResponseDto;
-} 
+}
