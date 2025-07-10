@@ -10,7 +10,7 @@ export class CommunityFeedPostCommunityResponseDto {
 }
 
 export class CommunityFeedPostResponseDto {
-  id: number;
+  id: string;
   caption: string;
   created_at: Date;
   media: CommunityFeedPostMediaResponseDto[];

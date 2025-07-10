@@ -34,8 +34,8 @@ export class CreateCommunityNewsPostMediaDto {
 }
 
 export class CreateCommunityNewsPostDto {
-  @IsNumber()
-  communityId: number;
+  @IsString()
+  communityId: string;
 
   @IsString()
   title: string;

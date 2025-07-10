@@ -10,5 +10,6 @@ export class CreateCommunityRoleDto {
   description?: string;
 
   @IsNotEmpty()
-  communityId: number;
+  @IsString()
+  communityId: string;
 }

@@ -10,7 +10,7 @@ export class CompanyFeedPostCompanyResponseDto {
 }
 
 export class CompanyFeedPostResponseDto {
-  id: number;
+  id: string;
   caption: string;
   created_at: Date;
   media: CompanyFeedPostMediaResponseDto[];

@@ -12,8 +12,8 @@ export class CreateCommunityFeedPostMediaDto {
 }
 
 export class CreateCommunityFeedPostDto {
-  @IsNumber()
-  communityId: number;
+  @IsString()
+  communityId: string;
 
   @IsString()
   caption: string;

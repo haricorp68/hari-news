@@ -10,13 +10,13 @@ export class Share {
   user: User;
 
   @Column({ nullable: true })
-  user_post_id: number;
+  user_post_id: string;
 
   @Column({ nullable: true })
-  community_post_id: number;
+  community_post_id: string;
 
   @Column({ nullable: true })
-  company_post_id: number;
+  company_post_id: string;
 
   @CreateDateColumn()
   created_at: Date;

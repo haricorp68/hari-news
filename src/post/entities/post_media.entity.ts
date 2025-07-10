@@ -10,7 +10,7 @@ export class PostMedia {
   post_type: string; // 'user_feed', 'community_feed', 'company_feed', 'user_news', 'community_news', 'company_news'
 
   @Column()
-  post_id: number;
+  post_id: string;
 
   @Column()
   url: string;

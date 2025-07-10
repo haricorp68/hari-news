@@ -10,7 +10,7 @@ export class UserFeedPostUserResponseDto {
 }
 
 export class UserFeedPostResponseDto {
-  id: number;
+  id: string;
   caption: string;
   created_at: Date;
   updated_at: Date;

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository, IsNull, LessThan } from 'typeorm';
+import { DataSource, Repository, IsNull, LessThan, MoreThan } from 'typeorm';
 import { RefreshToken, RefreshTokenType } from '../entities/refresh-token.entity';
 import { User } from '../../user/entities/user.entity';
 
@@ -30,7 +30,7 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
     return this.save(entity);
   }
 
-  async findByUser(userId: number, type: RefreshTokenType = RefreshTokenType.LOCAL) {
+  async findByUser(userId: string, type: RefreshTokenType = RefreshTokenType.LOCAL) {
     return this.find({
       where: {
         user: { id: userId },
@@ -40,14 +40,14 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
     });
   }
 
-  async findValidToken(userId: number, refreshTokenHash: string, type: RefreshTokenType = RefreshTokenType.LOCAL) {
+  async findValidToken(userId: string, refreshTokenHash: string, type: RefreshTokenType = RefreshTokenType.LOCAL) {
     return this.findOne({
       where: {
         user: { id: userId },
         token: refreshTokenHash,
         type,
         revokedAt: IsNull(),
-        expiredAt: IsNull(),
+        expiredAt: MoreThan(new Date()),
       },
       relations: ['user'],
     });
@@ -57,11 +57,11 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
     return this.findOne({ where: { token: refreshTokenHash } });
   }
 
-  async revokeToken(id: number) {
+  async revokeToken(id: string) {
     return this.update(id, { revokedAt: new Date() });
   }
 
-  async revokeAllForUser(userId: number, type: RefreshTokenType = RefreshTokenType.LOCAL) {
+  async revokeAllForUser(userId: string, type: RefreshTokenType = RefreshTokenType.LOCAL) {
     return this.update(
       { user: { id: userId }, type, revokedAt: IsNull() },
       { revokedAt: new Date() },

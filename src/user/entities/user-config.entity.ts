@@ -19,7 +19,7 @@ export class UserConfig {
   user: User;
 
   @Column()
-  userId: number;
+  userId: string;
 
   @Column({ type: 'json', nullable: true })
   preferences: {

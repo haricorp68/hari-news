@@ -34,8 +34,8 @@ export class CreateCompanyNewsPostMediaDto {
 }
 
 export class CreateCompanyNewsPostDto {
-  @IsNumber()
-  companyId: number;
+  @IsString()
+  companyId: string;
 
   @IsString()
   title: string;

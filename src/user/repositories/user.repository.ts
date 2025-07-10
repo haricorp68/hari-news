@@ -8,7 +8,7 @@ export class UserRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return this.findOne({ where: { id } });
   }
 
@@ -30,21 +30,21 @@ export class UserRepository extends Repository<User> {
     });
   }
 
-  async findWithRelations(id: number, relations: string[] = []) {
+  async findWithRelations(id: string, relations: string[] = []) {
     return this.findOne({ where: { id }, relations });
   }
 
-  async customSoftDelete(id: number) {
+  async customSoftDelete(id: string) {
     // Nếu có trường is_deleted thì update, nếu không thì xóa cứng
     return this.delete(id);
   }
 
-  async customRestore(id: number) {
+  async customRestore(id: string) {
     // Nếu có trường is_deleted thì update lại, nếu không thì không cần
     return this.findOne({ where: { id } });
   }
 
-  async updateProfile(id: number, profile: Partial<User>) {
+  async updateProfile(id: string, profile: Partial<User>) {
     await this.update(id, profile);
     return this.findOne({ where: { id } });
   }

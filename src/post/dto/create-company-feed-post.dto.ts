@@ -12,8 +12,8 @@ export class CreateCompanyFeedPostMediaDto {
 }
 
 export class CreateCompanyFeedPostDto {
-  @IsNumber()
-  companyId: number;
+  @IsString()
+  companyId: string;
 
   @IsString()
   caption: string;
