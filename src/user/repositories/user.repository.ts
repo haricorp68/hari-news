@@ -23,10 +23,7 @@ export class UserRepository extends Repository<User> {
 
   async search(keyword: string) {
     return this.find({
-      where: [
-        { name: Like(`%${keyword}%`) },
-        { email: Like(`%${keyword}%`) },
-      ],
+      where: [{ name: Like(`%${keyword}%`) }, { email: Like(`%${keyword}%`) }],
     });
   }
 
@@ -54,7 +51,7 @@ export class UserRepository extends Repository<User> {
   }
 
   // Ví dụ: lấy user kèm profile mở rộng (nếu có bảng profile riêng)
-  // async findWithProfile(id: number) {
+  // async findWithProfile(id: string) {
   //   return this.findOne({ where: { id }, relations: ['profile'] });
   // }
-} 
+}

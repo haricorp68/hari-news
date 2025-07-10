@@ -9,7 +9,7 @@ export class UserFeedPostRepository extends Repository<UserFeedPost> {
     super(UserFeedPost, dataSource.createEntityManager());
   }
 
-  async getUserFeedPosts(userId: number, limit = 20, offset = 0) {
+  async getUserFeedPosts(userId: string, limit = 20, offset = 0) {
     const posts = await this.createQueryBuilder('post')
       .leftJoinAndSelect('post.user', 'user')
       .where('user.id = :userId', { userId })
@@ -19,10 +19,11 @@ export class UserFeedPostRepository extends Repository<UserFeedPost> {
       .take(limit)
       .getMany();
     // Lấy media cho từng post
-    const postIds = posts.map(p => p.id);
+    const postIds = posts.map((p) => p.id);
     let media: PostMedia[] = [];
     if (postIds.length) {
-      media = await this.manager.getRepository(PostMedia)
+      media = await this.manager
+        .getRepository(PostMedia)
         .createQueryBuilder('media')
         .where('media.post_type = :postType', { postType: 'user_feed' })
         .andWhere('media.post_id IN (:...postIds)', { postIds })
@@ -30,12 +31,12 @@ export class UserFeedPostRepository extends Repository<UserFeedPost> {
         .getMany();
     }
     for (const post of posts) {
-      post['media'] = media.filter(m => m.post_id === post.id);
+      post['media'] = media.filter((m) => m.post_id === post.id);
     }
     return posts;
   }
 
-  async getUserFeedPostDetail(userId: number, postId: number) {
+  async getUserFeedPostDetail(userId: string, postId: string) {
     const post = await this.createQueryBuilder('post')
       .leftJoinAndSelect('post.user', 'user')
       .where('post.id = :postId', { postId })
@@ -49,4 +50,4 @@ export class UserFeedPostRepository extends Repository<UserFeedPost> {
     });
     return post;
   }
-} 
+}

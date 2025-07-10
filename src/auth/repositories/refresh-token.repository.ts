@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository, IsNull, LessThan, MoreThan } from 'typeorm';
-import { RefreshToken, RefreshTokenType } from '../entities/refresh-token.entity';
+import { DataSource, Repository, IsNull, LessThan } from 'typeorm';
+import {
+  RefreshToken,
+  RefreshTokenType,
+} from '../entities/refresh-token.entity';
 import { User } from '../../user/entities/user.entity';
 
 @Injectable()
@@ -30,7 +33,10 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
     return this.save(entity);
   }
 
-  async findByUser(userId: string, type: RefreshTokenType = RefreshTokenType.LOCAL) {
+  async findByUser(
+    userId: string,
+    type: RefreshTokenType = RefreshTokenType.LOCAL,
+  ) {
     return this.find({
       where: {
         user: { id: userId },
@@ -40,14 +46,18 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
     });
   }
 
-  async findValidToken(userId: string, refreshTokenHash: string, type: RefreshTokenType = RefreshTokenType.LOCAL) {
+  async findValidToken(
+    userId: string,
+    refreshTokenHash: string,
+    type: RefreshTokenType = RefreshTokenType.LOCAL,
+  ) {
     return this.findOne({
       where: {
         user: { id: userId },
         token: refreshTokenHash,
         type,
         revokedAt: IsNull(),
-        expiredAt: MoreThan(new Date()),
+        expiredAt: IsNull(),
       },
       relations: ['user'],
     });
@@ -61,7 +71,10 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
     return this.update(id, { revokedAt: new Date() });
   }
 
-  async revokeAllForUser(userId: string, type: RefreshTokenType = RefreshTokenType.LOCAL) {
+  async revokeAllForUser(
+    userId: string,
+    type: RefreshTokenType = RefreshTokenType.LOCAL,
+  ) {
     return this.update(
       { user: { id: userId }, type, revokedAt: IsNull() },
       { revokedAt: new Date() },
@@ -71,4 +84,4 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
   async removeExpiredTokens(now: Date = new Date()) {
     return this.delete({ expiredAt: LessThan(now) });
   }
-} 
+}

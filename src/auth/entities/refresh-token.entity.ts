@@ -16,7 +16,7 @@ export enum RefreshTokenType {
 @Entity()
 export class RefreshToken {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @ManyToOne(() => User, (user) => user.refreshTokens, { onDelete: 'CASCADE' })
   user: User;

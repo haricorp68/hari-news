@@ -16,7 +16,7 @@ export class PostBlock {
   post_type: string; // 'user_news', 'community_news', 'company_news'
 
   @Column()
-  post_id: number;
+  post_id: string;
 
   @Column({ type: 'enum', enum: BlockType })
   type: BlockType; // 'text', 'image', 'video', 'file'
@@ -35,4 +35,4 @@ export class PostBlock {
 
   @Column()
   order: number; // Thứ tự hiển thị
-} 
+}

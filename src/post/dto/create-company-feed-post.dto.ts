@@ -1,4 +1,11 @@
-import { IsString, IsNumber, IsArray, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsArray,
+  IsOptional,
+  ValidateNested,
+  IsUUID,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateCompanyFeedPostMediaDto {
@@ -12,7 +19,7 @@ export class CreateCompanyFeedPostMediaDto {
 }
 
 export class CreateCompanyFeedPostDto {
-  @IsString()
+  @IsUUID()
   companyId: string;
 
   @IsString()
@@ -23,4 +30,4 @@ export class CreateCompanyFeedPostDto {
   @ValidateNested({ each: true })
   @Type(() => CreateCompanyFeedPostMediaDto)
   media?: CreateCompanyFeedPostMediaDto[];
-} 
+}
