@@ -13,14 +13,6 @@ export class UserConfigService {
   async createUserConfig(userId: string): Promise<UserConfig> {
     const defaultConfig = this.userConfigRepository.create({
       userId,
-      preferences: {
-        emailNotifications: true,
-        pushNotifications: true,
-        privacyLevel: 'public',
-        theme: 'light',
-      },
-      socialLinks: {},
-      twoFactorEnabled: false,
     });
     return this.userConfigRepository.save(defaultConfig);
   }
@@ -43,49 +35,6 @@ export class UserConfigService {
 
     await this.userConfigRepository.update({ userId }, configData);
     return this.userConfigRepository.findOne({ where: { userId } });
-  }
-
-  async updatePreferences(
-    userId: string,
-    preferences: any,
-  ): Promise<UserConfig | null> {
-    const config = await this.getUserConfig(userId);
-    if (!config) {
-      return this.updateUserConfig(userId, { preferences });
-    }
-
-    const updatedPreferences = { ...config.preferences, ...preferences };
-    return this.updateUserConfig(userId, { preferences: updatedPreferences });
-  }
-
-  async updateSocialLinks(
-    userId: string,
-    socialLinks: any,
-  ): Promise<UserConfig | null> {
-    const config = await this.getUserConfig(userId);
-    if (!config) {
-      return this.updateUserConfig(userId, { socialLinks });
-    }
-
-    const updatedSocialLinks = { ...config.socialLinks, ...socialLinks };
-    return this.updateUserConfig(userId, { socialLinks: updatedSocialLinks });
-  }
-
-  async enableTwoFactor(
-    userId: string,
-    secret: string,
-  ): Promise<UserConfig | null> {
-    return this.updateUserConfig(userId, {
-      twoFactorSecret: secret,
-      twoFactorEnabled: true,
-    });
-  }
-
-  async disableTwoFactor(userId: string): Promise<UserConfig | null> {
-    return this.updateUserConfig(userId, {
-      twoFactorSecret: undefined,
-      twoFactorEnabled: false,
-    });
   }
 
   async deleteUserConfig(userId: string): Promise<boolean> {
