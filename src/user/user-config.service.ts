@@ -6,8 +6,18 @@ import { UserConfig } from './entities/user-config.entity';
 export class UserConfigService {
   constructor(private readonly userConfigRepository: UserConfigRepository) {}
 
-  async getUserConfig(userId: string): Promise<UserConfig | null> {
-    return this.userConfigRepository.findOne({ where: { userId } });
+  async getUserConfig(
+    userId: string,
+  ): Promise<Omit<
+    UserConfig,
+    'passwordResetToken' | 'passwordResetExpiresAt'
+  > | null> {
+    const config = await this.userConfigRepository.findOne({
+      where: { userId },
+    });
+    if (!config) return null;
+    const { passwordResetToken, passwordResetExpiresAt, ...rest } = config;
+    return rest;
   }
 
   async createUserConfig(userId: string): Promise<UserConfig> {

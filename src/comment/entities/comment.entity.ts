@@ -2,41 +2,64 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { PostType } from 'src/post/enums/post.enums';
+
+export type CommentMediaType = 'image' | 'video' | 'file';
+
+export interface CommentMedia {
+  type: CommentMediaType;
+  url: string;
+}
 
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
-  user_post_id: string;
+  @Column({ type: 'enum', enum: PostType })
+  postType: PostType;
 
-  @Column({ nullable: true })
-  community_post_id: string;
-
-  @Column({ nullable: true })
-  company_post_id: string;
-
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  user: User;
-
-  @Column({ nullable: true })
-  parent_id: string;
+  @Column({ type: 'uuid' })
+  postId: string;
 
   @Column({ type: 'text' })
   content: string;
 
-  @Column({ default: false })
-  is_deleted: boolean;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @Column()
+  userId: string;
+
+  @ManyToOne(() => Comment, (comment) => comment.children, { nullable: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'parentId' })
+  parent: Comment;
+
+  @Column({ nullable: true })
+  parentId: string;
+
+  @OneToMany(() => Comment, (comment) => comment.parent)
+  children: Comment[];
+
+  // Media: lưu mảng các object CommentMedia rõ ràng
+  @Column({ type: 'jsonb', nullable: true })
+  media: CommentMedia[];
 
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 }
