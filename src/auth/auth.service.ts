@@ -355,7 +355,7 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
     // User đã được loại bỏ password từ userService.findOne
-    return { user };
+    return user;
   }
 
   async refreshTokenByCookie(refreshToken: string) {

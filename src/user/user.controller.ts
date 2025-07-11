@@ -104,4 +104,106 @@ export class UserController {
   async remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
+
+  // --- CRUD for self user config ---
+  @Get('config/self')
+  @UseGuards(JwtAuthGuard)
+  async getSelfConfig(@CurrentUser() user) {
+    const config = await this.userConfigService.getUserConfig(
+      user.userId || user.id,
+    );
+    return {
+      message: 'Lấy config của bạn thành công!',
+      ...config,
+    };
+  }
+
+  @Post('config/self')
+  @UseGuards(JwtAuthGuard)
+  async createSelfConfig(@CurrentUser() user) {
+    const config = await this.userConfigService.createUserConfig(
+      user.userId || user.id,
+    );
+    return {
+      config,
+      message: 'Tạo config của bạn thành công!',
+    };
+  }
+
+  @Patch('config/self')
+  @UseGuards(JwtAuthGuard)
+  async updateSelfConfig(@CurrentUser() user, @Body() configData: any) {
+    const config = await this.userConfigService.updateUserConfig(
+      user.userId || user.id,
+      configData,
+    );
+    return {
+      config,
+      message: 'Cập nhật config của bạn thành công!',
+    };
+  }
+
+  @Delete('config/self')
+  @UseGuards(JwtAuthGuard)
+  async deleteSelfConfig(@CurrentUser() user) {
+    const result = await this.userConfigService.deleteUserConfig(
+      user.userId || user.id,
+    );
+    return {
+      success: result,
+      message: result
+        ? 'Xóa config của bạn thành công!'
+        : 'Không tìm thấy config để xóa!',
+    };
+  }
+
+  // --- CRUD for user config (admin or user with permission) ---
+  @Get('config/:id')
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @CheckAbility('read', 'userConfig')
+  async getUserConfig(@Param('id') id: string) {
+    const config = await this.userConfigService.getUserConfig(id);
+    return {
+      data: config,
+      message: 'Lấy config user thành công!',
+    };
+  }
+
+  @Post('config/:id')
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @CheckAbility('create', 'userConfig')
+  async createUserConfig(@Param('id') id: string) {
+    const config = await this.userConfigService.createUserConfig(id);
+    return {
+      data: config,
+      message: 'Tạo config user thành công!',
+    };
+  }
+
+  @Patch('config/:id')
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @CheckAbility('update', 'userConfig')
+  async updateUserConfig(@Param('id') id: string, @Body() configData: any) {
+    const config = await this.userConfigService.updateUserConfig(
+      id,
+      configData,
+    );
+    return {
+      data: config,
+      message: 'Cập nhật config user thành công!',
+    };
+  }
+
+  @Delete('config/:id')
+  @UseGuards(JwtAuthGuard, CaslAbilityGuard)
+  @CheckAbility('delete', 'userConfig')
+  async deleteUserConfig(@Param('id') id: string) {
+    const result = await this.userConfigService.deleteUserConfig(id);
+    return {
+      success: result,
+      message: result
+        ? 'Xóa config user thành công!'
+        : 'Không tìm thấy config để xóa!',
+    };
+  }
 }

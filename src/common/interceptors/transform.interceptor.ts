@@ -31,6 +31,23 @@ export class TransformInterceptor<T> implements NestInterceptor<T, any> {
             ? 'Data deleted successfully'
             : 'Request successful');
 
+        // Nếu object đã có data và metadata, giữ nguyên không lồng thêm
+        if (
+          result &&
+          typeof result === 'object' &&
+          'data' in result &&
+          'metadata' in result
+        ) {
+          return {
+            status: 'success',
+            statusCode,
+            message: result.message || message,
+            data: result.data,
+            metadata: result.metadata,
+            timestamp: new Date().toISOString(),
+          };
+        }
+
         // Nếu object có message và các field khác, gom các field khác vào data
         if (
           result &&
