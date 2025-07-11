@@ -15,4 +15,5 @@ export class CommunityFeedPostResponseDto {
   created_at: Date;
   media: CommunityFeedPostMediaResponseDto[];
   community: CommunityFeedPostCommunityResponseDto;
+  commentCount: number;
 }

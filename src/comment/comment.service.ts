@@ -128,4 +128,8 @@ export class CommentService {
       },
     };
   }
+
+  async getCommentCountByPost(postId: string): Promise<number> {
+    return this.commentRepository.count({ where: { postId } });
+  }
 }

@@ -24,6 +24,7 @@ import { ReactionRepository } from '../reaction/repositories/reaction.repository
 import { In } from 'typeorm';
 import { PostType } from './enums/post.enums';
 import { ReactionService } from '../reaction/reaction.service';
+import { CommentService } from '../comment/comment.service';
 
 @Injectable()
 export class PostService {
@@ -33,6 +34,7 @@ export class PostService {
     private readonly companyFeedPostRepo: CompanyFeedPostRepository,
     private readonly postMediaRepo: PostMediaRepository,
     private readonly reactionService: ReactionService, // inject service thay vì repo
+    private readonly commentService: CommentService,
   ) {}
 
   async createUserFeedPost(userId: string, dto: CreateUserFeedPostDto) {
@@ -106,7 +108,9 @@ export class PostService {
       postType: PostType.USER_FEED,
       postIds,
     });
-    return posts.map((post) => ({
+    // Lấy số lượng comment cho từng post
+    const commentCounts = await Promise.all(postIds.map(id => this.commentService.getCommentCountByPost(id)));
+    return posts.map((post, idx) => ({
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
@@ -121,6 +125,7 @@ export class PostService {
         avatar: post.user?.avatar,
       },
       reactionSummary: reactionSummaryMap[post.id] || {},
+      commentCount: commentCounts[idx],
     }));
   }
 
@@ -133,6 +138,7 @@ export class PostService {
       postId,
     );
     if (!post) return null;
+    const commentCount = await this.commentService.getCommentCountByPost(post.id);
     return {
       id: post.id,
       caption: post.caption,
@@ -147,6 +153,7 @@ export class PostService {
         name: post.user?.name,
         avatar: post.user?.avatar,
       },
+      commentCount,
     };
   }
 
@@ -160,7 +167,9 @@ export class PostService {
       limit,
       offset,
     );
-    return posts.map((post) => ({
+    const postIds = posts.map((p) => p.id);
+    const commentCounts = await Promise.all(postIds.map(id => this.commentService.getCommentCountByPost(id)));
+    return posts.map((post, idx) => ({
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
@@ -173,6 +182,7 @@ export class PostService {
         name: post.community?.name,
         avatar: post.community?.avatar,
       },
+      commentCount: commentCounts[idx],
     }));
   }
 
@@ -185,6 +195,7 @@ export class PostService {
       postId,
     );
     if (!post) return null;
+    const commentCount = await this.commentService.getCommentCountByPost(post.id);
     return {
       id: post.id,
       caption: post.caption,
@@ -198,6 +209,7 @@ export class PostService {
         name: post.community?.name,
         avatar: post.community?.avatar,
       },
+      commentCount,
     };
   }
 
@@ -211,7 +223,9 @@ export class PostService {
       limit,
       offset,
     );
-    return posts.map((post) => ({
+    const postIds = posts.map((p) => p.id);
+    const commentCounts = await Promise.all(postIds.map(id => this.commentService.getCommentCountByPost(id)));
+    return posts.map((post, idx) => ({
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
@@ -224,6 +238,7 @@ export class PostService {
         name: post.company?.name,
         avatar: post.company?.avatar,
       },
+      commentCount: commentCounts[idx],
     }));
   }
 
@@ -236,6 +251,7 @@ export class PostService {
       postId,
     );
     if (!post) return null;
+    const commentCount = await this.commentService.getCommentCountByPost(post.id);
     return {
       id: post.id,
       caption: post.caption,
@@ -249,6 +265,7 @@ export class PostService {
         name: post.company?.name,
         avatar: post.company?.avatar,
       },
+      commentCount,
     };
   }
 }

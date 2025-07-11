@@ -15,4 +15,5 @@ export class CompanyFeedPostResponseDto {
   created_at: Date;
   media: CompanyFeedPostMediaResponseDto[];
   company: CompanyFeedPostCompanyResponseDto;
+  commentCount: number;
 }

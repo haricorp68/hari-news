@@ -16,4 +16,5 @@ export class UserFeedPostResponseDto {
   updated_at: Date;
   media: UserFeedPostMediaResponseDto[];
   user: UserFeedPostUserResponseDto;
+  commentCount: number;
 }

@@ -10,6 +10,8 @@ import { ReactionModule } from 'src/reaction/reaction.module';
 import { UserNewsPostRepository } from './repositories/user_news_post.repository';
 import { CompanyNewsPostRepository } from './repositories/company_news_post.repository';
 import { CommunityNewsPostRepository } from './repositories/community_news_post.repository';
+import { CommentService } from 'src/comment/comment.service';
+import { CommentModule } from 'src/comment/comment.module';
 
 @Module({
   controllers: [PostController],
@@ -23,7 +25,8 @@ import { CommunityNewsPostRepository } from './repositories/community_news_post.
     UserNewsPostRepository,
     CompanyNewsPostRepository,
     CommunityNewsPostRepository,
+    CommentService,
   ],
-  imports: [ReactionModule],
+  imports: [ReactionModule, CommentModule],
 })
 export class PostModule {}
