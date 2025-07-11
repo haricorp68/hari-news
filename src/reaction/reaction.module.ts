@@ -21,5 +21,6 @@ import { CommunityNewsPostRepository } from '../post/repositories/community_news
     CompanyNewsPostRepository,
     CommunityNewsPostRepository,
   ],
+  exports: [ReactionService, ReactionRepository],
 })
 export class ReactionModule {}

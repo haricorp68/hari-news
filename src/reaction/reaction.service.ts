@@ -10,6 +10,7 @@ import { UserNewsPostRepository } from '../post/repositories/user_news_post.repo
 import { CompanyNewsPostRepository } from '../post/repositories/company_news_post.repository';
 import { CommunityNewsPostRepository } from '../post/repositories/community_news_post.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ReactionType } from './entities/reaction.entity';
 
 @Injectable()
 export class ReactionService {
@@ -52,12 +53,22 @@ export class ReactionService {
   }
 
   async create(createReactionDto: CreateReactionDto) {
-    const { postType, postId } = createReactionDto;
+    const { postType, postId, userId } = createReactionDto; // userId cần có trong DTO hoặc truyền vào
     const valid = await this.validatePost(postType, postId);
     if (!valid) {
       throw new BadRequestException('Invalid postId or postType');
     }
-    // You may want to check for duplicate reaction by user here
+    // Kiểm tra duplicate reaction
+    const existed = await this.reactionRepository.findOne({
+      where: {
+        userId,
+        postType,
+        postId,
+      },
+    });
+    if (existed) {
+      throw new BadRequestException('Reaction already exists');
+    }
     const reaction = this.reactionRepository.create(createReactionDto);
     return this.reactionRepository.save(reaction);
   }
@@ -84,5 +95,61 @@ export class ReactionService {
     if (!reaction) throw new NotFoundException('Reaction not found');
     await this.reactionRepository.remove(reaction);
     return { deleted: true };
+  }
+
+  async toggleReaction(
+    createReactionDto: CreateReactionDto & { userId: string },
+  ) {
+    const { postType, postId, type, userId } = createReactionDto;
+    const valid = await this.validatePost(postType, postId);
+    if (!valid) {
+      throw new BadRequestException('Invalid postId or postType');
+    }
+    const existed = await this.reactionRepository.findOne({
+      where: {
+        userId,
+        postType,
+        postId,
+      },
+    });
+    if (!existed) {
+      // Chưa có -> tạo mới
+      const reaction = this.reactionRepository.create(createReactionDto);
+      return this.reactionRepository.save(reaction);
+    }
+    if (existed.type === type) {
+      // Đã có cùng loại -> xóa (gỡ reaction)
+      await this.reactionRepository.remove(existed);
+      return { deleted: true };
+    }
+    // Đã có khác loại -> cập nhật
+    existed.type = type;
+    return this.reactionRepository.save(existed);
+  }
+
+  async findByPost(params: {
+    postType: PostType;
+    postId: string;
+    type?: ReactionType;
+  }) {
+    const { postType, postId, type } = params;
+    const where: any = { postType, postId };
+    if (type) where.type = type;
+    const reactions = await this.reactionRepository.find({ where });
+    // Tính summary
+    const summary: Record<string, number> = {};
+    for (const r of reactions) {
+      summary[r.type] = (summary[r.type] || 0) + 1;
+    }
+    return { reactions, summary };
+  }
+
+  async findByPosts(params: {
+    postType: PostType;
+    postIds: string[];
+    type?: ReactionType;
+  }) {
+    const { postType, postIds, type } = params;
+    return this.reactionRepository.getSummaryByPosts(postType, postIds, type);
   }
 }

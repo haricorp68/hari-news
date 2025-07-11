@@ -20,6 +20,10 @@ import { MediaType } from './enums/post.enums';
 import { UserFeedPostResponseDto } from './dto/user-feed-post-response.dto';
 import { CommunityFeedPostResponseDto } from './dto/community-feed-post-response.dto';
 import { CompanyFeedPostResponseDto } from './dto/company-feed-post-response.dto';
+import { ReactionRepository } from '../reaction/repositories/reaction.repository';
+import { In } from 'typeorm';
+import { PostType } from './enums/post.enums';
+import { ReactionService } from '../reaction/reaction.service';
 
 @Injectable()
 export class PostService {
@@ -28,6 +32,7 @@ export class PostService {
     private readonly communityFeedPostRepo: CommunityFeedPostRepository,
     private readonly companyFeedPostRepo: CompanyFeedPostRepository,
     private readonly postMediaRepo: PostMediaRepository,
+    private readonly reactionService: ReactionService, // inject service thay vì repo
   ) {}
 
   async createUserFeedPost(userId: string, dto: CreateUserFeedPostDto) {
@@ -94,16 +99,13 @@ export class PostService {
     return { id: post.id, type: 'company_feed' };
   }
 
-  async getUserSelfFeedPosts(
-    userId: string,
-    limit = 20,
-    offset = 0,
-  ): Promise<UserFeedPostResponseDto[]> {
-    const posts = await this.userFeedPostRepo.getUserFeedPosts(
-      userId,
-      limit,
-      offset,
-    );
+  async getUserSelfFeedPosts(userId: string, limit = 20, offset = 0) {
+    const posts = await this.userFeedPostRepo.getUserFeedPosts(userId, limit, offset);
+    const postIds = posts.map((p) => p.id);
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postType: PostType.USER_FEED,
+      postIds,
+    });
     return posts.map((post) => ({
       id: post.id,
       caption: post.caption,
@@ -118,6 +120,7 @@ export class PostService {
         name: post.user?.name,
         avatar: post.user?.avatar,
       },
+      reactionSummary: reactionSummaryMap[post.id] || {},
     }));
   }
 

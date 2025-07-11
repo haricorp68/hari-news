@@ -21,15 +21,9 @@ export enum ReactionType {
   MEH = 'meh',
 }
 
-export enum EntityType {
-  USER = 'user',
-  COMPANY = 'company',
-  COMMUNITY = 'community',
-}
-
 @Entity('reactions')
-@Index(['postType', 'postId', 'entityType', 'entityId'])
-@Index(['userId', 'postType', 'postId', 'entityType', 'entityId'], { unique: true })
+@Index(['postType', 'postId'])
+@Index(['userId', 'postType', 'postId'], { unique: true })
 export class Reaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -49,15 +43,6 @@ export class Reaction {
 
   @Column('uuid')
   postId: string;
-
-  @Column({
-    type: 'enum',
-    enum: EntityType,
-  })
-  entityType: EntityType;
-
-  @Column('uuid')
-  entityId: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })

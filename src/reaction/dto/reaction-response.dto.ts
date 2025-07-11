@@ -1,4 +1,4 @@
-import { ReactionType, EntityType } from '../entities/reaction.entity';
+import { ReactionType } from '../entities/reaction.entity';
 import { PostType } from '../../post/enums/post.enums';
 
 export class ReactionResponseDto {
@@ -6,9 +6,8 @@ export class ReactionResponseDto {
   type: ReactionType;
   postType: PostType;
   postId: string;
-  entityType: EntityType;
   entityId: string;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
-} 
+}

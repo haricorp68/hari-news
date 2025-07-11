@@ -5,15 +5,25 @@ import { CommunityFeedPostRepository } from './repositories/community_feed_post.
 import { UserFeedPostRepository } from './repositories/user_feed_post.repository';
 import { CompanyFeedPostRepository } from './repositories/company_feed_post.repository';
 import { PostMediaRepository } from './repositories/post_media.repository';
+import { ReactionService } from 'src/reaction/reaction.service';
+import { ReactionModule } from 'src/reaction/reaction.module';
+import { UserNewsPostRepository } from './repositories/user_news_post.repository';
+import { CompanyNewsPostRepository } from './repositories/company_news_post.repository';
+import { CommunityNewsPostRepository } from './repositories/community_news_post.repository';
 
 @Module({
   controllers: [PostController],
   providers: [
     PostService,
+    ReactionService,
     CommunityFeedPostRepository,
     UserFeedPostRepository,
     CompanyFeedPostRepository,
     PostMediaRepository,
+    UserNewsPostRepository,
+    CompanyNewsPostRepository,
+    CommunityNewsPostRepository,
   ],
+  imports: [ReactionModule],
 })
 export class PostModule {}
