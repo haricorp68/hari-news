@@ -19,6 +19,7 @@ import { sendEmailVerificationDto } from './dto/send-email-verification.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { UserResponseDto } from '../user/dto/user-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -66,7 +67,7 @@ export class AuthController {
   @SkipThrottle({ short: true, medium: true, long: true })
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getCurrentUser(@CurrentUser() user) {
+  async getCurrentUser(@CurrentUser() user): Promise<{ message: string }> {
     const result = await this.authService.getCurrentUser(
       user.userId || user.id,
     );

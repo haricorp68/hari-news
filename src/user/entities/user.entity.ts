@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { UserConfig } from './user-config.entity';
+import { Follow } from '../../follow/entities/follow.entity';
 
 @Entity()
 export class User {
@@ -26,6 +27,9 @@ export class User {
 
   @Column({ nullable: true })
   avatar: string;
+
+  @Column({ nullable: true })
+  coverImage: string;
 
   @Column({ nullable: true, type: 'text' })
   bio: string;
@@ -92,6 +96,12 @@ export class User {
 
   @OneToOne(() => UserConfig, (userConfig) => userConfig.user, { cascade: true })
   config: UserConfig;
+
+  @OneToMany(() => Follow, (follow) => follow.follower)
+  following: Follow[];
+
+  @OneToMany(() => Follow, (follow) => follow.following)
+  followers: Follow[];
 
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;

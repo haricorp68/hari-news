@@ -17,6 +17,10 @@ export class UpdateUserDto {
   avatar?: string;
 
   @IsOptional()
+  @IsUrl({}, { message: 'Ảnh bìa phải là URL hợp lệ' })
+  coverImage?: string;
+
+  @IsOptional()
   @IsString({ message: 'Tiểu sử phải là chuỗi' })
   bio?: string;
 

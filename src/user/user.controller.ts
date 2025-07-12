@@ -62,7 +62,10 @@ export class UserController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   async getProfile(@CurrentUser() user) {
-    const userProfile = await this.userService.findOne(user.userId || user.id);
+    const userProfile = await this.userService.findOne(
+      user.userId || user.id,
+      false,
+    );
     return {
       user: userProfile,
       message: 'Lấy thông tin profile thành công!',
@@ -70,9 +73,8 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+    return this.userService.findOne(id, false);
   }
 
   @Patch(':id')

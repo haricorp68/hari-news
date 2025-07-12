@@ -1,7 +1,7 @@
 import { IsString, IsOptional, IsArray, ValidateNested, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateUserNewsPostBlockDto {
+export class UpdateUserNewsPostBlockDto {
   @IsString()
   type: 'text' | 'image' | 'video' | 'file';
 
@@ -25,20 +25,10 @@ export class CreateUserNewsPostBlockDto {
   order: number;
 }
 
-export class CreateUserNewsPostMediaDto {
+export class UpdateUserNewsPostDto {
+  @IsOptional()
   @IsString()
-  url: string;
-
-  @IsString()
-  type: 'image' | 'video';
-
-  @IsNumber()
-  order: number;
-}
-
-export class CreateUserNewsPostDto {
-  @IsString()
-  title: string;
+  title?: string;
 
   @IsOptional()
   @IsString()
@@ -51,6 +41,6 @@ export class CreateUserNewsPostDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateUserNewsPostBlockDto)
-  blocks?: CreateUserNewsPostBlockDto[];
-}
+  @Type(() => UpdateUserNewsPostBlockDto)
+  blocks?: UpdateUserNewsPostBlockDto[];
+} 

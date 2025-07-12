@@ -42,6 +42,8 @@ import { CompanyNewsPost } from './post/entities/company_news_post.entity';
 import { PostBlock } from './post/entities/post_block.entity';
 import { UserFeedPost } from './post/entities/user_feed_post.entity';
 import { UserNewsPost } from './post/entities/user_news_post.entity';
+import { FollowModule } from './follow/follow.module';
+import { Follow } from './follow/entities/follow.entity';
 
 @Module({
   imports: [
@@ -98,6 +100,7 @@ import { UserNewsPost } from './post/entities/user_news_post.entity';
         PostMedia,
         UserFeedPost,
         UserNewsPost,
+        Follow,
       ],
       synchronize: true,
     }),
@@ -111,6 +114,7 @@ import { UserNewsPost } from './post/entities/user_news_post.entity';
     ReactionModule,
     ShareModule,
     PolicyModule,
+    FollowModule,
   ],
   controllers: [AppController],
   providers: [

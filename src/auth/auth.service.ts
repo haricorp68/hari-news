@@ -20,6 +20,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { RegisterAuthDto } from './dto/register-auth.dto';
+import { UserResponseDto } from '../user/dto/user-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -349,13 +350,13 @@ export class AuthService {
     return {};
   }
 
-  async getCurrentUser(userId: string) {
-    const user = await this.userService.findOne(userId);
-    if (!user) {
+  async getCurrentUser(userId: string): Promise<UserResponseDto> {
+    const user = await this.userService.findOne(userId, false);
+    const userDto = this.userService.mapToUserResponseDto(user);
+    if (!userDto) {
       throw new UnauthorizedException('User not found');
     }
-    // User đã được loại bỏ password từ userService.findOne
-    return user;
+    return userDto;
   }
 
   async refreshTokenByCookie(refreshToken: string) {

@@ -21,4 +21,12 @@ export class CreateUserDto {
   @IsBoolean()
   @IsOptional()
   isVerified?: boolean = false;
+
+  @IsString()
+  @IsOptional()
+  avatar?: string;
+
+  @IsString()
+  @IsOptional()
+  coverImage?: string;
 }

@@ -5,13 +5,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { User } from './entities/user.entity';
 import { UserConfigService } from './user-config.service';
+import { FollowService } from '../follow/follow.service';
 import { Like } from 'typeorm';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userConfigService: UserConfigService,
+    private readonly followService: FollowService,
   ) {}
 
   async onModuleInit() {
@@ -74,9 +77,22 @@ export class UserService implements OnModuleInit {
   ): Promise<User | Omit<User, 'password'> | null> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) return null;
-    if (withPassword) return user;
-    const { password, ...result } = user;
-    return result as Omit<User, 'password'>;
+    
+    let result: any = user;
+    if (!withPassword) {
+      const { password, ...userWithoutPassword } = user;
+      result = userWithoutPassword;
+    }
+
+    // Luôn thêm follow stats với giá trị mặc định là 0
+    const followStats = await this.followService.getFollowStats(id);
+    result = {
+      ...result,
+      followersCount: followStats.followersCount,
+      followingCount: followStats.followingCount,
+    };
+
+    return result;
   }
 
   async findByEmail(
@@ -157,9 +173,31 @@ export class UserService implements OnModuleInit {
       take: pageSize,
       order: { id: 'DESC' },
     });
+
+    let userData = users.map(({ password, ...rest }) => rest);
+
+    // Luôn thêm follow stats với giá trị mặc định là 0
+    const usersWithStats = await Promise.all(
+      userData.map(async (user) => {
+        const followStats = await this.followService.getFollowStats(user.id);
+        return {
+          ...user,
+          followersCount: followStats.followersCount,
+          followingCount: followStats.followingCount,
+        };
+      })
+    );
+    userData = usersWithStats;
+
     return {
-      data: users.map(({ password, ...rest }) => rest),
+      data: userData,
       total,
     };
+  }
+
+  mapToUserResponseDto(user: any): UserResponseDto | undefined {
+    if (!user) return undefined;
+    const { password, ...rest } = user;
+    return rest as UserResponseDto;
   }
 }

@@ -7,9 +7,10 @@ import { UserRepository } from './repositories/user.repository';
 import { UserConfig } from './entities/user-config.entity';
 import { UserConfigService } from './user-config.service';
 import { UserConfigRepository } from './repositories/user-config.repository';
+import { FollowModule } from '../follow/follow.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, UserConfig])],
+  imports: [TypeOrmModule.forFeature([User, UserConfig]), FollowModule],
   controllers: [UserController],
   providers: [
     UserService,

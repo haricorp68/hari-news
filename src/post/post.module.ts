@@ -8,6 +8,7 @@ import { PostMediaRepository } from './repositories/post_media.repository';
 import { ReactionService } from 'src/reaction/reaction.service';
 import { ReactionModule } from 'src/reaction/reaction.module';
 import { UserNewsPostRepository } from './repositories/user_news_post.repository';
+import { PostBlockRepository } from './repositories/post_block.repository';
 import { CompanyNewsPostRepository } from './repositories/company_news_post.repository';
 import { CommunityNewsPostRepository } from './repositories/community_news_post.repository';
 import { CommentService } from 'src/comment/comment.service';
@@ -23,6 +24,7 @@ import { CommentModule } from 'src/comment/comment.module';
     CompanyFeedPostRepository,
     PostMediaRepository,
     UserNewsPostRepository,
+    PostBlockRepository,
     CompanyNewsPostRepository,
     CommunityNewsPostRepository,
     CommentService,
