@@ -29,7 +29,7 @@ import { UserNewsPostRepository } from './repositories/user_news_post.repository
 import { PostBlockRepository } from './repositories/post_block.repository';
 import { CreateUserNewsPostDto } from './dto/create-user-news-post.dto';
 import { UpdateUserNewsPostDto } from './dto/update-user-news-post.dto';
-import { UserNewsPostResponseDto, PostBlockDto } from './dto/user-news-post-response.dto';
+import { UserNewsPostResponseDto, UserNewsPostListDto, PostBlockDto } from './dto/user-news-post-response.dto';
 
 @Injectable()
 export class PostService {
@@ -325,19 +325,13 @@ export class PostService {
     userId: string,
     limit = 20,
     offset = 0,
-  ): Promise<UserNewsPostResponseDto[]> {
+  ): Promise<UserNewsPostListDto[]> {
     const posts = await this.userNewsPostRepo.find({
       where: { user: { id: userId } },
       order: { created_at: 'DESC' },
       skip: offset,
       take: limit,
       relations: ['user'],
-    });
-    const postIds = posts.map((p) => p.id);
-    // Get blocks for all posts (news posts only use blocks, not media)
-    const allBlocks = await this.postBlockRepo.findBy({
-      post_type: 'user_news',
-      post_id: In(postIds),
     });
     return posts.map((post) => ({
       id: post.id,
@@ -351,17 +345,6 @@ export class PostService {
         name: post.user.name,
         avatar: post.user.avatar,
       },
-      blocks: allBlocks
-        .filter((b) => b.post_id === post.id)
-        .map((block): PostBlockDto => ({
-          id: block.id,
-          type: block.type,
-          content: block.content,
-          media_url: block.media_url,
-          file_name: block.file_name,
-          file_size: block.file_size,
-          order: block.order,
-        })),
     }));
   }
 

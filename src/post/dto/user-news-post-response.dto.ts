@@ -8,6 +8,20 @@ export interface PostBlockDto {
   order: number;
 }
 
+export class UserNewsPostListDto {
+  id: string;
+  title: string;
+  summary?: string;
+  cover_image?: string;
+  created_at: Date;
+  updated_at: Date;
+  user: {
+    id: string;
+    name?: string;
+    avatar?: string;
+  };
+}
+
 export class UserNewsPostResponseDto {
   id: string;
   title: string;
