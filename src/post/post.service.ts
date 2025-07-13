@@ -115,6 +115,7 @@ export class PostService {
       title: dto.title,
       summary: dto.summary,
       cover_image: dto.cover_image,
+      categoryId: dto.categoryId,
     });
     await this.userNewsPostRepo.save(post);
     // Save blocks if any (news posts only use blocks, not media)
@@ -331,13 +332,19 @@ export class PostService {
       order: { created_at: 'DESC' },
       skip: offset,
       take: limit,
-      relations: ['user'],
+      relations: ['user', 'category'],
     });
     return posts.map((post) => ({
       id: post.id,
       title: post.title,
       summary: post.summary,
       cover_image: post.cover_image,
+      categoryId: post.categoryId,
+      category: post.category ? {
+        id: post.category.id,
+        name: post.category.name,
+        description: post.category.description,
+      } : undefined,
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -359,7 +366,7 @@ export class PostService {
       order: { created_at: 'DESC' },
       skip: offset,
       take: limit,
-      relations: ['user'],
+      relations: ['user', 'category'],
     });
     const postIds = posts.map((p) => p.id);
     const allBlocks = await this.postBlockRepo.findBy({
@@ -371,6 +378,12 @@ export class PostService {
       title: post.title,
       summary: post.summary,
       cover_image: post.cover_image,
+      categoryId: post.categoryId,
+      category: post.category ? {
+        id: post.category.id,
+        name: post.category.name,
+        description: post.category.description,
+      } : undefined,
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -397,7 +410,7 @@ export class PostService {
   ): Promise<UserNewsPostResponseDto | null> {
     const post = await this.userNewsPostRepo.findOne({
       where: { id: postId },
-      relations: ['user'],
+      relations: ['user', 'category'],
     });
     if (!post) return null;
     const blocks = await this.postBlockRepo.findBy({
@@ -409,6 +422,12 @@ export class PostService {
       title: post.title,
       summary: post.summary,
       cover_image: post.cover_image,
+      categoryId: post.categoryId,
+      category: post.category ? {
+        id: post.category.id,
+        name: post.category.name,
+        description: post.category.description,
+      } : undefined,
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -446,6 +465,7 @@ export class PostService {
     if (dto.title !== undefined) post.title = dto.title;
     if (dto.summary !== undefined) post.summary = dto.summary;
     if (dto.cover_image !== undefined) post.cover_image = dto.cover_image;
+    if (dto.categoryId !== undefined) post.categoryId = dto.categoryId;
     
     await this.userNewsPostRepo.save(post);
 

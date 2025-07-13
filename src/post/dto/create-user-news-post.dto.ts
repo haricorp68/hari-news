@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsArray, ValidateNested, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateUserNewsPostBlockDto {
@@ -40,13 +46,14 @@ export class CreateUserNewsPostDto {
   @IsString()
   title: string;
 
-  @IsOptional()
   @IsString()
-  summary?: string;
+  summary: string;
 
-  @IsOptional()
   @IsString()
-  cover_image?: string;
+  cover_image: string;
+
+  @IsString()
+  categoryId: string;
 
   @IsOptional()
   @IsArray()

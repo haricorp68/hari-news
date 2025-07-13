@@ -39,6 +39,10 @@ export class UpdateUserNewsPostDto {
   cover_image?: string;
 
   @IsOptional()
+  @IsString()
+  categoryId?: string;
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => UpdateUserNewsPostBlockDto)

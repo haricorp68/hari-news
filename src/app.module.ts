@@ -44,6 +44,8 @@ import { UserFeedPost } from './post/entities/user_feed_post.entity';
 import { UserNewsPost } from './post/entities/user_news_post.entity';
 import { FollowModule } from './follow/follow.module';
 import { Follow } from './follow/entities/follow.entity';
+import { Category } from './category/entities/category.entity';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -101,6 +103,7 @@ import { Follow } from './follow/entities/follow.entity';
         UserFeedPost,
         UserNewsPost,
         Follow,
+        Category,
       ],
       synchronize: true,
     }),
@@ -115,6 +118,7 @@ import { Follow } from './follow/entities/follow.entity';
     ShareModule,
     PolicyModule,
     FollowModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [

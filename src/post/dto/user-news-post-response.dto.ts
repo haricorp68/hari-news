@@ -13,6 +13,12 @@ export class UserNewsPostListDto {
   title: string;
   summary?: string;
   cover_image?: string;
+  categoryId?: string;
+  category?: {
+    id: string;
+    name: string;
+    description?: string;
+  };
   created_at: Date;
   updated_at: Date;
   user: {
@@ -27,6 +33,12 @@ export class UserNewsPostResponseDto {
   title: string;
   summary?: string;
   cover_image?: string;
+  categoryId?: string;
+  category?: {
+    id: string;
+    name: string;
+    description?: string;
+  };
   created_at: Date;
   updated_at: Date;
   user: {
