@@ -125,4 +125,51 @@ export class CategorySearchService {
       console.error('Error deleting category from ES:', error);
     }
   }
+
+  async bulkIndexCategories(categories: Category[]) {
+    try {
+      const operations = categories.flatMap(category => [
+        { index: { _index: this.index, _id: category.id } },
+        {
+          id: category.id,
+          name: category.name,
+          description: category.description,
+          coverImage: category.coverImage,
+          parentId: category.parentId,
+          created_at: category.created_at,
+          updated_at: category.updated_at
+        }
+      ]);
+
+      if (operations.length > 0) {
+        const result = await this.elasticsearchService.bulk({
+          operations
+        });
+        
+        console.log(`Bulk indexed ${categories.length} categories`);
+        return result;
+      }
+    } catch (error) {
+      console.error('Error bulk indexing categories:', error);
+    }
+  }
+
+  async reindexAllCategories(categories: Category[]) {
+    try {
+      // Delete existing index
+      await this.elasticsearchService.indices.delete({
+        index: this.index
+      });
+      
+      // Recreate index
+      await this.createIndex();
+      
+      // Bulk index all categories
+      await this.bulkIndexCategories(categories);
+      
+      console.log('Reindex completed successfully');
+    } catch (error) {
+      console.error('Error reindexing categories:', error);
+    }
+  }
 } 

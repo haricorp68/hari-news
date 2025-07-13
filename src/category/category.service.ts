@@ -106,4 +106,34 @@ export class CategoryService {
   async autocomplete(query: string): Promise<Category[]> {
     return this.categorySearchService.autocomplete(query);
   }
+
+  async syncAllCategories(): Promise<void> {
+    try {
+      // Lấy tất cả categories từ database
+      const categories = await this.categoryRepository.find();
+      
+      // Bulk index vào Elasticsearch
+      await this.categorySearchService.bulkIndexCategories(categories);
+      
+      console.log(`Synced ${categories.length} categories to Elasticsearch`);
+    } catch (error) {
+      console.error('Error syncing categories:', error);
+      throw error;
+    }
+  }
+
+  async reindexAllCategories(): Promise<void> {
+    try {
+      // Lấy tất cả categories từ database
+      const categories = await this.categoryRepository.find();
+      
+      // Reindex toàn bộ
+      await this.categorySearchService.reindexAllCategories(categories);
+      
+      console.log(`Reindexed ${categories.length} categories`);
+    } catch (error) {
+      console.error('Error reindexing categories:', error);
+      throw error;
+    }
+  }
 }

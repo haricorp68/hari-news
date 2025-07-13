@@ -46,4 +46,14 @@ export class CategoryController {
   remove(@Param('id') id: string) {
     return this.categoryService.remove(id);
   }
+
+  @Post('sync')
+  syncAllCategories() {
+    return this.categoryService.syncAllCategories();
+  }
+
+  @Post('reindex')
+  reindexAllCategories() {
+    return this.categoryService.reindexAllCategories();
+  }
 } 
