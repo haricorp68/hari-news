@@ -17,5 +17,15 @@ export class CommentRepository extends Repository<Comment> {
       relations: ['user'],
     });
   }
+
+  // Đệ quy đếm tổng số comment con (mọi cấp) của một comment
+  async countAllDescendants(commentId: string): Promise<number> {
+    const children = await this.find({ where: { parentId: commentId } });
+    let count = children.length;
+    for (const child of children) {
+      count += await this.countAllDescendants(child.id);
+    }
+    return count;
+  }
   // Thêm các method custom cho comment ở đây nếu cần
 } 

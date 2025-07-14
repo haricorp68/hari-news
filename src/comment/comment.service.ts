@@ -68,9 +68,7 @@ export class CommentService {
   }
 
   private async toResponseDto(comment: Comment): Promise<CommentResponseDto> {
-    const childCount = await this.commentRepository.count({
-      where: { parentId: comment.id },
-    });
+    const childCount = await this.commentRepository.countAllDescendants(comment.id);
     return {
       id: comment.id,
       postId: comment.postId,

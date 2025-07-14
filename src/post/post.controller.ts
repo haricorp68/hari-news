@@ -62,12 +62,6 @@ export class PostController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('self/user-feed/:id')
-  getSelfUserFeedDetail(@CurrentUser() user, @Param('id') id: string) {
-    return this.postService.getUserSelfFeedPostDetail(user.userId, id);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('self/user-news')
   getSelfUserNews(
     @CurrentUser() user,
@@ -95,9 +89,18 @@ export class PostController {
     );
   }
 
-  @Get('user-news/detail/:id')
-  getUserNewsPostDetail(@Param('id') id: string) {
-    return this.postService.getUserNewsPostDetail(id);
+  // Public endpoint for reading user feed posts by userId
+  @Get('user-feed/:userId')
+  getUserFeedPosts(
+    @Param('userId') userId: string,
+    @Query('limit') limit = 20,
+    @Query('offset') offset = 0,
+  ) {
+    return this.postService.getUserFeedPosts(
+      userId,
+      Number(limit),
+      Number(offset),
+    );
   }
 
   // Self management endpoints

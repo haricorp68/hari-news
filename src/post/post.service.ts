@@ -172,6 +172,42 @@ export class PostService {
     }));
   }
 
+  // Public endpoint for reading user feed posts by userId
+  async getUserFeedPosts(userId: string, limit = 20, offset = 0) {
+    const posts = await this.userFeedPostRepo.getUserFeedPosts(
+      userId,
+      limit,
+      offset,
+    );
+    const postIds = posts.map((p) => p.id);
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postType: PostType.USER_FEED,
+      postIds,
+    });
+    // Lấy số lượng comment cho từng post
+    const commentCounts = await Promise.all(
+      postIds.map((id) => this.commentService.getCommentCountByPost(id)),
+    );
+    return posts.map((post, idx) => ({
+      id: post.id,
+      caption: post.caption,
+      created_at: post.created_at,
+      updated_at: post.updated_at,
+      media: (post['media'] || []).map((m) => ({
+        url: m.url,
+        type: m.type,
+        order: m.order,
+      })),
+      user: {
+        name: post.user?.name,
+        avatar: post.user?.avatar,
+        id: post.user.id,
+      },
+      reactionSummary: reactionSummaryMap[post.id] || {},
+      commentCount: commentCounts[idx],
+    }));
+  }
+
   async getUserSelfFeedPostDetail(
     userId: string,
     postId: string,
@@ -403,48 +439,6 @@ export class PostService {
           order: block.order,
         })),
     }));
-  }
-
-  async getUserNewsPostDetail(
-    postId: string,
-  ): Promise<UserNewsPostResponseDto | null> {
-    const post = await this.userNewsPostRepo.findOne({
-      where: { id: postId },
-      relations: ['user', 'category'],
-    });
-    if (!post) return null;
-    const blocks = await this.postBlockRepo.findBy({
-      post_type: 'user_news',
-      post_id: post.id,
-    });
-    return {
-      id: post.id,
-      title: post.title,
-      summary: post.summary,
-      cover_image: post.cover_image,
-      categoryId: post.categoryId,
-      category: post.category ? {
-        id: post.category.id,
-        name: post.category.name,
-        description: post.category.description,
-      } : undefined,
-      created_at: post.created_at,
-      updated_at: post.updated_at,
-      user: {
-        id: post.user.id,
-        name: post.user.name,
-        avatar: post.user.avatar,
-      },
-      blocks: blocks.map((block): PostBlockDto => ({
-        id: block.id,
-        type: block.type,
-        content: block.content,
-        media_url: block.media_url,
-        file_name: block.file_name,
-        file_size: block.file_size,
-        order: block.order,
-      })),
-    };
   }
 
   // Update and delete methods
