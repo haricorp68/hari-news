@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Category } from './entities/category.entity';
+import * as removeAccents from 'remove-accents';
 
 export interface CategorySearchResult extends Category {
   score?: number;
@@ -21,10 +22,29 @@ export class CategorySearchService {
       if (!indexExists) {
         await this.elasticsearchService.indices.create({
           index: this.index,
+          mappings: {
+            properties: {
+              id: { type: 'keyword' },
+              name: { 
+                type: 'text',
+                fields: {
+                  keyword: { type: 'keyword' }
+                }
+              },
+              name_no_accent: { type: 'text' },
+              description: { type: 'text' },
+              coverImage: { type: 'keyword' },
+              parentId: { type: 'keyword' },
+              created_at: { type: 'date' },
+              updated_at: { type: 'date' },
+            },
+          },
         });
+        console.log('Index created successfully');
       }
     } catch (error) {
       console.error('Error creating index:', error);
+      throw error;
     }
   }
 
@@ -36,6 +56,7 @@ export class CategorySearchService {
         document: {
           id: category.id,
           name: category.name,
+          name_no_accent: removeAccents(category.name).toLowerCase(),
           description: category.description,
           coverImage: category.coverImage,
           parentId: category.parentId,
@@ -56,18 +77,18 @@ export class CategorySearchService {
           multi_match: {
             query: name,
             fields: ['name^2', 'description'],
-            fuzziness: 'AUTO'
-          }
+            fuzziness: 'AUTO',
+          },
         },
         sort: [
-          { '_score': { order: 'desc' } },
-          { 'name.keyword': { order: 'asc' } }
-        ]
+          { _score: { order: 'desc' } },
+          { 'name.keyword': { order: 'asc' } },
+        ],
       });
 
-      return result.hits.hits.map(hit => ({
+      return result.hits.hits.map((hit) => ({
         ...(hit._source as any),
-        score: hit._score
+        score: hit._score,
       }));
     } catch (error) {
       console.error('Error searching categories:', error);
@@ -77,20 +98,61 @@ export class CategorySearchService {
 
   async autocomplete(query: string): Promise<Category[]> {
     try {
+      const queryNoAccent = removeAccents(query).toLowerCase();
       const result = await this.elasticsearchService.search({
         index: this.index,
         query: {
-          match: {
-            name: {
-              query,
-              fuzziness: 'AUTO'
-            }
-          }
+          bool: {
+            should: [
+              // Tìm trên trường name (có dấu) - match
+              {
+                match: {
+                  name: {
+                    query: query,
+                    operator: 'or',
+                    boost: 5.0,
+                  },
+                },
+              },
+              // Tìm trên trường name_no_accent (không dấu) - prefix
+              {
+                prefix: {
+                  name_no_accent: {
+                    value: queryNoAccent,
+                    boost: 5.0,
+                  },
+                },
+              },
+              // Tìm trên trường name (có dấu) - wildcard
+              {
+                wildcard: {
+                  name: {
+                    value: `*${query.toLowerCase()}*`,
+                    boost: 2.0,
+                  },
+                },
+              },
+              // Tìm trên trường name_no_accent (không dấu) - wildcard
+              {
+                wildcard: {
+                  name_no_accent: {
+                    value: `*${queryNoAccent}*`,
+                    boost: 2.0,
+                  },
+                },
+              },
+            ],
+            minimum_should_match: 1,
+          },
         },
-        size: 10
+        sort: [
+          { _score: { order: 'desc' } },
+          { 'name.keyword': { order: 'asc' } },
+        ],
+        size: 10,
       });
 
-      return result.hits.hits.map(hit => hit._source as any);
+      return result.hits.hits.map((hit) => hit._source as any);
     } catch (error) {
       console.error('Error autocomplete:', error);
       return [];
@@ -104,11 +166,12 @@ export class CategorySearchService {
         id: category.id,
         doc: {
           name: category.name,
+          name_no_accent: removeAccents(category.name).toLowerCase(),
           description: category.description,
           coverImage: category.coverImage,
           parentId: category.parentId,
-          updated_at: category.updated_at
-        }
+          updated_at: category.updated_at,
+        },
       });
     } catch (error) {
       console.error('Error updating category in ES:', error);
@@ -119,7 +182,7 @@ export class CategorySearchService {
     try {
       return await this.elasticsearchService.delete({
         index: this.index,
-        id
+        id,
       });
     } catch (error) {
       console.error('Error deleting category from ES:', error);
@@ -128,24 +191,25 @@ export class CategorySearchService {
 
   async bulkIndexCategories(categories: Category[]) {
     try {
-      const operations = categories.flatMap(category => [
+      const operations = categories.flatMap((category) => [
         { index: { _index: this.index, _id: category.id } },
         {
           id: category.id,
           name: category.name,
+          name_no_accent: removeAccents(category.name).toLowerCase(),
           description: category.description,
           coverImage: category.coverImage,
           parentId: category.parentId,
           created_at: category.created_at,
-          updated_at: category.updated_at
-        }
+          updated_at: category.updated_at,
+        },
       ]);
 
       if (operations.length > 0) {
         const result = await this.elasticsearchService.bulk({
-          operations
+          operations,
         });
-        
+
         console.log(`Bulk indexed ${categories.length} categories`);
         return result;
       }
@@ -158,18 +222,18 @@ export class CategorySearchService {
     try {
       // Delete existing index
       await this.elasticsearchService.indices.delete({
-        index: this.index
+        index: this.index,
       });
-      
+
       // Recreate index
       await this.createIndex();
-      
+
       // Bulk index all categories
       await this.bulkIndexCategories(categories);
-      
+
       console.log('Reindex completed successfully');
     } catch (error) {
       console.error('Error reindexing categories:', error);
     }
   }
-} 
+}

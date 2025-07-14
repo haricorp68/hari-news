@@ -27,14 +27,19 @@ export class CategoryController {
     return this.categoryService.autocomplete(query);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoryService.findOne(id);
+  @Get('root')
+  findRootCategories() {
+    return this.categoryService.findRootCategories();
   }
 
   @Get('parent/:parentId')
   findByParentId(@Param('parentId') parentId: string) {
     return this.categoryService.findByParentId(parentId);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.categoryService.findOne(id);
   }
 
   @Patch(':id')
