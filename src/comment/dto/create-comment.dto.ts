@@ -8,7 +8,6 @@ import {
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { PostType } from 'src/post/enums/post.enums';
 
 export class CommentMediaDto {
   @IsEnum(['image', 'video', 'file'])

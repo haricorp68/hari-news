@@ -20,16 +20,18 @@ import { MediaType, BlockType } from './enums/post.enums';
 import { UserFeedPostResponseDto } from './dto/user-feed-post-response.dto';
 import { CommunityFeedPostResponseDto } from './dto/community-feed-post-response.dto';
 import { CompanyFeedPostResponseDto } from './dto/company-feed-post-response.dto';
-import { ReactionRepository } from '../reaction/repositories/reaction.repository';
 import { In } from 'typeorm';
-import { PostType } from './enums/post.enums';
 import { ReactionService } from '../reaction/reaction.service';
 import { CommentService } from '../comment/comment.service';
 import { UserNewsPostRepository } from './repositories/user_news_post.repository';
 import { PostBlockRepository } from './repositories/post_block.repository';
 import { CreateUserNewsPostDto } from './dto/create-user-news-post.dto';
 import { UpdateUserNewsPostDto } from './dto/update-user-news-post.dto';
-import { UserNewsPostResponseDto, UserNewsPostListDto, PostBlockDto } from './dto/user-news-post-response.dto';
+import {
+  UserNewsPostResponseDto,
+  UserNewsPostListDto,
+  PostBlockDto,
+} from './dto/user-news-post-response.dto';
 
 @Injectable()
 export class PostService {
@@ -145,7 +147,6 @@ export class PostService {
     );
     const postIds = posts.map((p) => p.id);
     const reactionSummaryMap = await this.reactionService.findByPosts({
-      postType: PostType.USER_FEED,
       postIds,
     });
     // Lấy số lượng comment cho từng post
@@ -181,7 +182,6 @@ export class PostService {
     );
     const postIds = posts.map((p) => p.id);
     const reactionSummaryMap = await this.reactionService.findByPosts({
-      postType: PostType.USER_FEED,
       postIds,
     });
     // Lấy số lượng comment cho từng post
@@ -376,11 +376,13 @@ export class PostService {
       summary: post.summary,
       cover_image: post.cover_image,
       categoryId: post.categoryId,
-      category: post.category ? {
-        id: post.category.id,
-        name: post.category.name,
-        description: post.category.description,
-      } : undefined,
+      category: post.category
+        ? {
+            id: post.category.id,
+            name: post.category.name,
+            description: post.category.description,
+          }
+        : undefined,
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -415,11 +417,13 @@ export class PostService {
       summary: post.summary,
       cover_image: post.cover_image,
       categoryId: post.categoryId,
-      category: post.category ? {
-        id: post.category.id,
-        name: post.category.name,
-        description: post.category.description,
-      } : undefined,
+      category: post.category
+        ? {
+            id: post.category.id,
+            name: post.category.name,
+            description: post.category.description,
+          }
+        : undefined,
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -429,15 +433,17 @@ export class PostService {
       },
       blocks: allBlocks
         .filter((b) => b.post_id === post.id)
-        .map((block): PostBlockDto => ({
-          id: block.id,
-          type: block.type,
-          content: block.content,
-          media_url: block.media_url,
-          file_name: block.file_name,
-          file_size: block.file_size,
-          order: block.order,
-        })),
+        .map(
+          (block): PostBlockDto => ({
+            id: block.id,
+            type: block.type,
+            content: block.content,
+            media_url: block.media_url,
+            file_name: block.file_name,
+            file_size: block.file_size,
+            order: block.order,
+          }),
+        ),
     }));
   }
 
@@ -460,7 +466,7 @@ export class PostService {
     if (dto.summary !== undefined) post.summary = dto.summary;
     if (dto.cover_image !== undefined) post.cover_image = dto.cover_image;
     if (dto.categoryId !== undefined) post.categoryId = dto.categoryId;
-    
+
     await this.userNewsPostRepo.save(post);
 
     // Update blocks if provided

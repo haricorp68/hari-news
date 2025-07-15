@@ -40,7 +40,7 @@ export class RefreshToken {
   })
   type: RefreshTokenType;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })

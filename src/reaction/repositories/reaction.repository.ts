@@ -8,9 +8,9 @@ export class ReactionRepository extends Repository<Reaction> {
     super(Reaction, dataSource.createEntityManager());
   }
 
-  async getSummaryByPosts(postType: string, postIds: string[], type?: string) {
+  async getSummaryByPosts(postIds: string[], type?: string) {
     if (!postIds.length) return {};
-    const where: any = { postType, postId: In(postIds) };
+    const where: any = { postId: In(postIds) };
     if (type) where.type = type;
     const reactions = await this.find({ where });
     const result: Record<string, Record<string, number>> = {};
@@ -20,4 +20,4 @@ export class ReactionRepository extends Repository<Reaction> {
     }
     return result; // { postId: { like: 2, love: 1, ... }, ... }
   }
-} 
+}

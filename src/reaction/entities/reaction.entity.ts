@@ -9,7 +9,6 @@ import {
   Index,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { PostType } from '../../post/enums/post.enums';
 
 export enum ReactionType {
   LIKE = 'like',
@@ -22,8 +21,8 @@ export enum ReactionType {
 }
 
 @Entity('reactions')
-@Index(['postType', 'postId'])
-@Index(['userId', 'postType', 'postId'], { unique: true })
+@Index(['postId'])
+@Index(['userId', 'postId'], { unique: true })
 export class Reaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -35,12 +34,6 @@ export class Reaction {
   })
   type: ReactionType;
 
-  @Column({
-    type: 'enum',
-    enum: PostType,
-  })
-  postType: PostType;
-
   @Column('uuid')
   postId: string;
 
@@ -51,9 +44,9 @@ export class Reaction {
   @Column('uuid')
   userId: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

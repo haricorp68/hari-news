@@ -13,7 +13,6 @@ import { ReactionService } from './reaction.service';
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { PostType } from '../post/enums/post.enums';
 import { ReactionType } from './entities/reaction.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
@@ -47,13 +46,12 @@ export class ReactionController {
     return this.reactionService.findAll();
   }
 
-  @Get('post')
+  @Get('post/:postId')
   async getReactionsByPost(
-    @Query('postType') postType: PostType,
-    @Query('postId') postId: string,
+    @Param('postId') postId: string,
     @Query('type') type?: ReactionType,
   ) {
-    return this.reactionService.findByPost({ postType, postId, type });
+    return this.reactionService.findByPost({ postId, type });
   }
 
   @Get(':id')

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
 import { ReactionRepository } from './repositories/reaction.repository';
-import { PostType } from '../post/enums/post.enums';
 import { UserFeedPostRepository } from '../post/repositories/user_feed_post.repository';
 import { CompanyFeedPostRepository } from '../post/repositories/company_feed_post.repository';
 import { CommunityFeedPostRepository } from '../post/repositories/community_feed_post.repository';
@@ -24,45 +23,13 @@ export class ReactionService {
     private readonly communityNewsPostRepository: CommunityNewsPostRepository,
   ) {}
 
-  async validatePost(postType: PostType, postId: string): Promise<boolean> {
-    const id = postId;
-    switch (postType) {
-      case PostType.USER_FEED:
-        return !!(await this.userFeedPostRepository.findOne({ where: { id } }));
-      case PostType.COMPANY_FEED:
-        return !!(await this.companyFeedPostRepository.findOne({
-          where: { id },
-        }));
-      case PostType.COMMUNITY_FEED:
-        return !!(await this.communityFeedPostRepository.findOne({
-          where: { id },
-        }));
-      case PostType.USER_NEWS:
-        return !!(await this.userNewsPostRepository.findOne({ where: { id } }));
-      case PostType.COMPANY_NEWS:
-        return !!(await this.companyNewsPostRepository.findOne({
-          where: { id },
-        }));
-      case PostType.COMMUNITY_NEWS:
-        return !!(await this.communityNewsPostRepository.findOne({
-          where: { id },
-        }));
-      default:
-        return false;
-    }
-  }
-
   async create(createReactionDto: CreateReactionDto) {
-    const { postType, postId, userId } = createReactionDto; // userId cần có trong DTO hoặc truyền vào
-    const valid = await this.validatePost(postType, postId);
-    if (!valid) {
-      throw new BadRequestException('Invalid postId or postType');
-    }
+    const { postId, userId } = createReactionDto; // userId cần có trong DTO hoặc truyền vào
+
     // Kiểm tra duplicate reaction
     const existed = await this.reactionRepository.findOne({
       where: {
         userId,
-        postType,
         postId,
       },
     });
@@ -100,15 +67,10 @@ export class ReactionService {
   async toggleReaction(
     createReactionDto: CreateReactionDto & { userId: string },
   ) {
-    const { postType, postId, type, userId } = createReactionDto;
-    const valid = await this.validatePost(postType, postId);
-    if (!valid) {
-      throw new BadRequestException('Invalid postId or postType');
-    }
+    const { postId, type, userId } = createReactionDto;
     const existed = await this.reactionRepository.findOne({
       where: {
         userId,
-        postType,
         postId,
       },
     });
@@ -127,13 +89,9 @@ export class ReactionService {
     return this.reactionRepository.save(existed);
   }
 
-  async findByPost(params: {
-    postType: PostType;
-    postId: string;
-    type?: ReactionType;
-  }) {
-    const { postType, postId, type } = params;
-    const where: any = { postType, postId };
+  async findByPost(params: { postId: string; type?: ReactionType }) {
+    const { postId, type } = params;
+    const where: any = { postId };
     if (type) where.type = type;
     const reactions = await this.reactionRepository.find({ where });
     // Tính summary
@@ -144,12 +102,8 @@ export class ReactionService {
     return { reactions, summary };
   }
 
-  async findByPosts(params: {
-    postType: PostType;
-    postIds: string[];
-    type?: ReactionType;
-  }) {
-    const { postType, postIds, type } = params;
-    return this.reactionRepository.getSummaryByPosts(postType, postIds, type);
+  async findByPosts(params: { postIds: string[]; type?: ReactionType }) {
+    const { postIds, type } = params;
+    return this.reactionRepository.getSummaryByPosts(postIds, type);
   }
 }

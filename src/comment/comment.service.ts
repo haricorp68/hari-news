@@ -71,7 +71,6 @@ export class CommentService {
     const childCount = await this.commentRepository.countAllDescendants(
       comment.id,
     );
-    console.log('DEBUG created_at:', comment.created_at); // Log giá trị created_at
     return {
       id: comment.id,
       postId: comment.postId,

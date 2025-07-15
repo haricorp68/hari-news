@@ -10,7 +10,6 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { PostType } from 'src/post/enums/post.enums';
 
 export type CommentMediaType = 'image' | 'video' | 'file';
 
