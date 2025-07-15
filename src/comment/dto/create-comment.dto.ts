@@ -1,4 +1,12 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, ValidateNested, IsArray } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+  IsArray,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { PostType } from 'src/post/enums/post.enums';
 
@@ -11,9 +19,6 @@ export class CommentMediaDto {
 }
 
 export class CreateCommentDto {
-  @IsEnum(PostType)
-  postType: PostType;
-
   @IsUUID()
   postId: string;
 

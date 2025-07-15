@@ -68,11 +68,12 @@ export class CommentService {
   }
 
   private async toResponseDto(comment: Comment): Promise<CommentResponseDto> {
-    const childCount = await this.commentRepository.countAllDescendants(comment.id);
+    const childCount = await this.commentRepository.countAllDescendants(
+      comment.id,
+    );
     return {
       id: comment.id,
       postId: comment.postId,
-      postType: comment.postType,
       content: comment.content,
       user: comment.user
         ? {
@@ -90,7 +91,11 @@ export class CommentService {
   }
 
   async findByPost(postId: string, page = 1, pageSize = 10) {
-    const [data, total] = await this.commentRepository.findParentCommentsByPost(postId, page, pageSize);
+    const [data, total] = await this.commentRepository.findParentCommentsByPost(
+      postId,
+      page,
+      pageSize,
+    );
     const dataWithCount = await Promise.all(
       data.map((c) => this.toResponseDto(c)),
     );

@@ -51,13 +51,13 @@ import { CategoryModule } from './category/category.module';
   imports: [
     ThrottlerModule.forRoot({
       throttlers: [
-        { name: 'short', limit: 5, ttl: seconds(10) },
+        { name: 'short', limit: 20, ttl: seconds(10) },
         {
           name: 'medium',
-          limit: 200,
+          limit: 2000,
           ttl: minutes(1),
         },
-        { name: 'long', limit: 2000, ttl: hours(1) },
+        { name: 'long', limit: 20000, ttl: hours(1) },
       ],
       errorMessage: 'Rate limiting actived!',
       storage: new ThrottlerStorageRedisService(),

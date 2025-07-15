@@ -10,7 +10,6 @@ export class CommentUserDto {
 export class CommentResponseDto {
   id: string;
   postId: string;
-  postType: PostType;
   content: string;
   user: CommentUserDto;
   parentId?: string;
@@ -18,4 +17,4 @@ export class CommentResponseDto {
   created_at: Date;
   updated_at: Date;
   childCount: number;
-} 
+}

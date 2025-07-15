@@ -24,9 +24,6 @@ export class Comment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: PostType })
-  postType: PostType;
-
   @Column({ type: 'uuid' })
   postId: string;
 
@@ -40,7 +37,10 @@ export class Comment {
   @Column()
   userId: string;
 
-  @ManyToOne(() => Comment, (comment) => comment.children, { nullable: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Comment, (comment) => comment.children, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'parentId' })
   parent: Comment;
 
