@@ -103,6 +103,13 @@ export class PostController {
     );
   }
 
+  // Public endpoint: lấy chi tiết post user feed theo id
+  @Get('user-feed/detail/:id')
+  @UseGuards(JwtAuthGuard)
+  getUserFeedPostDetail(@Param('id') id: string, @CurrentUser() user) {
+    return this.postService.getUserFeedPostDetail(id, user.userId);
+  }
+
   // Self management endpoints
   @UseGuards(JwtAuthGuard)
   @Put('self/user-news/:id')
@@ -133,10 +140,7 @@ export class PostController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('user-news/:userId/:id')
-  deleteUserNews(
-    @Param('userId') userId: string,
-    @Param('id') id: string,
-  ) {
+  deleteUserNews(@Param('userId') userId: string, @Param('id') id: string) {
     return this.postService.deleteUserNewsPost(userId, id);
   }
 }

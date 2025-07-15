@@ -151,7 +151,10 @@ export class PostService {
     const reactionSummaryMap = await this.reactionService.findByPosts({
       postIds,
     });
-    const userReactionMap = await this.reactionService.getUserReactionsForPosts(userId, postIds);
+    const userReactionMap = await this.reactionService.getUserReactionsForPosts(
+      userId,
+      postIds,
+    );
     // Lấy số lượng comment cho từng post
     const commentCounts = await Promise.all(
       postIds.map((id) => this.commentService.getCommentCountByPost(id)),
@@ -177,9 +180,9 @@ export class PostService {
     }));
   }
 
-  async getUserSelfFeedPostDetail(
-    userId: string,
+  async getUserFeedPostDetail(
     postId: string,
+    userId: string,
   ): Promise<UserFeedPostResponseDto | null> {
     const post = await this.userFeedPostRepo.getUserFeedPostDetail(
       userId,
@@ -189,21 +192,36 @@ export class PostService {
     const commentCount = await this.commentService.getCommentCountByPost(
       post.id,
     );
+    // Get reaction summary and user reaction for this post
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postIds: [post.id],
+    });
+    const userReactionMap = await this.reactionService.getUserReactionsForPosts(
+      userId,
+      [post.id],
+    );
+    const reactionSummary = reactionSummaryMap[post.id] || {};
+    const userReaction = userReactionMap[post.id] as ReactionType | undefined;
+
     return {
       id: post.id,
       caption: post.caption,
       created_at: post.created_at,
       updated_at: post.updated_at,
-      media: (post['media'] || []).map((m) => ({
-        url: m.url,
-        type: m.type,
-        order: m.order,
-      })),
+      media: (post['media'] || []).map(
+        (m: { url: string; type: string; order: number }) => ({
+          url: m.url,
+          type: m.type,
+          order: m.order,
+        }),
+      ),
       user: {
         name: post.user?.name,
         avatar: post.user?.avatar,
       },
       commentCount,
+      reactionSummary,
+      userReaction,
     };
   }
 
@@ -327,7 +345,11 @@ export class PostService {
     };
   }
 
-  async getUserSelfNewsPosts(userId: string, limit = 20, offset = 0): Promise<UserNewsPostListDto[]> {
+  async getUserSelfNewsPosts(
+    userId: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<UserNewsPostListDto[]> {
     const posts = await this.userNewsPostRepo.find({
       where: { user: { id: userId } },
       order: { created_at: 'DESC' },
@@ -336,7 +358,10 @@ export class PostService {
       relations: ['user', 'category'],
     });
     const postIds = posts.map((p) => p.id);
-    const userReactionMap = await this.reactionService.getUserReactionsForPosts(userId, postIds);
+    const userReactionMap = await this.reactionService.getUserReactionsForPosts(
+      userId,
+      postIds,
+    );
     return posts.map((post) => ({
       id: post.id,
       title: post.title,
@@ -362,7 +387,11 @@ export class PostService {
   }
 
   // Public endpoints for reading user news posts
-  async getUserNewsPosts(userId: string, limit = 20, offset = 0): Promise<UserNewsPostResponseDto[]> {
+  async getUserNewsPosts(
+    userId: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<UserNewsPostResponseDto[]> {
     const posts = await this.userNewsPostRepo.find({
       where: { user: { id: userId } },
       order: { created_at: 'DESC' },
@@ -376,7 +405,10 @@ export class PostService {
       post_id: In(postIds),
     });
     // Lấy reaction của user hiện tại
-    const userReactionMap = await this.reactionService.getUserReactionsForPosts(userId, postIds);
+    const userReactionMap = await this.reactionService.getUserReactionsForPosts(
+      userId,
+      postIds,
+    );
     return posts.map((post) => ({
       id: post.id,
       title: post.title,

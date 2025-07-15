@@ -20,4 +20,5 @@ export class UserFeedPostResponseDto {
   user: UserFeedPostUserResponseDto;
   userReaction?: ReactionType;
   commentCount: number;
+  reactionSummary: {};
 }
