@@ -85,8 +85,12 @@ export class ReactionService {
       return { deleted: true };
     }
     // Đã có khác loại -> cập nhật
-    existed.type = type;
-    return this.reactionRepository.save(existed);
+    if (typeof type !== 'undefined') {
+      existed.type = type;
+      return this.reactionRepository.save(existed);
+    }
+    // Nếu không truyền type, không làm gì
+    return existed;
   }
 
   async findByPost(params: { postId: string; type?: ReactionType }) {
@@ -105,5 +109,20 @@ export class ReactionService {
   async findByPosts(params: { postIds: string[]; type?: ReactionType }) {
     const { postIds, type } = params;
     return this.reactionRepository.getSummaryByPosts(postIds, type);
+  }
+
+  async getUserReactionsForPosts(userId: string, postIds: string[]) {
+    return this.reactionRepository.getUserReactionsForPosts(userId, postIds);
+  }
+
+  async removeUserReaction(userId: string, postId: string) {
+    const existed = await this.reactionRepository.findOne({
+      where: { userId, postId },
+    });
+    if (existed) {
+      await this.reactionRepository.remove(existed);
+      return { deleted: true };
+    }
+    return { deleted: false };
   }
 }

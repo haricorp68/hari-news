@@ -1,3 +1,5 @@
+import { ReactionType } from '../../reaction/entities/reaction.entity';
+
 export class UserFeedPostMediaResponseDto {
   url: string;
   type: string;
@@ -16,5 +18,6 @@ export class UserFeedPostResponseDto {
   updated_at: Date;
   media: UserFeedPostMediaResponseDto[];
   user: UserFeedPostUserResponseDto;
+  userReaction?: ReactionType;
   commentCount: number;
 }

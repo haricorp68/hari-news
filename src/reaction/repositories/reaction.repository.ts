@@ -20,4 +20,14 @@ export class ReactionRepository extends Repository<Reaction> {
     }
     return result; // { postId: { like: 2, love: 1, ... }, ... }
   }
+
+  async getUserReactionsForPosts(userId: string, postIds: string[]): Promise<Record<string, string>> {
+    if (!postIds.length) return {};
+    const reactions = await this.find({ where: { userId, postId: In(postIds) } });
+    const result: Record<string, string> = {};
+    for (const r of reactions) {
+      result[r.postId] = r.type;
+    }
+    return result;
+  }
 }

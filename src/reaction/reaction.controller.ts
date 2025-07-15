@@ -35,6 +35,12 @@ export class ReactionController {
     @CurrentUser() user,
     @Body() createReactionDto: CreateReactionDto,
   ) {
+    // Nếu không truyền type thì chỉ gỡ reaction nếu đã từng react
+    if (!createReactionDto.type) {
+      // Gọi service để gỡ reaction nếu có
+      return await this.reactionService.removeUserReaction(user.userId, createReactionDto.postId);
+    }
+    // Nếu có type thì giữ logic cũ
     return await this.reactionService.toggleReaction({
       ...createReactionDto,
       userId: user.userId,

@@ -32,6 +32,7 @@ import {
   UserNewsPostListDto,
   PostBlockDto,
 } from './dto/user-news-post-response.dto';
+import { ReactionType } from '../reaction/entities/reaction.entity';
 
 @Injectable()
 export class PostService {
@@ -139,40 +140,6 @@ export class PostService {
     return { id: post.id, type: 'user_news' };
   }
 
-  async getUserSelfFeedPosts(userId: string, limit = 20, offset = 0) {
-    const posts = await this.userFeedPostRepo.getUserFeedPosts(
-      userId,
-      limit,
-      offset,
-    );
-    const postIds = posts.map((p) => p.id);
-    const reactionSummaryMap = await this.reactionService.findByPosts({
-      postIds,
-    });
-    // Lấy số lượng comment cho từng post
-    const commentCounts = await Promise.all(
-      postIds.map((id) => this.commentService.getCommentCountByPost(id)),
-    );
-    return posts.map((post, idx) => ({
-      id: post.id,
-      caption: post.caption,
-      created_at: post.created_at,
-      updated_at: post.updated_at,
-      media: (post['media'] || []).map((m) => ({
-        url: m.url,
-        type: m.type,
-        order: m.order,
-      })),
-      user: {
-        name: post.user?.name,
-        avatar: post.user?.avatar,
-        id: post.user.id,
-      },
-      reactionSummary: reactionSummaryMap[post.id] || {},
-      commentCount: commentCounts[idx],
-    }));
-  }
-
   // Public endpoint for reading user feed posts by userId
   async getUserFeedPosts(userId: string, limit = 20, offset = 0) {
     const posts = await this.userFeedPostRepo.getUserFeedPosts(
@@ -184,6 +151,7 @@ export class PostService {
     const reactionSummaryMap = await this.reactionService.findByPosts({
       postIds,
     });
+    const userReactionMap = await this.reactionService.getUserReactionsForPosts(userId, postIds);
     // Lấy số lượng comment cho từng post
     const commentCounts = await Promise.all(
       postIds.map((id) => this.commentService.getCommentCountByPost(id)),
@@ -204,6 +172,7 @@ export class PostService {
         id: post.user.id,
       },
       reactionSummary: reactionSummaryMap[post.id] || {},
+      userReaction: userReactionMap[post.id] as ReactionType | undefined,
       commentCount: commentCounts[idx],
     }));
   }
@@ -358,11 +327,7 @@ export class PostService {
     };
   }
 
-  async getUserSelfNewsPosts(
-    userId: string,
-    limit = 20,
-    offset = 0,
-  ): Promise<UserNewsPostListDto[]> {
+  async getUserSelfNewsPosts(userId: string, limit = 20, offset = 0): Promise<UserNewsPostListDto[]> {
     const posts = await this.userNewsPostRepo.find({
       where: { user: { id: userId } },
       order: { created_at: 'DESC' },
@@ -370,6 +335,8 @@ export class PostService {
       take: limit,
       relations: ['user', 'category'],
     });
+    const postIds = posts.map((p) => p.id);
+    const userReactionMap = await this.reactionService.getUserReactionsForPosts(userId, postIds);
     return posts.map((post) => ({
       id: post.id,
       title: post.title,
@@ -390,15 +357,12 @@ export class PostService {
         name: post.user.name,
         avatar: post.user.avatar,
       },
+      userReaction: userReactionMap[post.id] as ReactionType | undefined,
     }));
   }
 
   // Public endpoints for reading user news posts
-  async getUserNewsPosts(
-    userId: string,
-    limit = 20,
-    offset = 0,
-  ): Promise<UserNewsPostResponseDto[]> {
+  async getUserNewsPosts(userId: string, limit = 20, offset = 0): Promise<UserNewsPostResponseDto[]> {
     const posts = await this.userNewsPostRepo.find({
       where: { user: { id: userId } },
       order: { created_at: 'DESC' },
@@ -411,6 +375,8 @@ export class PostService {
       post_type: 'user_news',
       post_id: In(postIds),
     });
+    // Lấy reaction của user hiện tại
+    const userReactionMap = await this.reactionService.getUserReactionsForPosts(userId, postIds);
     return posts.map((post) => ({
       id: post.id,
       title: post.title,
@@ -431,6 +397,7 @@ export class PostService {
         name: post.user.name,
         avatar: post.user.avatar,
       },
+      userReaction: userReactionMap[post.id] as ReactionType | undefined,
       blocks: allBlocks
         .filter((b) => b.post_id === post.id)
         .map(

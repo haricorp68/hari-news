@@ -54,7 +54,7 @@ export class PostController {
     @Query('limit') limit = 20,
     @Query('offset') offset = 0,
   ) {
-    return this.postService.getUserSelfFeedPosts(
+    return this.postService.getUserFeedPosts(
       user.userId,
       Number(limit),
       Number(offset),

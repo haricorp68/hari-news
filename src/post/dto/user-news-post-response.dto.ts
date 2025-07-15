@@ -1,3 +1,5 @@
+import { ReactionType } from '../../reaction/entities/reaction.entity';
+
 export interface PostBlockDto {
   id: string;
   type: 'text' | 'image' | 'video' | 'file';
@@ -46,6 +48,7 @@ export class UserNewsPostResponseDto {
     name?: string;
     avatar?: string;
   };
+  userReaction?: ReactionType;
   blocks?: PostBlockDto[];
   // News posts only use blocks, not media
 } 
