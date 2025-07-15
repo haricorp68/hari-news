@@ -24,12 +24,12 @@ export class TransformInterceptor<T> implements NestInterceptor<T, any> {
           (request.method === 'GET'
             ? 'Data retrieved successfully'
             : request.method === 'POST'
-            ? 'Data created successfully'
-            : request.method === 'PATCH'
-            ? 'Data updated successfully'
-            : request.method === 'DELETE'
-            ? 'Data deleted successfully'
-            : 'Request successful');
+              ? 'Data created successfully'
+              : request.method === 'PATCH'
+                ? 'Data updated successfully'
+                : request.method === 'DELETE'
+                  ? 'Data deleted successfully'
+                  : 'Request successful');
 
         // Nếu object đã có data và metadata, giữ nguyên không lồng thêm
         if (
@@ -44,7 +44,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, any> {
             message: result.message || message,
             data: result.data,
             metadata: result.metadata,
-            timestamp: new Date().toISOString(),
+            timestamp: new Date(),
           };
         }
 
@@ -58,10 +58,20 @@ export class TransformInterceptor<T> implements NestInterceptor<T, any> {
           const { message: msg, ...rest } = result;
           message = msg;
           data = rest;
-        } else if (result && typeof result === 'object' && 'data' in result && 'message' in result) {
+        } else if (
+          result &&
+          typeof result === 'object' &&
+          'data' in result &&
+          'message' in result
+        ) {
           data = result.data;
           message = result.message;
-        } else if (result && typeof result === 'object' && 'message' in result && Object.keys(result).length === 1) {
+        } else if (
+          result &&
+          typeof result === 'object' &&
+          'message' in result &&
+          Object.keys(result).length === 1
+        ) {
           data = undefined;
           message = result.message;
         } else {
@@ -78,9 +88,9 @@ export class TransformInterceptor<T> implements NestInterceptor<T, any> {
           message,
           data: data !== undefined ? data : null,
           metadata,
-          timestamp: new Date().toISOString(),
+          timestamp: new Date(),
         };
       }),
     );
   }
-} 
+}
