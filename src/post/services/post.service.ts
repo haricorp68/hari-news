@@ -3,36 +3,36 @@ import { Inject } from '@nestjs/common';
 import {
   CreateUserFeedPostDto,
   CreateUserFeedPostMediaDto,
-} from './dto/create-user-feed-post.dto';
+} from './../dto/create-user-feed-post.dto';
 import {
   CreateCommunityFeedPostDto,
   CreateCommunityFeedPostMediaDto,
-} from './dto/create-community-feed-post.dto';
+} from './../dto/create-community-feed-post.dto';
 import {
   CreateCompanyFeedPostDto,
   CreateCompanyFeedPostMediaDto,
-} from './dto/create-company-feed-post.dto';
-import { UserFeedPostRepository } from './repositories/user_feed_post.repository';
-import { CommunityFeedPostRepository } from './repositories/community_feed_post.repository';
-import { CompanyFeedPostRepository } from './repositories/company_feed_post.repository';
-import { PostMediaRepository } from './repositories/post_media.repository';
-import { MediaType, BlockType } from './enums/post.enums';
-import { UserFeedPostResponseDto } from './dto/user-feed-post-response.dto';
-import { CommunityFeedPostResponseDto } from './dto/community-feed-post-response.dto';
-import { CompanyFeedPostResponseDto } from './dto/company-feed-post-response.dto';
+} from './../dto/create-company-feed-post.dto';
+import { UserFeedPostRepository } from './../repositories/user_feed_post.repository';
+import { CommunityFeedPostRepository } from './../repositories/community_feed_post.repository';
+import { CompanyFeedPostRepository } from './../repositories/company_feed_post.repository';
+import { PostMediaRepository } from './../repositories/post_media.repository';
+import { MediaType, BlockType } from './../enums/post.enums';
+import { UserFeedPostResponseDto } from './../dto/user-feed-post-response.dto';
+import { CommunityFeedPostResponseDto } from './../dto/community-feed-post-response.dto';
+import { CompanyFeedPostResponseDto } from './../dto/company-feed-post-response.dto';
 import { In } from 'typeorm';
-import { ReactionService } from '../reaction/reaction.service';
-import { CommentService } from '../comment/comment.service';
-import { UserNewsPostRepository } from './repositories/user_news_post.repository';
-import { PostBlockRepository } from './repositories/post_block.repository';
-import { CreateUserNewsPostDto } from './dto/create-user-news-post.dto';
-import { UpdateUserNewsPostDto } from './dto/update-user-news-post.dto';
+import { ReactionService } from '../../reaction/reaction.service';
+import { CommentService } from '../../comment/comment.service';
+import { UserNewsPostRepository } from './../repositories/user_news_post.repository';
+import { PostBlockRepository } from './../repositories/post_block.repository';
+import { CreateUserNewsPostDto } from './../dto/create-user-news-post.dto';
+import { UpdateUserNewsPostDto } from './../dto/update-user-news-post.dto';
 import {
   UserNewsPostResponseDto,
   UserNewsPostListDto,
   PostBlockDto,
-} from './dto/user-news-post-response.dto';
-import { ReactionType } from '../reaction/entities/reaction.entity';
+} from './../dto/user-news-post-response.dto';
+import { ReactionType } from '../../reaction/entities/reaction.entity';
 
 @Injectable()
 export class PostService {
@@ -362,12 +362,17 @@ export class PostService {
       userId,
       postIds,
     );
-    return posts.map((post) => ({
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postIds,
+    });
+    const commentCounts = await Promise.all(
+      postIds.map((id) => this.commentService.getCommentCountByPost(id)),
+    );
+    return posts.map((post, idx) => ({
       id: post.id,
       title: post.title,
       summary: post.summary,
       cover_image: post.cover_image,
-      categoryId: post.categoryId,
       category: post.category
         ? {
             id: post.category.id,
@@ -383,15 +388,18 @@ export class PostService {
         avatar: post.user.avatar,
       },
       userReaction: userReactionMap[post.id] as ReactionType | undefined,
+      reactionSummary: reactionSummaryMap[post.id] || {},
+      commentCount: commentCounts[idx],
     }));
   }
 
   // Public endpoints for reading user news posts
   async getUserNewsPosts(
     userId: string,
+    currentUserId?: string,
     limit = 20,
     offset = 0,
-  ): Promise<UserNewsPostResponseDto[]> {
+  ): Promise<UserNewsPostListDto[]> {
     const posts = await this.userNewsPostRepo.find({
       where: { user: { id: userId } },
       order: { created_at: 'DESC' },
@@ -400,16 +408,70 @@ export class PostService {
       relations: ['user', 'category'],
     });
     const postIds = posts.map((p) => p.id);
-    const allBlocks = await this.postBlockRepo.findBy({
-      post_type: 'user_news',
-      post_id: In(postIds),
-    });
-    // Lấy reaction của user hiện tại
-    const userReactionMap = await this.reactionService.getUserReactionsForPosts(
-      userId,
+    const userReactionMap = currentUserId
+      ? await this.reactionService.getUserReactionsForPosts(
+          currentUserId,
+          postIds,
+        )
+      : {};
+    const reactionSummaryMap = await this.reactionService.findByPosts({
       postIds,
+    });
+    const commentCounts = await Promise.all(
+      postIds.map((id) => this.commentService.getCommentCountByPost(id)),
     );
-    return posts.map((post) => ({
+    return posts.map((post, idx) => ({
+      id: post.id,
+      title: post.title,
+      summary: post.summary,
+      cover_image: post.cover_image,
+      category: post.category
+        ? {
+            id: post.category.id,
+            name: post.category.name,
+            description: post.category.description,
+          }
+        : undefined,
+      created_at: post.created_at,
+      updated_at: post.updated_at,
+      user: {
+        id: post.user.id,
+        name: post.user.name,
+        avatar: post.user.avatar,
+      },
+      userReaction: userReactionMap[post.id] as ReactionType | undefined,
+      reactionSummary: reactionSummaryMap[post.id] || {},
+      commentCount: commentCounts[idx],
+    }));
+  }
+
+  async getUserNewsSummary(
+    userId: string,
+    currentUserId?: string,
+    limit = 20,
+    offset = 0,
+  ) {
+    const posts = await this.userNewsPostRepo.find({
+      where: { user: { id: userId } },
+      order: { created_at: 'DESC' },
+      skip: offset,
+      take: limit,
+      relations: ['user', 'category'],
+    });
+    const postIds = posts.map((p) => p.id);
+    const userReactionMap = currentUserId
+      ? await this.reactionService.getUserReactionsForPosts(
+          currentUserId,
+          postIds,
+        )
+      : {};
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postIds,
+    });
+    const commentCounts = await Promise.all(
+      postIds.map((id) => this.commentService.getCommentCountByPost(id)),
+    );
+    return posts.map((post, idx) => ({
       id: post.id,
       title: post.title,
       summary: post.summary,
@@ -430,20 +492,64 @@ export class PostService {
         avatar: post.user.avatar,
       },
       userReaction: userReactionMap[post.id] as ReactionType | undefined,
-      blocks: allBlocks
-        .filter((b) => b.post_id === post.id)
-        .map(
-          (block): PostBlockDto => ({
-            id: block.id,
-            type: block.type,
-            content: block.content,
-            media_url: block.media_url,
-            file_name: block.file_name,
-            file_size: block.file_size,
-            order: block.order,
-          }),
-        ),
+      reactionSummary: reactionSummaryMap[post.id] || {},
+      commentCount: commentCounts[idx],
     }));
+  }
+
+  async getUserNewsPostDetailById(postId: string, userId?: string) {
+    const post = await this.userNewsPostRepo.findOne({
+      where: { id: postId },
+      relations: ['user', 'category'],
+    });
+    if (!post) return null;
+    const blocks = await this.postBlockRepo.findBy({
+      post_type: 'user_news',
+      post_id: postId,
+    });
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postIds: [postId],
+    });
+    const commentCount =
+      await this.commentService.getCommentCountByPost(postId);
+    let userReaction: ReactionType | undefined = undefined;
+    if (userId) {
+      const userReactionMap =
+        await this.reactionService.getUserReactionsForPosts(userId, [postId]);
+      userReaction = userReactionMap[postId] as ReactionType | undefined;
+    }
+    return {
+      id: post.id,
+      title: post.title,
+      summary: post.summary,
+      cover_image: post.cover_image,
+      category: post.category
+        ? {
+            id: post.category.id,
+            name: post.category.name,
+            description: post.category.description,
+          }
+        : undefined,
+      created_at: post.created_at,
+      updated_at: post.updated_at,
+      user: {
+        id: post.user.id,
+        name: post.user.name,
+        avatar: post.user.avatar,
+      },
+      blocks: blocks.map((block) => ({
+        id: block.id,
+        type: block.type,
+        content: block.content,
+        media_url: block.media_url,
+        file_name: block.file_name,
+        file_size: block.file_size,
+        order: block.order,
+      })),
+      reactionSummary: reactionSummaryMap[postId] || {},
+      userReaction,
+      commentCount,
+    };
   }
 
   // Update and delete methods

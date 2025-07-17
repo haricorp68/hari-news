@@ -5,6 +5,9 @@ export enum BlockType {
   IMAGE = 'image',
   VIDEO = 'video',
   FILE = 'file',
+  HEADING_1 = 'heading_1', // Heading cấp 1
+  HEADING_2 = 'heading_2', // Heading cấp 2
+  HEADING_3 = 'heading_3', // Heading cấp 3
 }
 
 @Entity()

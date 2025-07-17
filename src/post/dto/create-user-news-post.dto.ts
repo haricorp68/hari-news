@@ -6,10 +6,11 @@ import {
   IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { BlockType } from '../enums/post.enums';
 
 export class CreateUserNewsPostBlockDto {
   @IsString()
-  type: 'text' | 'image' | 'video' | 'file';
+  type: BlockType;
 
   @IsOptional()
   @IsString()
@@ -26,17 +27,6 @@ export class CreateUserNewsPostBlockDto {
   @IsOptional()
   @IsNumber()
   file_size?: number;
-
-  @IsNumber()
-  order: number;
-}
-
-export class CreateUserNewsPostMediaDto {
-  @IsString()
-  url: string;
-
-  @IsString()
-  type: 'image' | 'video';
 
   @IsNumber()
   order: number;

@@ -46,6 +46,7 @@ import { FollowModule } from './follow/follow.module';
 import { Follow } from './follow/entities/follow.entity';
 import { Category } from './category/entities/category.entity';
 import { CategoryModule } from './category/category.module';
+import { NewsTag } from './post/entities/news_tag.entity';
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { CategoryModule } from './category/category.module';
         UserNewsPost,
         Follow,
         Category,
+        NewsTag,
       ],
       synchronize: true,
     }),
