@@ -41,7 +41,7 @@ export class PostService {
     private readonly communityFeedPostRepo: CommunityFeedPostRepository,
     private readonly companyFeedPostRepo: CompanyFeedPostRepository,
     private readonly postMediaRepo: PostMediaRepository,
-    private readonly reactionService: ReactionService, // inject service thay vì repo
+    private readonly reactionService: ReactionService,
     private readonly commentService: CommentService,
     private readonly userNewsPostRepo: UserNewsPostRepository,
     private readonly postBlockRepo: PostBlockRepository,

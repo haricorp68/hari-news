@@ -1,0 +1,1442 @@
+{
+  "id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+  "title": "Cách mạng công nghệ AI: Tác động và thách thức trong đời sống hiện đại",
+  "summary": "Trí tuệ nhân tạo (AI) đang thay đổi mạnh mẽ mọi lĩnh vực từ kinh tế, giáo dục, y tế đến giải trí. Bài viết phân tích sâu các tác động tích cực, tiêu cực và những thách thức đặt ra cho xã hội hiện đại.",
+  "cover_image": "https://i1-kinhdoanh.vnecdn.net/2025/07/17/o-ng-tra-n-vie-t-ha-pho-tru-o-1934-1903-1752743034.jpg?w=0&h=0&q=100&dpr=2&fit=crop&s=p6kGwpM9GbtSPcrMyWgAig",
+  "category": {
+    "id": "44d8288d-1097-4fcd-9961-d9f0db720457",
+    "name": "Công nghệ",
+    "description": "Tin tức công nghệ mới nhất"
+  },
+  "created_at": "2025-07-16T17:00:54.986Z",
+  "updated_at": "2025-07-16T17:00:54.986Z",
+  "user": {
+    "id": "d14dc9a1-8209-4fcc-bfa0-5495c2b3d347",
+    "name": "Nguyễn Văn Công",
+    "avatar": "https://randomuser.me/api/portraits/men/32.jpg"
+  },
+  "blocks": [
+    {
+      "id": "block-1",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_1",
+      "content": "AI - Xu hướng tất yếu của thời đại",
+      "order": 1
+    },
+    {
+      "id": "block-2",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Trong những năm gần đây, AI đã trở thành từ khóa nóng trên toàn cầu. Từ các tập đoàn công nghệ lớn đến các startup nhỏ, tất cả đều đầu tư mạnh mẽ vào AI nhằm tối ưu hóa quy trình, nâng cao hiệu quả và tạo ra các sản phẩm, dịch vụ mới.",
+      "order": 2
+    },
+    {
+      "id": "block-3",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "image",
+      "media_url": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80",
+      "content": "AI trong sản xuất công nghiệp",
+      "order": 3
+    },
+    {
+      "id": "block-4",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Ứng dụng trong công nghiệp",
+      "order": 4
+    },
+    {
+      "id": "block-5",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tự động hóa dây chuyền sản xuất",
+      "order": 5
+    },
+    {
+      "id": "block-6",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI giúp tối ưu hóa dây chuyền sản xuất, giảm thiểu lỗi và tăng năng suất.",
+      "order": 6
+    },
+    {
+      "id": "block-7",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Bảo trì dự đoán",
+      "order": 7
+    },
+    {
+      "id": "block-8",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Sử dụng AI để dự đoán hỏng hóc máy móc trước khi chúng xảy ra, tiết kiệm chi phí bảo trì.",
+      "order": 8
+    },
+    {
+      "id": "block-9",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Quản lý chuỗi cung ứng",
+      "order": 9
+    },
+    {
+      "id": "block-10",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tối ưu hóa quy trình chuỗi cung ứng, từ dự báo nhu cầu đến phân phối sản phẩm.",
+      "order": 10
+    },
+    {
+      "id": "block-11",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Kiểm soát chất lượng",
+      "order": 11
+    },
+    {
+      "id": "block-12",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI sử dụng thị giác máy tính để kiểm tra chất lượng sản phẩm với độ chính xác cao.",
+      "order": 12
+    },
+    {
+      "id": "block-13",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tích hợp robot thông minh",
+      "order": 13
+    },
+    {
+      "id": "block-14",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Robot thông minh được điều khiển bởi AI thực hiện các nhiệm vụ phức tạp trong nhà máy.",
+      "order": 14
+    },
+    {
+      "id": "block-15",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "AI trong y tế",
+      "order": 15
+    },
+    {
+      "id": "block-16",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Chẩn đoán bệnh",
+      "order": 16
+    },
+    {
+      "id": "block-17",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI hỗ trợ bác sĩ chẩn đoán bệnh nhanh chóng và chính xác hơn thông qua phân tích hình ảnh y khoa.",
+      "order": 17
+    },
+    {
+      "id": "block-18",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Cá nhân hóa điều trị",
+      "order": 18
+    },
+    {
+      "id": "block-19",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI phân tích dữ liệu bệnh nhân để đề xuất phác đồ điều trị phù hợp nhất.",
+      "order": 19
+    },
+    {
+      "id": "block-20",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Nghiên cứu dược phẩm",
+      "order": 20
+    },
+    {
+      "id": "block-21",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tăng tốc quá trình phát triển thuốc mới bằng cách dự đoán tương tác hóa học.",
+      "order": 21
+    },
+    {
+      "id": "block-22",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Theo dõi sức khỏe",
+      "order": 22
+    },
+    {
+      "id": "block-23",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Các thiết bị đeo thông minh sử dụng AI để theo dõi sức khỏe người dùng theo thời gian thực.",
+      "order": 23
+    },
+    {
+      "id": "block-24",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phẫu thuật hỗ trợ AI",
+      "order": 24
+    },
+    {
+      "id": "block-25",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Robot phẫu thuật sử dụng AI để thực hiện các ca phẫu thuật với độ chính xác cao.",
+      "order": 25
+    },
+    {
+      "id": "block-26",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "AI trong giáo dục",
+      "order": 26
+    },
+    {
+      "id": "block-27",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Học tập cá nhân hóa",
+      "order": 27
+    },
+    {
+      "id": "block-28",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tạo ra các lộ trình học tập phù hợp với năng lực và tốc độ học của từng học sinh.",
+      "order": 28
+    },
+    {
+      "id": "block-29",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Trợ lý giảng dạy ảo",
+      "order": 29
+    },
+    {
+      "id": "block-30",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI hỗ trợ giáo viên bằng cách cung cấp tài liệu giảng dạy và trả lời câu hỏi học sinh.",
+      "order": 30
+    },
+    {
+      "id": "block-31",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Đánh giá tự động",
+      "order": 31
+    },
+    {
+      "id": "block-32",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI chấm điểm bài kiểm tra và cung cấp phản hồi chi tiết cho học sinh.",
+      "order": 32
+    },
+    {
+      "id": "block-33",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Học trực tuyến",
+      "order": 33
+    },
+    {
+      "id": "block-34",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Nền tảng học trực tuyến sử dụng AI để tối ưu hóa trải nghiệm học tập.",
+      "order": 34
+    },
+    {
+      "id": "block-35",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phát triển kỹ năng mềm",
+      "order": 35
+    },
+    {
+      "id": "block-36",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI cung cấp các bài tập thực hành để cải thiện kỹ năng giao tiếp và tư duy sáng tạo.",
+      "order": 36
+    },
+    {
+      "id": "block-37",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "AI trong giải trí",
+      "order": 37
+    },
+    {
+      "id": "block-38",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Đề xuất nội dung",
+      "order": 38
+    },
+    {
+      "id": "block-39",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI gợi ý phim, nhạc và trò chơi dựa trên sở thích cá nhân của người dùng.",
+      "order": 39
+    },
+    {
+      "id": "block-40",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Sáng tạo nội dung",
+      "order": 40
+    },
+    {
+      "id": "block-41",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI hỗ trợ tạo video, âm nhạc và hình ảnh nghệ thuật một cách nhanh chóng.",
+      "order": 41
+    },
+    {
+      "id": "block-42",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Trò chơi điện tử",
+      "order": 42
+    },
+    {
+      "id": "block-43",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tạo ra các nhân vật và kịch bản trò chơi thông minh, tăng tính tương tác.",
+      "order": 43
+    },
+    {
+      "id": "block-44",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Thực tế ảo (VR)",
+      "order": 44
+    },
+    {
+      "id": "block-45",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI cải thiện trải nghiệm VR bằng cách tạo môi trường thực tế hơn.",
+      "order": 45
+    },
+    {
+      "id": "block-46",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Sản xuất phim",
+      "order": 46
+    },
+    {
+      "id": "block-47",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI hỗ trợ biên tập và hiệu ứng đặc biệt trong sản xuất phim.",
+      "order": 47
+    },
+    {
+      "id": "block-48",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "AI trong giao thông",
+      "order": 48
+    },
+    {
+      "id": "block-49",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Xe tự lái",
+      "order": 49
+    },
+    {
+      "id": "block-50",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI điều khiển xe tự lái, giảm thiểu tai nạn giao thông và tối ưu hóa lộ trình.",
+      "order": 50
+    },
+    {
+      "id": "block-51",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Quản lý giao thông",
+      "order": 51
+    },
+    {
+      "id": "block-52",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI điều chỉnh tín hiệu giao thông để giảm ùn tắc và tiết kiệm thời gian.",
+      "order": 52
+    },
+    {
+      "id": "block-53",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Dự báo lưu lượng",
+      "order": 53
+    },
+    {
+      "id": "block-54",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI dự đoán lưu lượng giao thông để hỗ trợ quy hoạch đô thị.",
+      "order": 54
+    },
+    {
+      "id": "block-55",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "An toàn giao thông",
+      "order": 55
+    },
+    {
+      "id": "block-56",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI phát hiện hành vi nguy hiểm trên đường và cảnh báo kịp thời.",
+      "order": 56
+    },
+    {
+      "id": "block-57",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Vận tải công cộng",
+      "order": 57
+    },
+    {
+      "id": "block-58",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tối ưu hóa lịch trình và lộ trình của các phương tiện công cộng.",
+      "order": 58
+    },
+    {
+      "id": "block-59",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_1",
+      "content": "Tác động tích cực của AI",
+      "order": 59
+    },
+    {
+      "id": "block-60",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI giúp tự động hóa nhiều công việc lặp đi lặp lại, giảm chi phí nhân công và tăng năng suất. Trong y tế, AI hỗ trợ chẩn đoán bệnh nhanh chóng, chính xác hơn. Trong giáo dục, AI cá nhân hóa lộ trình học tập cho từng học sinh.",
+      "order": 60
+    },
+    {
+      "id": "block-61",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "image",
+      "media_url": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80",
+      "content": "AI trong y tế hiện đại",
+      "order": 61
+    },
+    {
+      "id": "block-62",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Tăng năng suất lao động",
+      "order": 62
+    },
+    {
+      "id": "block-63",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tự động hóa quy trình",
+      "order": 63
+    },
+    {
+      "id": "block-64",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI loại bỏ các công việc thủ công, giúp nhân viên tập trung vào công việc sáng tạo.",
+      "order": 64
+    },
+    {
+      "id": "block-65",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phân tích dữ liệu",
+      "order": 65
+    },
+    {
+      "id": "block-66",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI xử lý lượng lớn dữ liệu nhanh chóng, cung cấp thông tin chi tiết cho doanh nghiệp.",
+      "order": 66
+    },
+    {
+      "id": "block-67",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Cải thiện dịch vụ khách hàng",
+      "order": 67
+    },
+    {
+      "id": "block-68",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Chatbot AI cung cấp hỗ trợ khách hàng 24/7 với phản hồi nhanh chóng.",
+      "order": 68
+    },
+    {
+      "id": "block-69",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tối ưu hóa tài nguyên",
+      "order": 69
+    },
+    {
+      "id": "block-70",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI giúp doanh nghiệp sử dụng tài nguyên hiệu quả hơn, giảm lãng phí.",
+      "order": 70
+    },
+    {
+      "id": "block-71",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Hỗ trợ ra quyết định",
+      "order": 71
+    },
+    {
+      "id": "block-72",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI cung cấp các đề xuất dựa trên dữ liệu để hỗ trợ ra quyết định chiến lược.",
+      "order": 72
+    },
+    {
+      "id": "block-73",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Cải thiện chất lượng cuộc sống",
+      "order": 73
+    },
+    {
+      "id": "block-74",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Trợ lý ảo thông minh",
+      "order": 74
+    },
+    {
+      "id": "block-75",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Trợ lý ảo như Siri hay Google Assistant giúp quản lý công việc hàng ngày.",
+      "order": 75
+    },
+    {
+      "id": "block-76",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Nhà thông minh",
+      "order": 76
+    },
+    {
+      "id": "block-77",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI điều khiển các thiết bị trong nhà thông minh, tăng sự tiện nghi.",
+      "order": 77
+    },
+    {
+      "id": "block-78",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Y tế cá nhân hóa",
+      "order": 78
+    },
+    {
+      "id": "block-79",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI cung cấp các giải pháp y tế phù hợp với từng cá nhân.",
+      "order": 79
+    },
+    {
+      "id": "block-80",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Giải trí cá nhân hóa",
+      "order": 80
+    },
+    {
+      "id": "block-81",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI đề xuất nội dung giải trí phù hợp với sở thích cá nhân.",
+      "order": 81
+    },
+    {
+      "id": "block-82",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tiết kiệm thời gian",
+      "order": 82
+    },
+    {
+      "id": "block-83",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tự động hóa các công việc hàng ngày, giúp tiết kiệm thời gian cho người dùng.",
+      "order": 83
+    },
+    {
+      "id": "block-84",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Tăng cường an ninh",
+      "order": 84
+    },
+    {
+      "id": "block-85",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Nhận diện khuôn mặt",
+      "order": 85
+    },
+    {
+      "id": "block-86",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI sử dụng nhận diện khuôn mặt để tăng cường an ninh tại các khu vực công cộng.",
+      "order": 86
+    },
+    {
+      "id": "block-87",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phát hiện gian lận",
+      "order": 87
+    },
+    {
+      "id": "block-88",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI phân tích dữ liệu để phát hiện các hoạt động gian lận trong tài chính và thương mại điện tử.",
+      "order": 88
+    },
+    {
+      "id": "block-89",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Giám sát an ninh",
+      "order": 89
+    },
+    {
+      "id": "block-90",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI giám sát camera an ninh và phát hiện hành vi bất thường.",
+      "order": 90
+    },
+    {
+      "id": "block-91",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "An ninh mạng",
+      "order": 91
+    },
+    {
+      "id": "block-92",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI phát hiện và ngăn chặn các cuộc tấn công mạng trong thời gian thực.",
+      "order": 92
+    },
+    {
+      "id": "block-93",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phân tích rủi ro",
+      "order": 93
+    },
+    {
+      "id": "block-94",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI đánh giá rủi ro an ninh và đề xuất biện pháp phòng ngừa.",
+      "order": 94
+    },
+    {
+      "id": "block-95",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Hỗ trợ nghiên cứu khoa học",
+      "order": 95
+    },
+    {
+      "id": "block-96",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phân tích dữ liệu lớn",
+      "order": 96
+    },
+    {
+      "id": "block-97",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI xử lý và phân tích dữ liệu khoa học lớn để tìm ra các xu hướng mới.",
+      "order": 97
+    },
+    {
+      "id": "block-98",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Mô phỏng khoa học",
+      "order": 98
+    },
+    {
+      "id": "block-99",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI mô phỏng các hiện tượng khoa học để hỗ trợ nghiên cứu.",
+      "order": 99
+    },
+    {
+      "id": "block-100",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Dự đoán khí hậu",
+      "order": 100
+    },
+    {
+      "id": "block-101",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI dự báo biến đổi khí hậu và hỗ trợ các giải pháp bảo vệ môi trường.",
+      "order": 101
+    },
+    {
+      "id": "block-102",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Nghiên cứu vũ trụ",
+      "order": 102
+    },
+    {
+      "id": "block-103",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI phân tích dữ liệu từ kính thiên văn để khám phá vũ trụ.",
+      "order": 103
+    },
+    {
+      "id": "block-104",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Hỗ trợ nghiên cứu sinh học",
+      "order": 104
+    },
+    {
+      "id": "block-105",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI phân tích cấu trúc ADN để hỗ trợ nghiên cứu sinh học phân tử.",
+      "order": 105
+    },
+    {
+      "id": "block-106",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_1",
+      "content": "Những thách thức và mặt trái của AI",
+      "order": 106
+    },
+    {
+      "id": "block-107",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Bên cạnh lợi ích, AI cũng đặt ra nhiều thách thức: nguy cơ mất việc làm do tự động hóa, vấn đề đạo đức khi AI ra quyết định thay con người, nguy cơ bị lạm dụng trong deepfake, tấn công mạng...",
+      "order": 107
+    },
+    {
+      "id": "block-108",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "image",
+      "media_url": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+      "content": "Deepfake - mặt trái của AI",
+      "order": 108
+    },
+    {
+      "id": "block-109",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Mất việc làm do tự động hóa",
+      "order": 109
+    },
+    {
+      "id": "block-110",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Công việc thủ công",
+      "order": 110
+    },
+    {
+      "id": "block-111",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI thay thế nhiều công việc thủ công trong các ngành công nghiệp.",
+      "order": 111
+    },
+    {
+      "id": "block-112",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Dịch vụ khách hàng",
+      "order": 112
+    },
+    {
+      "id": "block-113",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Chatbot AI thay thế nhân viên chăm sóc khách hàng trong nhiều lĩnh vực.",
+      "order": 113
+    },
+    {
+      "id": "block-114",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Vận tải",
+      "order": 114
+    },
+    {
+      "id": "block-115",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Xe tự lái có thể thay thế tài xế trong tương lai.",
+      "order": 115
+    },
+    {
+      "id": "block-116",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Sản xuất nội dung",
+      "order": 116
+    },
+    {
+      "id": "block-117",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tạo nội dung tự động, ảnh hưởng đến các ngành nghề sáng tạo.",
+      "order": 117
+    },
+    {
+      "id": "block-118",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phân tích tài chính",
+      "order": 118
+    },
+    {
+      "id": "block-119",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI thay thế một phần công việc phân tích tài chính và dự báo thị trường.",
+      "order": 119
+    },
+    {
+      "id": "block-120",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Vấn đề đạo đức",
+      "order": 120
+    },
+    {
+      "id": "block-121",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Quyết định tự động",
+      "order": 121
+    },
+    {
+      "id": "block-122",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI ra quyết định thay con người đặt ra câu hỏi về trách nhiệm pháp lý.",
+      "order": 122
+    },
+    {
+      "id": "block-123",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Thiên vị trong AI",
+      "order": 123
+    },
+    {
+      "id": "block-124",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Dữ liệu huấn luyện AI có thể chứa thiên vị, dẫn đến các quyết định không công bằng.",
+      "order": 124
+    },
+    {
+      "id": "block-125",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Quyền riêng tư",
+      "order": 125
+    },
+    {
+      "id": "block-126",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI thu thập và xử lý dữ liệu cá nhân, gây lo ngại về quyền riêng tư.",
+      "order": 126
+    },
+    {
+      "id": "block-127",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Sử dụng trong quân sự",
+      "order": 127
+    },
+    {
+      "id": "block-128",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI trong quân sự đặt ra câu hỏi về đạo đức trong việc sử dụng vũ khí tự động.",
+      "order": 128
+    },
+    {
+      "id": "block-129",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Deepfake và giả mạo",
+      "order": 129
+    },
+    {
+      "id": "block-130",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Công nghệ deepfake do AI tạo ra có thể bị lạm dụng để lan truyền thông tin sai lệch.",
+      "order": 130
+    },
+    {
+      "id": "block-131",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "An ninh mạng",
+      "order": 131
+    },
+    {
+      "id": "block-132",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tấn công mạng",
+      "order": 132
+    },
+    {
+      "id": "block-133",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI có thể bị hacker sử dụng để thực hiện các cuộc tấn công mạng tinh vi.",
+      "order": 133
+    },
+    {
+      "id": "block-134",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phần mềm độc hại",
+      "order": 134
+    },
+    {
+      "id": "block-135",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tạo ra phần mềm độc hại thông minh, khó bị phát hiện.",
+      "order": 135
+    },
+    {
+      "id": "block-136",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Giả mạo danh tính",
+      "order": 136
+    },
+    {
+      "id": "block-137",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI có thể giả mạo danh tính người dùng, gây rủi ro cho an ninh mạng.",
+      "order": 137
+    },
+    {
+      "id": "block-138",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phishing thông minh",
+      "order": 138
+    },
+    {
+      "id": "block-139",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tạo ra các email lừa đảo khó phân biệt với email thật.",
+      "order": 139
+    },
+    {
+      "id": "block-140",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tấn công DDoS",
+      "order": 140
+    },
+    {
+      "id": "block-141",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI tăng cường khả năng thực hiện các cuộc tấn công DDoS quy mô lớn.",
+      "order": 141
+    },
+    {
+      "id": "block-142",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Chi phí phát triển",
+      "order": 142
+    },
+    {
+      "id": "block-143",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Nguồn lực tài chính",
+      "order": 143
+    },
+    {
+      "id": "block-144",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Phát triển AI đòi hỏi đầu tư lớn vào cơ sở hạ tầng và nghiên cứu.",
+      "order": 144
+    },
+    {
+      "id": "block-145",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Nhân lực chất lượng cao",
+      "order": 145
+    },
+    {
+      "id": "block-146",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Thiếu hụt chuyên gia AI là một thách thức lớn cho các doanh nghiệp.",
+      "order": 146
+    },
+    {
+      "id": "block-147",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Dữ liệu huấn luyện",
+      "order": 147
+    },
+    {
+      "id": "block-148",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI cần lượng dữ liệu lớn và chất lượng để huấn luyện hiệu quả.",
+      "order": 148
+    },
+    {
+      "id": "block-149",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Bảo trì hệ thống",
+      "order": 149
+    },
+    {
+      "id": "block-150",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Hệ thống AI cần bảo trì liên tục để đảm bảo hiệu suất.",
+      "order": 150
+    },
+    {
+      "id": "block-151",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tích hợp hệ thống",
+      "order": 151
+    },
+    {
+      "id": "block-152",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Tích hợp AI vào các hệ thống hiện có là một quá trình phức tạp và tốn kém.",
+      "order": 152
+    },
+    {
+      "id": "block-153",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_1",
+      "content": "AI trong đời sống hàng ngày",
+      "order": 153
+    },
+    {
+      "id": "block-154",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Từ trợ lý ảo trên điện thoại, đề xuất phim trên Netflix, đến xe tự lái, AI đã len lỏi vào mọi ngóc ngách của cuộc sống hiện đại.",
+      "order": 154
+    },
+    {
+      "id": "block-155",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "video",
+      "media_url": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "content": "Video minh họa AI trong thực tế",
+      "order": 155
+    },
+    {
+      "id": "block-156",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Trợ lý cá nhân",
+      "order": 156
+    },
+    {
+      "id": "block-157",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Quản lý lịch trình",
+      "order": 157
+    },
+    {
+      "id": "block-158",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI giúp sắp xếp lịch trình và nhắc nhở công việc hàng ngày.",
+      "order": 158
+    },
+    {
+      "id": "block-159",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Trả lời câu hỏi",
+      "order": 159
+    },
+    {
+      "id": "block-160",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "Trợ lý AI trả lời các câu hỏi của người dùng một cách nhanh chóng.",
+      "order": 160
+    },
+    {
+      "id": "block-161",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Hỗ trợ mua sắm",
+      "order": 161
+    },
+    {
+      "id": "block-162",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI gợi ý sản phẩm phù hợp khi mua sắm trực tuyến.",
+      "order": 162
+    },
+    {
+      "id": "block-163",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Điều khiển thiết bị",
+      "order": 163
+    },
+    {
+      "id": "block-164",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI điều khiển các thiết bị thông minh trong nhà qua giọng nói.",
+      "order": 164
+    },
+    {
+      "id": "block-165",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Hỗ trợ dịch thuật",
+      "order": 165
+    },
+    {
+      "id": "block-166",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI cung cấp dịch thuật theo thời gian thực, giúp giao tiếp đa ngôn ngữ.",
+      "order": 166
+    },
+    {
+      "id": "block-167",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_2",
+      "content": "Ứng dụng trong tài chính",
+      "order": 167
+    },
+    {
+      "id": "block-168",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phân tích đầu tư",
+      "order": 168
+    },
+    {
+      "id": "block-169",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI hỗ trợ nhà đầu tư bằng cách phân tích thị trường và dự báo xu hướng.",
+      "order": 169
+    },
+    {
+      "id": "block-170",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Quản lý tài sản",
+      "order": 170
+    },
+    {
+      "id": "block-171",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI giúp quản lý danh mục đầu tư và tối ưu hóa lợi nhuận.",
+      "order": 171
+    },
+    {
+      "id": "block-172",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Phát hiện gian lận",
+      "order": 172
+    },
+    {
+      "id": "block-173",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI phát hiện các giao dịch bất thường trong ngân hàng và tài chính.",
+      "order": 173
+    },
+    {
+      "id": "block-174",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "heading_3",
+      "content": "Tư vấn tài chính",
+      "order": 174
+    },
+    {
+      "id": "block-175",
+      "post_type": "user_news",
+      "post_id": "5d44d3c7-9c89-4b36-a21b-2c4e7c659ed3",
+      "type": "text",
+      "content": "AI cung cấp lời khuyên tài chính cá nhân hóa cho người dùng.",
+      "order": 175
+    }
+  ],
+  "reactionSummary": {
+    "like": 120,
+    "love": 45,
+    "haha": 7,
+    "angry": 2,
+    "sad": 3
+  },
+  "commentCount": 18,
+  "userReaction": "like",
+  "tags": [
+    "AI",
+    "Công nghệ",
+    "Tự động hóa",
+    "Deepfake",
+    "Y tế",
+    "Video",
+    "Báo cáo"
+  ]
+}
