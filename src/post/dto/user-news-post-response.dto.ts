@@ -1,8 +1,10 @@
 import { ReactionType } from '../../reaction/entities/reaction.entity';
+import { BlockType } from '../enums/post.enums';
+import { NewsTagDto } from './news-tag.dto';
 
 export interface PostBlockDto {
   id: string;
-  type: 'text' | 'image' | 'video' | 'file';
+  type: BlockType;
   content?: string;
   media_url?: string;
   file_name?: string;
@@ -50,5 +52,5 @@ export class UserNewsPostResponseDto {
   };
   userReaction?: ReactionType;
   blocks?: PostBlockDto[];
-  // News posts only use blocks, not media
+  tags: NewsTagDto[];
 } 

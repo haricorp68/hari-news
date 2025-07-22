@@ -13,9 +13,14 @@ import { CommunityNewsPostRepository } from './repositories/community_news_post.
 import { CommentService } from 'src/comment/comment.service';
 import { CommentModule } from 'src/comment/comment.module';
 import { PostService } from './services/post.service';
+import { NewsTagService } from './services/news_tag.service';
+import { NewsTagRepository } from './repositories/news_tag.repository';
+import { NewsTagSearchService } from './services/news_tag-search.service';
+import { NewsTagController } from './controllers/news_tag.controller';
+import { ElasticModule } from 'src/elastic/elastic.module';
 
 @Module({
-  controllers: [PostController],
+  controllers: [PostController, NewsTagController],
   providers: [
     PostService,
     ReactionService,
@@ -28,7 +33,10 @@ import { PostService } from './services/post.service';
     CompanyNewsPostRepository,
     CommunityNewsPostRepository,
     CommentService,
+    NewsTagService,
+    NewsTagRepository,
+    NewsTagSearchService,
   ],
-  imports: [ReactionModule, CommentModule],
+  imports: [ReactionModule, CommentModule, ElasticModule],
 })
 export class PostModule {}

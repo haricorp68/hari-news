@@ -27,12 +27,13 @@ import { UserNewsPostRepository } from './../repositories/user_news_post.reposit
 import { PostBlockRepository } from './../repositories/post_block.repository';
 import { CreateUserNewsPostDto } from './../dto/create-user-news-post.dto';
 import { UpdateUserNewsPostDto } from './../dto/update-user-news-post.dto';
-import {
-  UserNewsPostResponseDto,
-  UserNewsPostListDto,
-  PostBlockDto,
-} from './../dto/user-news-post-response.dto';
+import { UserNewsPostListDto } from './../dto/user-news-post-response.dto';
 import { ReactionType } from '../../reaction/entities/reaction.entity';
+import { NewsTagService } from './news_tag.service';
+import { CompanyNewsPostRepository } from './../repositories/company_news_post.repository';
+import { CommunityNewsPostRepository } from './../repositories/community_news_post.repository';
+import { CreateCompanyNewsPostDto } from './../dto/create-company-news-post.dto';
+import { CreateCommunityNewsPostDto } from './../dto/create-community-news-post.dto';
 
 @Injectable()
 export class PostService {
@@ -45,6 +46,9 @@ export class PostService {
     private readonly commentService: CommentService,
     private readonly userNewsPostRepo: UserNewsPostRepository,
     private readonly postBlockRepo: PostBlockRepository,
+    private readonly newsTagService: NewsTagService,
+    private readonly companyNewsPostRepo: CompanyNewsPostRepository,
+    private readonly communityNewsPostRepo: CommunityNewsPostRepository,
   ) {}
 
   async createUserFeedPost(userId: string, dto: CreateUserFeedPostDto) {
@@ -112,6 +116,13 @@ export class PostService {
   }
 
   async createUserNewsPost(userId: string, dto: CreateUserNewsPostDto) {
+    let tags: any[] = [];
+    if (dto.tags?.length) {
+      tags = await Promise.all(
+        dto.tags.map((id) => this.newsTagService.findOne(id)),
+      );
+      tags = tags.filter(Boolean);
+    }
     // Create the news post
     const post = this.userNewsPostRepo.create({
       user: { id: userId },
@@ -119,6 +130,7 @@ export class PostService {
       summary: dto.summary,
       cover_image: dto.cover_image,
       categoryId: dto.categoryId,
+      tags,
     });
     await this.userNewsPostRepo.save(post);
     // Save blocks if any (news posts only use blocks, not media)
@@ -138,6 +150,74 @@ export class PostService {
       await this.postBlockRepo.save(blocks);
     }
     return { id: post.id, type: 'user_news' };
+  }
+
+  async createCompanyNewsPost(dto: CreateCompanyNewsPostDto) {
+    let tags: any[] = [];
+    if (dto.tags?.length) {
+      tags = await Promise.all(
+        dto.tags.map((id) => this.newsTagService.findOne(id)),
+      );
+      tags = tags.filter(Boolean);
+    }
+    const post = this.companyNewsPostRepo.create({
+      company: { id: dto.companyId },
+      title: dto.title,
+      summary: dto.summary,
+      cover_image: dto.cover_image,
+      tags,
+    });
+    await this.companyNewsPostRepo.save(post);
+    if (dto.blocks?.length) {
+      const blocks = dto.blocks.map((b) =>
+        this.postBlockRepo.create({
+          post_type: 'company_news',
+          post_id: post.id,
+          type: BlockType[b.type.toUpperCase() as keyof typeof BlockType],
+          content: b.content,
+          media_url: b.media_url,
+          file_name: b.file_name,
+          file_size: b.file_size,
+          order: b.order,
+        }),
+      );
+      await this.postBlockRepo.save(blocks);
+    }
+    return { id: post.id, type: 'company_news' };
+  }
+
+  async createCommunityNewsPost(dto: CreateCommunityNewsPostDto) {
+    let tags: any[] = [];
+    if (dto.tags?.length) {
+      tags = await Promise.all(
+        dto.tags.map((id) => this.newsTagService.findOne(id)),
+      );
+      tags = tags.filter(Boolean);
+    }
+    const post = this.communityNewsPostRepo.create({
+      community: { id: dto.communityId },
+      title: dto.title,
+      summary: dto.summary,
+      cover_image: dto.cover_image,
+      tags,
+    });
+    await this.communityNewsPostRepo.save(post);
+    if (dto.blocks?.length) {
+      const blocks = dto.blocks.map((b) =>
+        this.postBlockRepo.create({
+          post_type: 'community_news',
+          post_id: post.id,
+          type: BlockType[b.type.toUpperCase() as keyof typeof BlockType],
+          content: b.content,
+          media_url: b.media_url,
+          file_name: b.file_name,
+          file_size: b.file_size,
+          order: b.order,
+        }),
+      );
+      await this.postBlockRepo.save(blocks);
+    }
+    return { id: post.id, type: 'community_news' };
   }
 
   // Public endpoint for reading user feed posts by userId
@@ -355,7 +435,7 @@ export class PostService {
       order: { created_at: 'DESC' },
       skip: offset,
       take: limit,
-      relations: ['user', 'category'],
+      relations: ['user', 'category', 'tags'],
     });
     const postIds = posts.map((p) => p.id);
     const userReactionMap = await this.reactionService.getUserReactionsForPosts(
@@ -380,6 +460,11 @@ export class PostService {
             description: post.category.description,
           }
         : undefined,
+      tags:
+        post.tags?.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        })) || [],
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -405,7 +490,7 @@ export class PostService {
       order: { created_at: 'DESC' },
       skip: offset,
       take: limit,
-      relations: ['user', 'category'],
+      relations: ['user', 'category', 'tags'], // thêm 'tags'
     });
     const postIds = posts.map((p) => p.id);
     const userReactionMap = currentUserId
@@ -432,6 +517,10 @@ export class PostService {
             description: post.category.description,
           }
         : undefined,
+      tags: post.tags?.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+      })) || [],
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -456,7 +545,7 @@ export class PostService {
       order: { created_at: 'DESC' },
       skip: offset,
       take: limit,
-      relations: ['user', 'category'],
+      relations: ['user', 'category', 'tags'], // thêm 'tags'
     });
     const postIds = posts.map((p) => p.id);
     const userReactionMap = currentUserId
@@ -484,6 +573,10 @@ export class PostService {
             description: post.category.description,
           }
         : undefined,
+      tags: post.tags?.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+      })) || [],
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -500,7 +593,7 @@ export class PostService {
   async getUserNewsPostDetailById(postId: string, userId?: string) {
     const post = await this.userNewsPostRepo.findOne({
       where: { id: postId },
-      relations: ['user', 'category'],
+      relations: ['user', 'category', 'tags'], // thêm 'tags'
     });
     if (!post) return null;
     const blocks = await this.postBlockRepo.findBy({
@@ -530,6 +623,10 @@ export class PostService {
             description: post.category.description,
           }
         : undefined,
+      tags: post.tags?.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+      })) || [],
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {

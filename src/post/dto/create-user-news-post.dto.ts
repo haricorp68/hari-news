@@ -47,6 +47,11 @@ export class CreateUserNewsPostDto {
 
   @IsOptional()
   @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateUserNewsPostBlockDto)
   blocks?: CreateUserNewsPostBlockDto[];

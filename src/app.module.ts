@@ -47,6 +47,7 @@ import { Follow } from './follow/entities/follow.entity';
 import { Category } from './category/entities/category.entity';
 import { CategoryModule } from './category/category.module';
 import { NewsTag } from './post/entities/news_tag.entity';
+import { ElasticModule } from './elastic/elastic.module';
 
 @Module({
   imports: [
@@ -121,6 +122,7 @@ import { NewsTag } from './post/entities/news_tag.entity';
     PolicyModule,
     FollowModule,
     CategoryModule,
+    ElasticModule,
   ],
   controllers: [AppController],
   providers: [

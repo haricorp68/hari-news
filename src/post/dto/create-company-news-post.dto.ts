@@ -50,6 +50,11 @@ export class CreateCompanyNewsPostDto {
 
   @IsOptional()
   @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateCompanyNewsPostBlockDto)
   blocks?: CreateCompanyNewsPostBlockDto[];

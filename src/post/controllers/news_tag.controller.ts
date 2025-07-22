@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  Query,
+} from '@nestjs/common';
 import { NewsTagService } from '../services/news_tag.service';
 import { CreateNewsTagDto, UpdateNewsTagDto } from '../dto/news-tag.dto';
 
@@ -12,8 +21,29 @@ export class NewsTagController {
   }
 
   @Get()
-  findAll() {
-    return this.newsTagService.findAll();
+  async findAll(@Query('page') page = 1, @Query('pageSize') pageSize = 20) {
+    return this.newsTagService.findAllWithPagination(
+      Number(page),
+      Number(pageSize),
+    );
+  }
+
+  @Get('search')
+  search(
+    @Query('q') q: string,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
+  ) {
+    return this.newsTagService.search(q, Number(page), Number(pageSize));
+  }
+
+  @Get('autocomplete')
+  autocomplete(
+    @Query('q') q: string,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
+  ) {
+    return this.newsTagService.autocomplete(q, Number(page), Number(pageSize));
   }
 
   @Get(':id')
@@ -30,4 +60,4 @@ export class NewsTagController {
   remove(@Param('id') id: string) {
     return this.newsTagService.remove(id);
   }
-} 
+}
