@@ -14,7 +14,6 @@ import { CreateCommunityFeedPostDto } from '../dto/create-community-feed-post.dt
 import { CreateCompanyFeedPostDto } from '../dto/create-company-feed-post.dto';
 import { CreateUserNewsPostDto } from '../dto/create-user-news-post.dto';
 import { UpdateUserNewsPostDto } from '../dto/update-user-news-post.dto';
-import { UserNewsPostResponseDto } from '../dto/user-news-post-response.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PostService } from '../services/post.service';
@@ -147,11 +146,9 @@ export class PostController {
    * Lấy chi tiết đầy đủ của một bài postnews (user news)
    */
   @Get('user-news/detail/:postId')
-  getUserNewsPostDetail(
-    @Param('postId') postId: string,
-    @Query('userId') userId?: string,
-  ) {
-    return this.postService.getUserNewsPostDetailById(postId, userId);
+  @UseGuards(JwtAuthGuard)
+  getUserNewsPostDetail(@Param('postId') postId: string, @CurrentUser() user) {
+    return this.postService.getUserNewsPostDetailById(postId, user.userId);
   }
 
   /**
@@ -167,17 +164,18 @@ export class PostController {
     @Query('toDate') toDate?: string,
     @Query('sortByInteraction') sortByInteraction?: string,
   ) {
-    return this.postService.getAllUserNews(
-      Number(page),
-      Number(pageSize),
-      {
-        tagIds: tagIds && Array.isArray(tagIds) ? tagIds : tagIds ? [tagIds] : undefined,
-        categoryId,
-        fromDate,
-        toDate,
-        sortByInteraction: sortByInteraction === 'true',
-      },
-    );
+    return this.postService.getAllUserNews(Number(page), Number(pageSize), {
+      tagIds:
+        tagIds && Array.isArray(tagIds)
+          ? tagIds
+          : tagIds
+            ? [tagIds]
+            : undefined,
+      categoryId,
+      fromDate,
+      toDate,
+      sortByInteraction: sortByInteraction === 'true',
+    });
   }
 
   // =========================
