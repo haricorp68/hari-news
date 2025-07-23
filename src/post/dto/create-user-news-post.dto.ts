@@ -4,6 +4,7 @@ import {
   IsArray,
   ValidateNested,
   IsNumber,
+  IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { BlockType } from '../enums/post.enums';
@@ -40,6 +41,7 @@ export class CreateUserNewsPostDto {
   summary: string;
 
   @IsString()
+  @IsNotEmpty()
   cover_image: string;
 
   @IsString()

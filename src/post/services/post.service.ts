@@ -517,10 +517,11 @@ export class PostService {
             description: post.category.description,
           }
         : undefined,
-      tags: post.tags?.map((tag) => ({
-        id: tag.id,
-        name: tag.name,
-      })) || [],
+      tags:
+        post.tags?.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        })) || [],
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -573,10 +574,11 @@ export class PostService {
             description: post.category.description,
           }
         : undefined,
-      tags: post.tags?.map((tag) => ({
-        id: tag.id,
-        name: tag.name,
-      })) || [],
+      tags:
+        post.tags?.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        })) || [],
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -623,10 +625,11 @@ export class PostService {
             description: post.category.description,
           }
         : undefined,
-      tags: post.tags?.map((tag) => ({
-        id: tag.id,
-        name: tag.name,
-      })) || [],
+      tags:
+        post.tags?.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        })) || [],
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
@@ -717,5 +720,98 @@ export class PostService {
     await this.userNewsPostRepo.delete(postId);
 
     return { id: postId, deleted: true };
+  }
+
+  async getAllUserNews(
+    page = 1,
+    pageSize = 10,
+    {
+      tagIds,
+      categoryId,
+      fromDate,
+      toDate,
+      sortByInteraction,
+    }: {
+      tagIds?: string[];
+      categoryId?: string;
+      fromDate?: string;
+      toDate?: string;
+      sortByInteraction?: boolean;
+    } = {},
+  ) {
+    const qb = this.userNewsPostRepo
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .leftJoinAndSelect('post.category', 'category')
+      .leftJoinAndSelect('post.tags', 'tags');
+
+    if (categoryId) {
+      qb.andWhere('post.categoryId = :categoryId', { categoryId });
+    }
+    if (tagIds && tagIds.length > 0) {
+      qb.andWhere('tags.id IN (:...tagIds)', { tagIds });
+    }
+    if (fromDate) {
+      qb.andWhere('post.created_at >= :fromDate', { fromDate });
+    }
+    if (toDate) {
+      qb.andWhere('post.created_at <= :toDate', { toDate });
+    }
+
+    qb.skip((page - 1) * pageSize).take(pageSize);
+    qb.orderBy('post.created_at', 'DESC');
+
+    const [posts, total] = await qb.getManyAndCount();
+    const postIds = posts.map((p) => p.id);
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postIds,
+    });
+    const commentCounts = await Promise.all(
+      postIds.map((id) => this.commentService.getCommentCountByPost(id)),
+    );
+
+    // Nếu sortByInteraction, sort lại theo tổng reaction + comment
+    let data = posts.map((post, idx) => {
+      const reactionCount = Object.values(
+        reactionSummaryMap[post.id] || {},
+      ).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0);
+      const commentCount = commentCounts[idx];
+      return {
+        id: post.id,
+        title: post.title,
+        summary: post.summary,
+        cover_image: post.cover_image,
+        category: post.category
+          ? {
+              id: post.category.id,
+              name: post.category.name,
+              description: post.category.description,
+            }
+          : undefined,
+        tags: post.tags?.map((tag) => ({ id: tag.id, name: tag.name })) || [],
+        created_at: post.created_at,
+        updated_at: post.updated_at,
+        user: {
+          id: post.user.id,
+          name: post.user.name,
+          avatar: post.user.avatar,
+        },
+        reactionSummary: reactionSummaryMap[post.id] || {},
+        commentCount,
+        interactionCount: reactionCount + commentCount,
+      };
+    });
+    if (sortByInteraction) {
+      data = data.sort((a, b) => b.interactionCount - a.interactionCount);
+    }
+    return {
+      data,
+      metadata: {
+        page: Number(page),
+        pageSize: Number(pageSize),
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
   }
 }

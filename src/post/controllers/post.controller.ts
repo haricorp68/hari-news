@@ -154,6 +154,32 @@ export class PostController {
     return this.postService.getUserNewsPostDetailById(postId, userId);
   }
 
+  /**
+   * Lấy tất cả user news (public, có phân trang và filter)
+   */
+  @Get('news')
+  getAllUserNews(
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
+    @Query('tagIds') tagIds?: string[],
+    @Query('categoryId') categoryId?: string,
+    @Query('fromDate') fromDate?: string,
+    @Query('toDate') toDate?: string,
+    @Query('sortByInteraction') sortByInteraction?: string,
+  ) {
+    return this.postService.getAllUserNews(
+      Number(page),
+      Number(pageSize),
+      {
+        tagIds: tagIds && Array.isArray(tagIds) ? tagIds : tagIds ? [tagIds] : undefined,
+        categoryId,
+        fromDate,
+        toDate,
+        sortByInteraction: sortByInteraction === 'true',
+      },
+    );
+  }
+
   // =========================
   // SELF MANAGEMENT ENDPOINTS (USER TỰ QUẢN LÝ BÀI VIẾT CỦA MÌNH)
   // =========================
