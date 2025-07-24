@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /path/to/your/app
+            cd /home/hoanghaaii/hari-news
             docker pull hoanghaaii/hari-news:${{ env.SHORT_SHA }}
             docker tag hoanghaaii/hari-news:${{ env.SHORT_SHA }} hoanghaaii/hari-news:latest
             docker-compose up -d
