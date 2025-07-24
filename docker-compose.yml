@@ -15,7 +15,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: always
-    command: redis-server --requirepass redis_password
+    command: redis-server
     ports:
       - '6379:6379'
     volumes:
@@ -27,7 +27,7 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
     ports:
       - '9200:9200'
       - '9300:9300'
@@ -90,4 +90,4 @@ networks:
 volumes:
   db_data:
   redis_data:
-  elasticsearch_data: 
+  elasticsearch_data:
