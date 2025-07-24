@@ -9,11 +9,13 @@
 **Mô tả:** Lấy thông tin cơ bản của người dùng đang đăng nhập
 
 **Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -47,11 +49,13 @@ Authorization: Bearer <access_token>
 **Mô tả:** Lấy thông tin profile chi tiết của người dùng đang đăng nhập (tương tự như /auth/me nhưng có thể mở rộng thêm thông tin)
 
 **Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -85,11 +89,13 @@ Authorization: Bearer <access_token>
 **Mô tả:** Đăng xuất người dùng và xóa cookies
 
 **Headers:**
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Logout successful"
@@ -111,7 +117,7 @@ const getCurrentUser = async () => {
         'Content-Type': 'application/json',
       },
     });
-    
+
     if (response.ok) {
       const data = await response.json();
       return data.user;
@@ -134,7 +140,7 @@ const logout = async () => {
         'Content-Type': 'application/json',
       },
     });
-    
+
     if (response.ok) {
       // Xóa state user trong frontend
       // Redirect về trang login
@@ -159,7 +165,7 @@ const getCurrentUser = async () => {
         'Content-Type': 'application/json',
       },
     });
-    
+
     if (response.ok) {
       const data = await response.json();
       return data.user;
@@ -180,7 +186,7 @@ const logout = async () => {
         'Content-Type': 'application/json',
       },
     });
-    
+
     if (response.ok) {
       // Xóa state user
       // Redirect về trang login
@@ -203,6 +209,7 @@ const logout = async () => {
 ## Error Responses
 
 ### 401 Unauthorized
+
 ```json
 {
   "statusCode": 401,
@@ -211,9 +218,10 @@ const logout = async () => {
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "statusCode": 404,
   "message": "User not found"
 }
-``` 
+```
