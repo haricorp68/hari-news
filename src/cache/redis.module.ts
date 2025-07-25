@@ -13,9 +13,8 @@ import { RedisService } from './redis.service';
         // Retrieve Redis configuration from environment variables using ConfigService
         const redisHost = configService.get<string>('REDIS_HOST');
         const redisPort = configService.get<number>('REDIS_PORT');
-        const redisPassword = configService.get<string>('REDIS_PASSWORD');
 
-        if (!redisHost || !redisPort || !redisPassword) {
+        if (!redisHost || !redisPort) {
           throw new Error('Redis configuration is missing');
         }
 
