@@ -23,7 +23,6 @@ import { RedisService } from './redis.service';
         const redis = new Redis({
           host: redisHost,
           port: redisPort,
-          password: redisPassword,
         });
 
         // Optional: You can listen to events like connection success and errors
