@@ -1,5 +1,45 @@
-version: '3.8'
+version: '3.9'
+
 services:
+  app:
+    image: hoanghaaii/hari-news:latest
+    ports:
+      - '3000:3000'
+    environment:
+      - FRONTEND_URL=${FRONTEND_URL}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - ELASTICSEARCH_NODE=${ELASTICSEARCH_NODE}
+      - ELASTIC_API_KEY=${ELASTIC_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
+      - NODE_ENV=${NODE_ENV}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
+      - FACEBOOK_APP_ID=${FACEBOOK_APP_ID}
+      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET}
+      - FACEBOOK_CALLBACK_URL=${FACEBOOK_CALLBACK_URL}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - MAIL_FROM=${MAIL_FROM}
+      - THROTTLE_TTL=${THROTTLE_TTL}
+      - THROTTLE_LIMIT=${THROTTLE_LIMIT}
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
   db:
     image: postgres:15
     restart: always
@@ -10,84 +50,21 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   redis:
-    image: redis:7-alpine
-    restart: always
+    image: redis:7
     command: redis-server
     ports:
       - '6379:6379'
-    volumes:
-      - redis_data:/data
-
-  elasticsearch:
-    image: elasticsearch:9.0.3
-    restart: always
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
-    ports:
-      - '9200:9200'
-      - '9300:9300'
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      - elastic
-
-  kibana:
-    image: kibana:9.0.3
-    restart: always
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - '5601:5601'
-    depends_on:
-      - elasticsearch
-    networks:
-      - elastic
-
-  app:
-    build: .
-    ports:
-      - '3000:3000'
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_DATABASE: hari_news
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: redis_password
-      ELASTICSEARCH_NODE: http://elasticsearch:9200
-      JWT_SECRET: your_jwt_secret_key
-      JWT_EXPIRES_IN: 3600s
-      JWT_REFRESH_EXPIRES_IN: 7d
-    depends_on:
-      - db
-      - redis
-      - elasticsearch
-    networks:
-      - elastic
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
-    ports:
-      - '5050:80'
-    depends_on:
-      - db
+      - app-network
 
 networks:
-  elastic:
+  app-network:
     driver: bridge
 
 volumes:
-  db_data:
-  redis_data:
-  elasticsearch_data:
+  pgdata:
