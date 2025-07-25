@@ -5,7 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
 import { CommunityModule } from './community/community.module';
 import { CompanyModule } from './company/company.module';
@@ -51,33 +51,36 @@ import { ElasticModule } from './elastic/elastic.module';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot({
-      throttlers: [
-        { name: 'short', limit: 20, ttl: seconds(10) },
-        {
-          name: 'medium',
-          limit: 2000,
-          ttl: minutes(1),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [
+          { name: 'short', limit: 20, ttl: seconds(10) },
+          { name: 'medium', limit: 2000, ttl: minutes(1) },
+          { name: 'long', limit: 20000, ttl: hours(1) },
+        ],
+        errorMessage: 'Rate limiting actived!',
+        storage: new ThrottlerStorageRedisService({
+          host: configService.get<string>('REDIS_HOST'),
+          port: configService.get<number>('REDIS_PORT'),
+        }),
+        getTracker: (req: Record<string, any>, context: ExecutionContext) => {
+          return req.headers['x-tenant-id'];
         },
-        { name: 'long', limit: 20000, ttl: hours(1) },
-      ],
-      errorMessage: 'Rate limiting actived!',
-      storage: new ThrottlerStorageRedisService(),
-      getTracker: (req: Record<string, any>, context: ExecutionContext) => {
-        return req.headers['x-tenant-id'];
-      },
-      generateKey: (
-        context: ExecutionContext,
-        trackerString: string,
-        throttlerName: string,
-      ) => {
-        return `${throttlerName}:${trackerString}`;
-      },
+        generateKey: (
+          context: ExecutionContext,
+          trackerString: string,
+          throttlerName: string,
+        ) => {
+          return `${throttlerName}:${trackerString}`;
+        },
+      }),
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
+      host: process.env.DB_HOST || 'db',
       port: parseInt(process.env.DB_PORT || '5432', 10),
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
