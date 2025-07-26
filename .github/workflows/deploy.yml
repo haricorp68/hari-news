@@ -45,4 +45,4 @@ jobs:
             cd /root/hari-news
             docker pull hoanghaaii/hari-news:${{ env.SHORT_SHA }}
             docker tag hoanghaaii/hari-news:${{ env.SHORT_SHA }} hoanghaaii/hari-news:latest
-            docker-compose up -d
+            docker-compose up -d backend
