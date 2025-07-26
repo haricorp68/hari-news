@@ -22,9 +22,11 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new HttpExceptionFilter(), new AllExceptionsFilter());
 
+  console.log('FRONTEND_URL from process.env:', process.env.FRONTEND_URL);
   const allowedOrigins = process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',')
-    : []; // Mảng rỗng nếu FRONTEND_URL không được định nghĩa
+    : [];
+  console.log('Allowed Origins:', allowedOrigins);
 
   app.enableCors({
     origin: (origin, callback) => {
