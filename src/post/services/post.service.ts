@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import {
   CreateUserFeedPostDto,
@@ -34,6 +34,7 @@ import { CompanyNewsPostRepository } from './../repositories/company_news_post.r
 import { CommunityNewsPostRepository } from './../repositories/community_news_post.repository';
 import { CreateCompanyNewsPostDto } from './../dto/create-company-news-post.dto';
 import { CreateCommunityNewsPostDto } from './../dto/create-community-news-post.dto';
+import { NewsTag } from '../entities/news_tag.entity';
 
 @Injectable()
 export class PostService {
@@ -116,14 +117,22 @@ export class PostService {
   }
 
   async createUserNewsPost(userId: string, dto: CreateUserNewsPostDto) {
-    let tags: any[] = [];
+    let tags: NewsTag[] = [];
     if (dto.tags?.length) {
-      tags = await Promise.all(
+      const rawTags = await Promise.all(
         dto.tags.map((id) => this.newsTagService.findOne(id)),
       );
-      tags = tags.filter(Boolean);
+      tags = rawTags.filter(Boolean) as NewsTag[]; // Type assertion
     }
-    // Create the news post
+
+    // Kiểm tra nếu không có tag hợp lệ thì báo lỗi
+    if (!tags.length) {
+      throw new BadRequestException(
+        'At least one valid tag is required to create a news post',
+      );
+    }
+
+    // Tạo news post và gán tags
     const post = this.userNewsPostRepo.create({
       user: { id: userId },
       title: dto.title,
@@ -132,8 +141,10 @@ export class PostService {
       categoryId: dto.categoryId,
       tags,
     });
+
     await this.userNewsPostRepo.save(post);
-    // Save blocks if any (news posts only use blocks, not media)
+
+    // Lưu blocks nếu có
     if (dto.blocks?.length) {
       const blocks = dto.blocks.map((b) =>
         this.postBlockRepo.create({
@@ -149,75 +160,8 @@ export class PostService {
       );
       await this.postBlockRepo.save(blocks);
     }
+
     return { id: post.id, type: 'user_news' };
-  }
-
-  async createCompanyNewsPost(dto: CreateCompanyNewsPostDto) {
-    let tags: any[] = [];
-    if (dto.tags?.length) {
-      tags = await Promise.all(
-        dto.tags.map((id) => this.newsTagService.findOne(id)),
-      );
-      tags = tags.filter(Boolean);
-    }
-    const post = this.companyNewsPostRepo.create({
-      company: { id: dto.companyId },
-      title: dto.title,
-      summary: dto.summary,
-      cover_image: dto.cover_image,
-      tags,
-    });
-    await this.companyNewsPostRepo.save(post);
-    if (dto.blocks?.length) {
-      const blocks = dto.blocks.map((b) =>
-        this.postBlockRepo.create({
-          post_type: 'company_news',
-          post_id: post.id,
-          type: BlockType[b.type.toUpperCase() as keyof typeof BlockType],
-          content: b.content,
-          media_url: b.media_url,
-          file_name: b.file_name,
-          file_size: b.file_size,
-          order: b.order,
-        }),
-      );
-      await this.postBlockRepo.save(blocks);
-    }
-    return { id: post.id, type: 'company_news' };
-  }
-
-  async createCommunityNewsPost(dto: CreateCommunityNewsPostDto) {
-    let tags: any[] = [];
-    if (dto.tags?.length) {
-      tags = await Promise.all(
-        dto.tags.map((id) => this.newsTagService.findOne(id)),
-      );
-      tags = tags.filter(Boolean);
-    }
-    const post = this.communityNewsPostRepo.create({
-      community: { id: dto.communityId },
-      title: dto.title,
-      summary: dto.summary,
-      cover_image: dto.cover_image,
-      tags,
-    });
-    await this.communityNewsPostRepo.save(post);
-    if (dto.blocks?.length) {
-      const blocks = dto.blocks.map((b) =>
-        this.postBlockRepo.create({
-          post_type: 'community_news',
-          post_id: post.id,
-          type: BlockType[b.type.toUpperCase() as keyof typeof BlockType],
-          content: b.content,
-          media_url: b.media_url,
-          file_name: b.file_name,
-          file_size: b.file_size,
-          order: b.order,
-        }),
-      );
-      await this.postBlockRepo.save(blocks);
-    }
-    return { id: post.id, type: 'community_news' };
   }
 
   // Public endpoint for reading user feed posts by userId
