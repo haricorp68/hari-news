@@ -17,7 +17,6 @@ import { CheckAbility } from '../common/decorators/check-ability.decorator';
 import { CaslAbilityGuard } from '../common/guards/casl-ability.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserConfigService } from './user-config.service';
-import { Throttle } from '@nestjs/throttler';
 
 @Controller('user')
 export class UserController {
@@ -25,6 +24,20 @@ export class UserController {
     private readonly userService: UserService,
     private readonly userConfigService: UserConfigService,
   ) {}
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @CurrentUser() user,
+
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const updated = await this.userService.update(user.userId, updateUserDto);
+    return {
+      message: 'Cập nhật profile thành công!',
+      ...updated,
+    };
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard, CaslAbilityGuard)
@@ -82,22 +95,6 @@ export class UserController {
   @CheckAbility('update', 'user')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
-  }
-
-  @Patch('profile')
-  @UseGuards(JwtAuthGuard)
-  async updateProfile(
-    @CurrentUser() user,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    const updated = await this.userService.update(
-      user.userId || user.id,
-      updateUserDto,
-    );
-    return {
-      data: updated,
-      message: 'Cập nhật profile thành công!',
-    };
   }
 
   @Delete(':id')

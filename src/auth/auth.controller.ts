@@ -6,6 +6,7 @@ import {
   Req,
   UseGuards,
   Res,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
@@ -20,6 +21,7 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { UserResponseDto } from '../user/dto/user-response.dto';
+import { ForbiddenError } from '@casl/ability';
 
 @Controller('auth')
 export class AuthController {
@@ -94,7 +96,7 @@ export class AuthController {
   ) {
     const refreshToken = req.cookies['refreshToken'];
     if (!refreshToken) {
-      return { message: 'No refresh token found', data: null };
+      throw new ForbiddenException('No refresh token found');
     }
     const result = await this.authService.refreshTokenByCookie(refreshToken);
     // Set lại accessToken mới vào cookie

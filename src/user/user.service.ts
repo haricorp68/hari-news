@@ -77,7 +77,7 @@ export class UserService implements OnModuleInit {
   ): Promise<User | Omit<User, 'password'> | null> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) return null;
-    
+
     let result: any = user;
     if (!withPassword) {
       const { password, ...userWithoutPassword } = user;
@@ -185,7 +185,7 @@ export class UserService implements OnModuleInit {
           followersCount: followStats.followersCount,
           followingCount: followStats.followingCount,
         };
-      })
+      }),
     );
     userData = usersWithStats;
 

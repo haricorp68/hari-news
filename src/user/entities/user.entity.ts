@@ -10,6 +10,7 @@ import {
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { UserConfig } from './user-config.entity';
 import { Follow } from '../../follow/entities/follow.entity';
+import { SocialPlatform } from '../enums/user.enum';
 
 @Entity()
 export class User {
@@ -34,16 +35,16 @@ export class User {
   @Column({ nullable: true, type: 'text' })
   bio: string;
 
-  @Column({ nullable: true })
-  phone: string;
+  @Column({ type: 'jsonb', nullable: true })
+  socialLinks: Partial<Record<SocialPlatform, string>>;
 
   @Column({ nullable: true })
   dateOfBirth: Date;
 
-  @Column({ 
-    type: 'enum', 
-    enum: ['male', 'female', 'other'], 
-    nullable: true 
+  @Column({
+    type: 'enum',
+    enum: ['male', 'female', 'other'],
+    nullable: true,
   })
   gender: string;
 
@@ -65,17 +66,17 @@ export class User {
   @Column({ nullable: true })
   phoneVerifiedAt: Date;
 
-  @Column({ 
-    type: 'enum', 
-    enum: ['pending', 'active', 'suspended', 'banned'], 
-    default: 'pending' 
+  @Column({
+    type: 'enum',
+    enum: ['pending', 'active', 'suspended', 'banned'],
+    default: 'pending',
   })
   status: string;
 
-  @Column({ 
-    type: 'enum', 
-    enum: ['user', 'moderator', 'admin', 'superadmin'], 
-    default: 'user' 
+  @Column({
+    type: 'enum',
+    enum: ['user', 'moderator', 'admin', 'superadmin'],
+    default: 'user',
   })
   role: string;
 
@@ -91,10 +92,15 @@ export class User {
   @Column({ nullable: true })
   deletedAt: Date;
 
+  @Column({ nullable: true })
+  phone: string;
+
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
 
-  @OneToOne(() => UserConfig, (userConfig) => userConfig.user, { cascade: true })
+  @OneToOne(() => UserConfig, (userConfig) => userConfig.user, {
+    cascade: true,
+  })
   config: UserConfig;
 
   @OneToMany(() => Follow, (follow) => follow.follower)
@@ -108,4 +114,7 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updated_at: Date;
+
+  @Column({ nullable: true, unique: true })
+  alias: string;
 }
