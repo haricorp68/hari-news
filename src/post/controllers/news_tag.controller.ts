@@ -21,7 +21,7 @@ export class NewsTagController {
   }
 
   @Get()
-  async findAll(@Query('page') page = 1, @Query('pageSize') pageSize = 20) {
+  async findAll(@Query('page') page = 1, @Query('pageSize') pageSize = 10) {
     return this.newsTagService.findAllWithPagination(
       Number(page),
       Number(pageSize),
@@ -32,7 +32,7 @@ export class NewsTagController {
   search(
     @Query('q') q: string,
     @Query('page') page = 1,
-    @Query('pageSize') pageSize = 20,
+    @Query('pageSize') pageSize = 10,
   ) {
     return this.newsTagService.search(q, Number(page), Number(pageSize));
   }
@@ -41,7 +41,7 @@ export class NewsTagController {
   autocomplete(
     @Query('q') q: string,
     @Query('page') page = 1,
-    @Query('pageSize') pageSize = 20,
+    @Query('pageSize') pageSize = 10,
   ) {
     return this.newsTagService.autocomplete(q, Number(page), Number(pageSize));
   }
