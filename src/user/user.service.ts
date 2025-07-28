@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  OnModuleInit,
+  Logger,
+} from '@nestjs/common'; // Import Logger
 import { UserRepository } from './repositories/user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -8,9 +13,12 @@ import { UserConfigService } from './user-config.service';
 import { FollowService } from '../follow/follow.service';
 import { Like } from 'typeorm';
 import { UserResponseDto } from './dto/user-response.dto';
+import { INITIAL_APP_CONFIG } from 'src/common/config/initial-config';
 
 @Injectable()
 export class UserService implements OnModuleInit {
+  private readonly logger = new Logger(UserService.name); // Initialize Logger
+
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userConfigService: UserConfigService,
@@ -18,25 +26,46 @@ export class UserService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const userByEmail = await this.userRepository.findByEmail(
-      'superadmin@hari.com',
-    );
-    if (!userByEmail) {
-      const hashedPassword = await bcrypt.hash('123qwe', 10);
-      const superadmin = this.userRepository.create({
-        email: 'superadmin@hari.com',
-        password: hashedPassword,
-        name: 'Super Admin',
-        role: 'superadmin',
-        isActive: true,
-        isVerified: true,
-        status: 'active',
-      });
-      const savedSuperadmin = await this.userRepository.save(superadmin);
-      await this.userConfigService.createUserConfig(savedSuperadmin.id);
-      console.log('Super admin created successfully!');
-    } else {
-      console.log('Super admin already exists!');
+    this.logger.log('User service initialized. Checking for superadmin...');
+
+    const superAdminUserConfig = INITIAL_APP_CONFIG.superAdminUser;
+
+    if (!superAdminUserConfig) {
+      this.logger.warn(
+        'Superadmin user configuration not found in initial-config.ts. Skipping superadmin creation.',
+      );
+      return;
+    }
+
+    try {
+      const userByEmail = await this.userRepository.findByEmail(
+        superAdminUserConfig.email,
+      );
+
+      if (!userByEmail) {
+        // Hash mật khẩu từ cấu hình
+        const hashedPassword = await bcrypt.hash(
+          superAdminUserConfig.password,
+          10,
+        );
+
+        const superadmin = this.userRepository.create({
+          email: superAdminUserConfig.email,
+          password: hashedPassword, // Sử dụng mật khẩu đã hash
+          name: superAdminUserConfig.name,
+          role: superAdminUserConfig.role,
+          isActive: superAdminUserConfig.isActive,
+          isVerified: superAdminUserConfig.isVerified,
+          status: superAdminUserConfig.status,
+        });
+        const savedSuperadmin = await this.userRepository.save(superadmin);
+        await this.userConfigService.createUserConfig(savedSuperadmin.id);
+        this.logger.log('Super admin created successfully!');
+      } else {
+        this.logger.log('Super admin already exists!');
+      }
+    } catch (error) {
+      this.logger.error('Failed to initialize Superadmin user:', error.stack);
     }
   }
 

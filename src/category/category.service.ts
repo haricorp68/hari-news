@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+// src/category/category.service.ts
+import {
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+  Logger,
+} from '@nestjs/common';
 import { IsNull } from 'typeorm';
 import { Category } from './entities/category.entity';
 import { CategoryRepository } from './repositories/category.repository';
@@ -8,17 +14,58 @@ import {
   CategorySearchService,
   CategorySearchResult,
 } from './category-search.service';
+import { v4 as uuidv4 } from 'uuid'; // Import uuid library
+import { INITIAL_APP_CONFIG } from 'src/common/config/initial-config';
 
 @Injectable()
-export class CategoryService {
+export class CategoryService implements OnModuleInit {
+  private readonly logger = new Logger(CategoryService.name);
+
   constructor(
     private readonly categoryRepository: CategoryRepository,
     private readonly categorySearchService: CategorySearchService,
   ) {}
 
+  async onModuleInit() {
+    this.logger.log(
+      'CategoryService initialized. Seeding default categories...',
+    );
+
+    const defaultCategoriesConfig = INITIAL_APP_CONFIG.defaultCategories;
+
+    if (!defaultCategoriesConfig || defaultCategoriesConfig.length === 0) {
+      this.logger.log('No default categories configured to seed.');
+      return;
+    }
+
+    try {
+      const { addedCategories, addedCount } =
+        await this.categoryRepository.createManyIfNotExists(
+          defaultCategoriesConfig,
+        );
+
+      if (addedCount > 0) {
+        this.logger.log(
+          `Successfully added ${addedCount} new default categories: ${addedCategories.map((cat) => cat.name).join(', ')}`,
+        );
+        // Index các category mới được thêm vào Elasticsearch
+        for (const category of addedCategories) {
+          await this.categorySearchService.indexCategory(category);
+        }
+      } else {
+        this.logger.log(
+          'No new default categories were added as they already exist.',
+        );
+      }
+    } catch (error) {
+      this.logger.error('Failed to seed default categories:', error.stack);
+    }
+    this.logger.log('Default categories seeding finished.');
+  }
+
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    // Xử lý parentId: nếu là chuỗi rỗng thì không set parentId
     const category = new Category();
+    category.id = createCategoryDto.id || uuidv4(); // Nếu ID không được cung cấp, tự sinh UUID
     category.name = createCategoryDto.name;
 
     if (createCategoryDto.description) {
@@ -29,19 +76,18 @@ export class CategoryService {
       category.coverImage = createCategoryDto.coverImage;
     }
 
-    // Chỉ set parentId nếu không phải chuỗi rỗng
     if (createCategoryDto.parentId && createCategoryDto.parentId !== '') {
       category.parentId = createCategoryDto.parentId;
     }
 
     const savedCategory = await this.categoryRepository.save(category);
 
-    // Index vào Elasticsearch
     await this.categorySearchService.indexCategory(savedCategory);
 
     return savedCategory;
   }
 
+  // ... (các phương thức khác không thay đổi)
   async findAll(): Promise<Category[]> {
     return this.categoryRepository.find();
   }
@@ -129,9 +175,11 @@ export class CategoryService {
       // Bulk index vào Elasticsearch
       await this.categorySearchService.bulkIndexCategories(categories);
 
-      console.log(`Synced ${categories.length} categories to Elasticsearch`);
+      this.logger.log(
+        `Synced ${categories.length} categories to Elasticsearch`,
+      );
     } catch (error) {
-      console.error('Error syncing categories:', error);
+      this.logger.error('Error syncing categories:', error);
       throw error;
     }
   }
@@ -144,9 +192,9 @@ export class CategoryService {
       // Reindex toàn bộ
       await this.categorySearchService.reindexAllCategories(categories);
 
-      console.log(`Reindexed ${categories.length} categories`);
+      this.logger.log(`Reindexed ${categories.length} categories`);
     } catch (error) {
-      console.error('Error reindexing categories:', error);
+      this.logger.error('Error reindexing categories:', error);
       throw error;
     }
   }

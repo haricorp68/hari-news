@@ -9,14 +9,37 @@ export interface NewsTagSearchResult extends NewsTag {
 @Injectable()
 export class NewsTagSearchService {
   private readonly index = 'news_tags';
+
+  // Settings với analyzer cải thiện
+  private readonly settings = {
+    analysis: {
+      analyzer: {
+        vietnamese_analyzer: {
+          type: 'custom',
+          tokenizer: 'keyword',
+          filter: ['lowercase', 'asciifolding'],
+        },
+      },
+    },
+  };
+
   private readonly mappings = {
     properties: {
       id: { type: 'keyword' },
       name: {
         type: 'text',
-        fields: { keyword: { type: 'keyword' } },
+        fields: {
+          keyword: { type: 'keyword' },
+          vietnamese: {
+            type: 'text',
+            analyzer: 'vietnamese_analyzer',
+          },
+        },
       },
-      name_no_accent: { type: 'text' },
+      name_no_accent: {
+        type: 'text',
+        analyzer: 'vietnamese_analyzer',
+      },
       created_at: {
         type: 'date',
         format: 'strict_date_optional_time||epoch_millis',
@@ -31,7 +54,11 @@ export class NewsTagSearchService {
   constructor(private readonly elasticService: ElasticService<NewsTag>) {}
 
   async createIndex() {
-    return this.elasticService.createIndex(this.index, this.mappings);
+    return this.elasticService.createIndex(
+      this.index,
+      this.mappings,
+      this.settings,
+    );
   }
 
   async indexTag(tag: NewsTag) {
@@ -63,11 +90,18 @@ export class NewsTagSearchService {
         created_at: tag['created_at'],
         updated_at: tag['updated_at'],
       }),
+      this.settings,
     );
   }
 
+  // Method search cũ vẫn hoạt động nhưng đã được cải thiện ở ElasticService
   async searchByName(name: string): Promise<NewsTagSearchResult[]> {
-    return this.elasticService.search(this.index, name, ['name'], { name: 2 });
+    return this.elasticService.search(
+      this.index,
+      name,
+      ['name', 'name_no_accent'],
+      { name: 2 },
+    );
   }
 
   async autocomplete(query: string): Promise<NewsTag[]> {
