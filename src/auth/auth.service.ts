@@ -76,16 +76,33 @@ export class AuthService {
       loginDto.email,
       true,
     )) as User | null;
-    if (!user || !user.password) {
-      throw new UnauthorizedException('Invalid credentials');
+
+    // Kiểm tra nếu người dùng không tồn tại
+    if (!user) {
+      throw new UnauthorizedException(
+        'Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.',
+      );
     }
+
+    // Kiểm tra nếu mật khẩu của người dùng không được đặt
+    if (!user.password) {
+      throw new UnauthorizedException(
+        'Người dùng chưa có mật khẩu được thiết lập. Vui lòng liên hệ quản trị viên.',
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
       user.password,
     );
+
+    // Kiểm tra nếu mật khẩu không hợp lệ
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(
+        'Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.',
+      );
     }
+
     const payload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
@@ -299,8 +316,10 @@ export class AuthService {
     if (existed) {
       throw new BadRequestException('Email đã tồn tại trong hệ thống!');
     }
+
     const tokenKey = `email_verification:${email}`;
     const cooldownKey = `email_verification_cooldown:${email}`;
+
     // Nếu đang cooldown thì báo lỗi
     const isCooldown = await this.redisService.getCache(cooldownKey);
     if (isCooldown) {
@@ -311,23 +330,42 @@ export class AuthService {
         retryAfter: ttl,
       });
     }
-    // Tạo token mới, lưu vào Redis 10 phút
+
+    // Tạo token mới
     const token = Math.floor(100000 + Math.random() * 900000).toString();
-    await this.redisService.setCache(tokenKey, JSON.stringify({ token }), 600); // TTL 10 phút
-    await this.redisService.setCache(cooldownKey, '1', 60); // TTL 1 phút
     const frontendUrl = this.configService.get('FRONTEND_URL');
     const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
 
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'Xác thực email tài khoản',
-      template: 'email-verification',
-      context: {
-        verifyUrl,
-        year: new Date().getFullYear(),
-      },
-    });
-    return {};
+    try {
+      // Gửi email trước
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Xác thực email tài khoản',
+        template: 'email-verification',
+        context: {
+          verifyUrl,
+          year: new Date().getFullYear(),
+        },
+      });
+
+      // Chỉ lưu vào Redis khi gửi email thành công
+      await this.redisService.setCache(
+        tokenKey,
+        JSON.stringify({ token }),
+        600,
+      ); // TTL 10 phút
+      await this.redisService.setCache(cooldownKey, '1', 60); // TTL 1 phút
+
+      return {};
+    } catch (error) {
+      // Log lỗi để debug
+      console.error('Gửi email verification thất bại:', error);
+
+      // Throw lại exception để client biết gửi email thất bại
+      throw new BadRequestException(
+        'Không thể gửi email xác thực. Vui lòng thử lại sau!',
+      );
+    }
   }
 
   // Đổi mật khẩu khi đã đăng nhập

@@ -109,6 +109,12 @@ export class User {
   @OneToMany(() => Follow, (follow) => follow.following)
   followers: Follow[];
 
+  @Column({ default: 0 })
+  newsPostsCount: number;
+
+  @Column({ default: 0 })
+  feedPostsCount: number;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   created_at: Date;
 

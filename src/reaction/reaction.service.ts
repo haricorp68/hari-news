@@ -2,26 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
 import { ReactionRepository } from './repositories/reaction.repository';
-import { UserFeedPostRepository } from '../post/repositories/user_feed_post.repository';
-import { CompanyFeedPostRepository } from '../post/repositories/company_feed_post.repository';
-import { CommunityFeedPostRepository } from '../post/repositories/community_feed_post.repository';
-import { UserNewsPostRepository } from '../post/repositories/user_news_post.repository';
-import { CompanyNewsPostRepository } from '../post/repositories/company_news_post.repository';
-import { CommunityNewsPostRepository } from '../post/repositories/community_news_post.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ReactionType } from './entities/reaction.entity';
 
 @Injectable()
 export class ReactionService {
-  constructor(
-    private readonly reactionRepository: ReactionRepository,
-    private readonly userFeedPostRepository: UserFeedPostRepository,
-    private readonly companyFeedPostRepository: CompanyFeedPostRepository,
-    private readonly communityFeedPostRepository: CommunityFeedPostRepository,
-    private readonly userNewsPostRepository: UserNewsPostRepository,
-    private readonly companyNewsPostRepository: CompanyNewsPostRepository,
-    private readonly communityNewsPostRepository: CommunityNewsPostRepository,
-  ) {}
+  constructor(private readonly reactionRepository: ReactionRepository) {}
 
   async create(createReactionDto: CreateReactionDto) {
     const { postId, userId } = createReactionDto; // userId cần có trong DTO hoặc truyền vào
