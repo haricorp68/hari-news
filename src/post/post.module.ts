@@ -38,5 +38,6 @@ import { ElasticModule } from 'src/elastic/elastic.module';
     NewsTagSearchService,
   ],
   imports: [ReactionModule, CommentModule, ElasticModule],
+  exports: [PostService],
 })
 export class PostModule {}

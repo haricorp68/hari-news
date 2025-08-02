@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
 import {
   CreateUserFeedPostDto,
   CreateUserFeedPostMediaDto,
@@ -20,7 +19,6 @@ import { MediaType, BlockType } from './../enums/post.enums';
 import { UserFeedPostResponseDto } from './../dto/user-feed-post-response.dto';
 import { CommunityFeedPostResponseDto } from './../dto/community-feed-post-response.dto';
 import { CompanyFeedPostResponseDto } from './../dto/company-feed-post-response.dto';
-import { In } from 'typeorm';
 import { ReactionService } from '../../reaction/reaction.service';
 import { CommentService } from '../../comment/comment.service';
 import { UserNewsPostRepository } from './../repositories/user_news_post.repository';
@@ -30,10 +28,6 @@ import { UpdateUserNewsPostDto } from './../dto/update-user-news-post.dto';
 import { UserNewsPostListDto } from './../dto/user-news-post-response.dto';
 import { ReactionType } from '../../reaction/entities/reaction.entity';
 import { NewsTagService } from './news_tag.service';
-import { CompanyNewsPostRepository } from './../repositories/company_news_post.repository';
-import { CommunityNewsPostRepository } from './../repositories/community_news_post.repository';
-import { CreateCompanyNewsPostDto } from './../dto/create-company-news-post.dto';
-import { CreateCommunityNewsPostDto } from './../dto/create-community-news-post.dto';
 import { NewsTag } from '../entities/news_tag.entity';
 
 @Injectable()
@@ -48,8 +42,6 @@ export class PostService {
     private readonly userNewsPostRepo: UserNewsPostRepository,
     private readonly postBlockRepo: PostBlockRepository,
     private readonly newsTagService: NewsTagService,
-    private readonly companyNewsPostRepo: CompanyNewsPostRepository,
-    private readonly communityNewsPostRepo: CommunityNewsPostRepository,
   ) {}
 
   async createUserFeedPost(userId: string, dto: CreateUserFeedPostDto) {
@@ -756,6 +748,20 @@ export class PostService {
         total,
         totalPages: Math.ceil(total / pageSize),
       },
+    };
+  }
+
+  async getPostsStatByUserId(userId: string) {
+    const userFeedPostsCount = await this.userFeedPostRepo.count({
+      where: { user: { id: userId } },
+    });
+    const userNewsPostsCount = await this.userNewsPostRepo.count({
+      where: { user: { id: userId } },
+    });
+
+    return {
+      userFeedPosts: userFeedPostsCount,
+      userNewsPosts: userNewsPostsCount,
     };
   }
 }

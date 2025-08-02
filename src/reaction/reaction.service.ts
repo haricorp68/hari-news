@@ -109,6 +109,7 @@ export class ReactionService {
       await this.reactionRepository.remove(existed);
       return { deleted: true };
     }
+
     return { deleted: false };
   }
 }

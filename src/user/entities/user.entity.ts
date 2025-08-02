@@ -123,4 +123,6 @@ export class User {
 
   @Column({ nullable: true, unique: true })
   alias: string;
+  @Column({ default: false, type: 'boolean' })
+  isCompletedTutorial: boolean;
 }

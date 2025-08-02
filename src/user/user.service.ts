@@ -14,6 +14,7 @@ import { FollowService } from '../follow/follow.service';
 import { Like } from 'typeorm';
 import { UserResponseDto } from './dto/user-response.dto';
 import { INITIAL_APP_CONFIG } from 'src/common/config/initial-config';
+import { PostService } from 'src/post/services/post.service';
 
 @Injectable()
 export class UserService implements OnModuleInit {
@@ -23,6 +24,7 @@ export class UserService implements OnModuleInit {
     private readonly userRepository: UserRepository,
     private readonly userConfigService: UserConfigService,
     private readonly followService: FollowService,
+    private readonly postService: PostService,
   ) {}
 
   async onModuleInit() {
@@ -120,6 +122,15 @@ export class UserService implements OnModuleInit {
       followersCount: followStats.followersCount,
       followingCount: followStats.followingCount,
     };
+
+    // --- Bổ sung: Lấy số liệu thống kê bài đăng của người dùng ---
+    const postStats = await this.postService.getPostsStatByUserId(id);
+    result = {
+      ...result,
+      userFeedPostsCount: postStats.userFeedPosts,
+      userNewsPostsCount: postStats.userNewsPosts,
+    };
+    // -------------------------------------------------------------
 
     return result;
   }
