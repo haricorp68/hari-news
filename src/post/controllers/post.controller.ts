@@ -17,6 +17,10 @@ import { UpdateUserNewsPostDto } from '../dto/update-user-news-post.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PostService } from '../services/post.service';
+import {
+  OptionalJwtAuthGuard,
+  OptionalJwtAuthGuardV2,
+} from 'src/common/guards/jwt-optional.guard';
 
 @Controller('post')
 export class PostController {
@@ -146,9 +150,10 @@ export class PostController {
    * Lấy chi tiết đầy đủ của một bài postnews (user news)
    */
   @Get('user-news/detail/:postId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   getUserNewsPostDetail(@Param('postId') postId: string, @CurrentUser() user) {
-    return this.postService.getUserNewsPostDetailById(postId, user.userId);
+    const userId = user?.userId || null; // Handle case when user is null
+    return this.postService.getUserNewsPostDetailById(postId, userId);
   }
 
   /**

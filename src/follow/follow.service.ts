@@ -1,12 +1,5 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Follow } from './entities/follow.entity';
-import { CreateFollowDto } from './dto/create-follow.dto';
-import { UpdateFollowDto } from './dto/update-follow.dto';
 import { FollowResponseDto } from './dto/follow-response.dto';
 import { FollowStatsDto } from './dto/follow-stats.dto';
 import { FollowRepository } from './repositories/follow.repository';
@@ -15,12 +8,10 @@ import { FollowRepository } from './repositories/follow.repository';
 export class FollowService {
   constructor(private followRepository: FollowRepository) {}
 
-  async createFollow(
+  async toggleFollow(
     followerId: string,
-    createFollowDto: CreateFollowDto,
-  ): Promise<FollowResponseDto> {
-    const { followingId } = createFollowDto;
-
+    followingId: string,
+  ): Promise<{ message: string; isFollowing: boolean }> {
     // Kiểm tra không follow chính mình
     if (followerId === followingId) {
       throw new BadRequestException('Cannot follow yourself');
@@ -33,115 +24,54 @@ export class FollowService {
     );
 
     if (existingFollow) {
-      throw new ConflictException('Already following this user');
-    }
-
-    const savedFollow = await this.followRepository.createFollow(
-      followerId,
-      followingId,
-    );
-    return this.mapToResponseDto(savedFollow);
-  }
-
-  async getFollowById(id: string): Promise<FollowResponseDto> {
-    const follow = await this.followRepository.findWithRelations(id, [
-      'follower',
-      'following',
-    ]);
-
-    if (!follow) {
-      throw new NotFoundException('Follow not found');
-    }
-
-    return this.mapToResponseDto(follow);
-  }
-
-  async getFollowByUsers(
-    followerId: string,
-    followingId: string,
-  ): Promise<FollowResponseDto | null> {
-    const follow = await this.followRepository.findByUsers(
-      followerId,
-      followingId,
-    );
-
-    return follow ? this.mapToResponseDto(follow) : null;
-  }
-
-  async updateFollow(
-    id: string,
-    updateFollowDto: UpdateFollowDto,
-  ): Promise<FollowResponseDto> {
-    const follow = await this.followRepository.findWithRelations(id, [
-      'follower',
-      'following',
-    ]);
-
-    if (!follow) {
-      throw new NotFoundException('Follow not found');
-    }
-
-    if (updateFollowDto.isMuted !== undefined) {
-      await this.followRepository.updateMuteStatus(id, updateFollowDto.isMuted);
-    }
-
-    const updatedFollow = await this.followRepository.findWithRelations(id, [
-      'follower',
-      'following',
-    ]);
-    if (!updatedFollow) {
-      throw new NotFoundException('Follow not found after update');
-    }
-    return this.mapToResponseDto(updatedFollow);
-  }
-
-  async deleteFollow(id: string): Promise<void> {
-    const follow = await this.followRepository.findById(id);
-
-    if (!follow) {
-      throw new NotFoundException('Follow not found');
-    }
-
-    await this.followRepository.remove(follow);
-  }
-
-  async unfollow(followerId: string, followingId: string): Promise<void> {
-    const result = await this.followRepository.deleteFollow(
-      followerId,
-      followingId,
-    );
-
-    if (!result) {
-      throw new NotFoundException('Follow relationship not found');
+      // Nếu đã follow thì unfollow
+      await this.followRepository.deleteFollow(followerId, followingId);
+      return {
+        message: 'Unfollowed successfully',
+        isFollowing: false,
+      };
+    } else {
+      // Nếu chưa follow thì follow
+      await this.followRepository.createFollow(followerId, followingId);
+      return {
+        message: 'Followed successfully',
+        isFollowing: true,
+      };
     }
   }
 
   async getFollowers(
     userId: string,
     page: number = 1,
-    limit: number = 20,
-  ): Promise<FollowResponseDto[]> {
-    const follows = await this.followRepository.findFollowers(
+    pageSize: number = 10,
+  ): Promise<{ data: FollowResponseDto[]; total: number; lastPage: number }> {
+    const [follows, total] = await this.followRepository.findFollowersWithCount(
       userId,
       page,
-      limit,
+      pageSize,
     );
 
-    return follows.map((follow) => this.mapToResponseDto(follow));
+    const data = follows.map((follow) => this.mapToResponseDto(follow));
+    const lastPage = Math.ceil(total / pageSize);
+
+    return { data, total, lastPage };
   }
 
   async getFollowing(
     userId: string,
     page: number = 1,
-    limit: number = 20,
-  ): Promise<FollowResponseDto[]> {
-    const follows = await this.followRepository.findFollowing(
+    pageSize: number = 10,
+  ): Promise<{ data: FollowResponseDto[]; total: number; lastPage: number }> {
+    const [follows, total] = await this.followRepository.findFollowingWithCount(
       userId,
       page,
-      limit,
+      pageSize,
     );
 
-    return follows.map((follow) => this.mapToResponseDto(follow));
+    const data = follows.map((follow) => this.mapToResponseDto(follow));
+    const lastPage = Math.ceil(total / pageSize);
+
+    return { data, total, lastPage };
   }
 
   async getFollowStats(userId: string): Promise<FollowStatsDto> {
@@ -154,10 +84,6 @@ export class FollowService {
       followersCount,
       followingCount,
     };
-  }
-
-  async isFollowing(followerId: string, followingId: string): Promise<boolean> {
-    return this.followRepository.isFollowing(followerId, followingId);
   }
 
   private mapToResponseDto(follow: Follow): FollowResponseDto {
@@ -175,7 +101,6 @@ export class FollowService {
             name: follow.follower.name,
             email: follow.follower.email,
             avatar: follow.follower.avatar,
-            //mark
           }
         : undefined,
       following: follow.following
@@ -184,9 +109,27 @@ export class FollowService {
             name: follow.following.name,
             email: follow.following.email,
             avatar: follow.following.avatar,
-            //mark
           }
         : undefined,
+    };
+  }
+  async checkFollowStatus(
+    followerId: string,
+    followingId: string,
+  ): Promise<{ isFollowing: boolean; follow?: any }> {
+    // Kiểm tra không check chính mình
+    if (followerId === followingId) {
+      return { isFollowing: false };
+    }
+
+    const existingFollow = await this.followRepository.findByUsers(
+      followerId,
+      followingId,
+    );
+
+    return {
+      isFollowing: !!existingFollow,
+      follow: existingFollow ? this.mapToResponseDto(existingFollow) : null,
     };
   }
 }

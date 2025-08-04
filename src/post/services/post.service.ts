@@ -528,27 +528,34 @@ export class PostService {
     }));
   }
 
-  async getUserNewsPostDetailById(postId: string, userId?: string) {
+  async getUserNewsPostDetailById(postId: string, userId?: string | null) {
     const post = await this.userNewsPostRepo.findOne({
       where: { id: postId },
-      relations: ['user', 'category', 'tags'], // thêm 'tags'
+      relations: ['user', 'category', 'tags'],
     });
+
     if (!post) return null;
+
     const blocks = await this.postBlockRepo.findBy({
       post_type: 'user_news',
       post_id: postId,
     });
+
     const reactionSummaryMap = await this.reactionService.findByPosts({
       postIds: [postId],
     });
+
     const commentCount =
       await this.commentService.getCommentCountByPost(postId);
+
+    // Only get user reaction if userId is provided and not null
     let userReaction: ReactionType | undefined = undefined;
     if (userId) {
       const userReactionMap =
         await this.reactionService.getUserReactionsForPosts(userId, [postId]);
       userReaction = userReactionMap[postId] as ReactionType | undefined;
     }
+
     return {
       id: post.id,
       title: post.title,
@@ -583,7 +590,7 @@ export class PostService {
         order: block.order,
       })),
       reactionSummary: reactionSummaryMap[postId] || {},
-      userReaction,
+      userReaction, // Will be undefined for guest users
       commentCount,
     };
   }

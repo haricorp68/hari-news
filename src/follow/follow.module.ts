@@ -11,4 +11,4 @@ import { FollowRepository } from './repositories/follow.repository';
   providers: [FollowService, FollowRepository],
   exports: [FollowService, FollowRepository],
 })
-export class FollowModule {} 
+export class FollowModule {}

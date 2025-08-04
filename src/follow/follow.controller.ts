@@ -2,9 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Put,
-  Delete,
-  Body,
   Param,
   Query,
   UseGuards,
@@ -12,8 +9,6 @@ import {
   DefaultValuePipe,
 } from '@nestjs/common';
 import { FollowService } from './follow.service';
-import { CreateFollowDto } from './dto/create-follow.dto';
-import { UpdateFollowDto } from './dto/update-follow.dto';
 import { FollowResponseDto } from './dto/follow-response.dto';
 import { FollowStatsDto } from './dto/follow-stats.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -23,70 +18,15 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 export class FollowController {
   constructor(private readonly followService: FollowService) {}
 
-  @Post()
+  @Post('toggle/:followingId')
   @UseGuards(JwtAuthGuard)
-  async createFollow(
-    @CurrentUser() user,
-    @Body() createFollowDto: CreateFollowDto,
-  ): Promise<FollowResponseDto> {
-    const userId = user.userId || user.id;
-    return this.followService.createFollow(userId, createFollowDto);
-  }
-
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  async getFollowById(@Param('id') id: string): Promise<FollowResponseDto> {
-    return this.followService.getFollowById(id);
-  }
-
-  @Get('check/:followingId')
-  @UseGuards(JwtAuthGuard)
-  async checkFollowStatus(
+  async toggleFollow(
     @CurrentUser() user,
     @Param('followingId') followingId: string,
-  ): Promise<{ isFollowing: boolean; follow?: FollowResponseDto }> {
+  ): Promise<{ message: string; isFollowing: boolean }> {
     const userId = user.userId || user.id;
-    const isFollowing = await this.followService.isFollowing(
-      userId,
-      followingId,
-    );
-    let follow: FollowResponseDto | undefined = undefined;
-
-    if (isFollowing) {
-      const followData = await this.followService.getFollowByUsers(
-        userId,
-        followingId,
-      );
-      follow = followData || undefined;
-    }
-
-    return { isFollowing, follow };
-  }
-
-  @Put(':id')
-  @UseGuards(JwtAuthGuard)
-  async updateFollow(
-    @Param('id') id: string,
-    @Body() updateFollowDto: UpdateFollowDto,
-  ): Promise<FollowResponseDto> {
-    return this.followService.updateFollow(id, updateFollowDto);
-  }
-
-  @Delete(':id')
-  async deleteFollow(@Param('id') id: string): Promise<{ message: string }> {
-    await this.followService.deleteFollow(id);
-    return { message: 'Follow deleted successfully' };
-  }
-
-  @Delete('unfollow/:followingId')
-  @UseGuards(JwtAuthGuard)
-  async unfollow(
-    @CurrentUser() user,
-    @Param('followingId') followingId: string,
-  ): Promise<{ message: string }> {
-    const userId = user.userId || user.id;
-    await this.followService.unfollow(userId, followingId);
-    return { message: 'Unfollowed successfully' };
+    const result = await this.followService.toggleFollow(userId, followingId);
+    return result;
   }
 
   @Get('followers/:userId')
@@ -94,9 +34,23 @@ export class FollowController {
   async getFollowers(
     @Param('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-  ): Promise<FollowResponseDto[]> {
-    return this.followService.getFollowers(userId, page, limit);
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+  ) {
+    const { data, total, lastPage } = await this.followService.getFollowers(
+      userId,
+      page,
+      pageSize,
+    );
+    return {
+      data,
+      message: 'Lấy danh sách followers thành công!',
+      metadata: {
+        page: Number(page),
+        pageSize: Number(pageSize),
+        total,
+        totalPages: lastPage,
+      },
+    };
   }
 
   @Get('following/:userId')
@@ -104,45 +58,49 @@ export class FollowController {
   async getFollowing(
     @Param('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-  ): Promise<FollowResponseDto[]> {
-    return this.followService.getFollowing(userId, page, limit);
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+  ) {
+    const { data, total, lastPage } = await this.followService.getFollowing(
+      userId,
+      page,
+      pageSize,
+    );
+    return {
+      data,
+      message: 'Lấy danh sách following thành công!',
+      metadata: {
+        page: Number(page),
+        pageSize: Number(pageSize),
+        total,
+        totalPages: lastPage,
+      },
+    };
   }
 
   @Get('stats/:userId')
   @UseGuards(JwtAuthGuard)
-  async getFollowStats(
+  async getFollowStats(@Param('userId') userId: string) {
+    const stats = await this.followService.getFollowStats(userId);
+    return {
+      message: 'Lấy thống kê follow thành công!',
+      ...stats,
+    };
+  }
+
+  @Get('check/:userId')
+  @UseGuards(JwtAuthGuard)
+  async checkFollowStatus(
+    @CurrentUser() user,
     @Param('userId') userId: string,
-  ): Promise<FollowStatsDto> {
-    return this.followService.getFollowStats(userId);
-  }
-
-  @Get('my/followers')
-  @UseGuards(JwtAuthGuard)
-  async getMyFollowers(
-    @CurrentUser() user,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-  ): Promise<FollowResponseDto[]> {
-    const userId = user.userId || user.id;
-    return this.followService.getFollowers(userId, page, limit);
-  }
-
-  @Get('my/following')
-  @UseGuards(JwtAuthGuard)
-  async getMyFollowing(
-    @CurrentUser() user,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-  ): Promise<FollowResponseDto[]> {
-    const userId = user.userId || user.id;
-    return this.followService.getFollowing(userId, page, limit);
-  }
-
-  @Get('my/stats')
-  @UseGuards(JwtAuthGuard)
-  async getMyFollowStats(@CurrentUser() user): Promise<FollowStatsDto> {
-    const userId = user.userId || user.id;
-    return this.followService.getFollowStats(userId);
+  ) {
+    const currentUserId = user.userId || user.id;
+    const result = await this.followService.checkFollowStatus(
+      currentUserId,
+      userId,
+    );
+    return {
+      message: 'Lấy trạng thái follow thành công!',
+      ...result,
+    };
   }
 }
