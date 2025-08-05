@@ -15,12 +15,9 @@ import { CreateCompanyFeedPostDto } from '../dto/create-company-feed-post.dto';
 import { CreateUserNewsPostDto } from '../dto/create-user-news-post.dto';
 import { UpdateUserNewsPostDto } from '../dto/update-user-news-post.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PostService } from '../services/post.service';
-import {
-  OptionalJwtAuthGuard,
-  OptionalJwtAuthGuardV2,
-} from 'src/common/guards/jwt-optional.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from 'src/common/guards/jwt-optional.guard';
 
 @Controller('post')
 export class PostController {
@@ -149,11 +146,42 @@ export class PostController {
   /**
    * Lấy chi tiết đầy đủ của một bài postnews (user news)
    */
-  @Get('user-news/detail/:postId')
+  // @Get('user-news/detail/:postId')
+  // @UseGuards(OptionalJwtAuthGuard)
+  // getUserNewsPostDetail(@Param('postId') postId: string, @CurrentUser() user) {
+  //   const userId = user?.userId || null; // Handle case when user is null
+  //   return this.postService.getUserNewsPostDetailById(postId, userId);
+  // }
+
+  @Get('user-news/slug/:slug')
   @UseGuards(OptionalJwtAuthGuard)
-  getUserNewsPostDetail(@Param('postId') postId: string, @CurrentUser() user) {
+  getUserNewsPostDetailBySlug(
+    @Param('slug') slug: string,
+    @CurrentUser() user,
+  ) {
     const userId = user?.userId || null; // Handle case when user is null
-    return this.postService.getUserNewsPostDetailById(postId, userId);
+    return this.postService.getUserNewsPostDetailBySlug(slug, userId);
+  }
+
+  @Get('user-news/detail/:identifier')
+  @UseGuards(OptionalJwtAuthGuard)
+  async getUserNewsPostDetailByIdentifier(
+    @Param('identifier') identifier: string,
+    @CurrentUser() user,
+  ) {
+    const userId = user?.userId || null;
+
+    // Kiểm tra xem identifier là UUID hay slug
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (uuidRegex.test(identifier)) {
+      // Nếu là UUID -> query by ID
+      return this.postService.getUserNewsPostDetailById(identifier, userId);
+    } else {
+      // Nếu không phải UUID -> query by slug
+      return this.postService.getUserNewsPostDetailBySlug(identifier, userId);
+    }
   }
 
   /**

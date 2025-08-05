@@ -108,6 +108,50 @@ export class PostService {
     return { id: post.id, type: 'company_feed' };
   }
 
+  // Thêm hàm generateUniqueSlug vào class
+  private slugify(str: string): string {
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Bỏ dấu tiếng Việt
+      .replace(/[đĐ]/g, 'd')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  private async generateUniqueSlug(
+    title: string,
+    currentId?: string,
+  ): Promise<string> {
+    const baseSlug = this.slugify(title);
+    let slug = baseSlug;
+    let counter = 1;
+
+    while (true) {
+      const queryBuilder = this.userNewsPostRepo
+        .createQueryBuilder('post')
+        .where('post.slug = :slug', { slug });
+
+      // Exclude current post khi update
+      if (currentId) {
+        queryBuilder.andWhere('post.id != :currentId', { currentId });
+      }
+
+      const existing = await queryBuilder.getOne();
+
+      if (!existing) break;
+
+      counter++;
+      slug = `${baseSlug}-${counter}`;
+    }
+
+    return slug;
+  }
+
+  // Hàm createUserNewsPost đã cập nhật
   async createUserNewsPost(userId: string, dto: CreateUserNewsPostDto) {
     let tags: NewsTag[] = [];
     if (dto.tags?.length) {
@@ -124,13 +168,17 @@ export class PostService {
       );
     }
 
-    // Tạo news post và gán tags
+    // Generate unique slug từ title
+    const slug = await this.generateUniqueSlug(dto.title);
+
+    // Tạo news post và gán tags + slug
     const post = this.userNewsPostRepo.create({
       user: { id: userId },
       title: dto.title,
       summary: dto.summary,
       cover_image: dto.cover_image,
       categoryId: dto.categoryId,
+      slug, // Thêm slug
       tags,
     });
 
@@ -153,7 +201,7 @@ export class PostService {
       await this.postBlockRepo.save(blocks);
     }
 
-    return { id: post.id, type: 'user_news' };
+    return { id: post.id, type: 'user_news', slug }; // Return slug để có thể dùng ngay
   }
 
   // Public endpoint for reading user feed posts by userId
@@ -389,6 +437,7 @@ export class PostService {
       title: post.title,
       summary: post.summary,
       cover_image: post.cover_image,
+      slug: post.slug,
       category: post.category
         ? {
             id: post.category.id,
@@ -446,6 +495,7 @@ export class PostService {
       title: post.title,
       summary: post.summary,
       cover_image: post.cover_image,
+      slug: post.slug,
       category: post.category
         ? {
             id: post.category.id,
@@ -502,6 +552,7 @@ export class PostService {
       title: post.title,
       summary: post.summary,
       cover_image: post.cover_image,
+      slug: post.slug,
       categoryId: post.categoryId,
       category: post.category
         ? {
@@ -561,6 +612,8 @@ export class PostService {
       title: post.title,
       summary: post.summary,
       cover_image: post.cover_image,
+
+      slug: post.slug,
       category: post.category
         ? {
             id: post.category.id,
@@ -595,7 +648,6 @@ export class PostService {
     };
   }
 
-  // Update and delete methods
   async updateUserNewsPost(
     userId: string,
     postId: string,
@@ -609,11 +661,19 @@ export class PostService {
       throw new Error('Post not found or access denied');
     }
 
+    // Track nếu title thay đổi để generate slug mới
+    const titleChanged = dto.title !== undefined && dto.title !== post.title;
+
     // Update post fields
     if (dto.title !== undefined) post.title = dto.title;
     if (dto.summary !== undefined) post.summary = dto.summary;
     if (dto.cover_image !== undefined) post.cover_image = dto.cover_image;
     if (dto.categoryId !== undefined) post.categoryId = dto.categoryId;
+
+    // Nếu title thay đổi, generate slug mới
+    if (titleChanged && dto.title) {
+      post.slug = await this.generateUniqueSlug(dto.title, postId);
+    }
 
     await this.userNewsPostRepo.save(post);
 
@@ -641,7 +701,12 @@ export class PostService {
       await this.postBlockRepo.save(blocks);
     }
 
-    return { id: post.id, type: 'user_news', updated: true };
+    return {
+      id: post.id,
+      type: 'user_news',
+      updated: true,
+      slug: post.slug, // Return slug để có thể update URL ở frontend
+    };
   }
 
   async deleteUserNewsPost(userId: string, postId: string) {
@@ -724,6 +789,7 @@ export class PostService {
         title: post.title,
         summary: post.summary,
         cover_image: post.cover_image,
+        slug: post.slug,
         category: post.category
           ? {
               id: post.category.id,
@@ -769,6 +835,75 @@ export class PostService {
     return {
       userFeedPosts: userFeedPostsCount,
       userNewsPosts: userNewsPostsCount,
+    };
+  }
+  // Thêm vào PostService
+  async getUserNewsPostDetailBySlug(slug: string, userId?: string | null) {
+    const post = await this.userNewsPostRepo.findOne({
+      where: { slug },
+      relations: ['user', 'category', 'tags'],
+    });
+
+    if (!post) return null;
+
+    const blocks = await this.postBlockRepo.findBy({
+      post_type: 'user_news',
+      post_id: post.id, // Vẫn dùng ID để query blocks
+    });
+
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postIds: [post.id],
+    });
+
+    const commentCount = await this.commentService.getCommentCountByPost(
+      post.id,
+    );
+
+    // Only get user reaction if userId is provided and not null
+    let userReaction: ReactionType | undefined = undefined;
+    if (userId) {
+      const userReactionMap =
+        await this.reactionService.getUserReactionsForPosts(userId, [post.id]);
+      userReaction = userReactionMap[post.id] as ReactionType | undefined;
+    }
+
+    return {
+      id: post.id,
+      slug: post.slug, // Thêm slug vào response
+      title: post.title,
+      summary: post.summary,
+      cover_image: post.cover_image,
+      category: post.category
+        ? {
+            id: post.category.id,
+            name: post.category.name,
+            description: post.category.description,
+          }
+        : undefined,
+      tags:
+        post.tags?.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        })) || [],
+      created_at: post.created_at,
+      updated_at: post.updated_at,
+      user: {
+        id: post.user.id,
+        name: post.user.name,
+        avatar: post.user.avatar,
+      },
+      blocks: blocks.map((block) => ({
+        id: block.id,
+        type: block.type,
+        content: block.content,
+        media_url: block.media_url,
+        file_name: block.file_name,
+        file_size: block.file_size,
+        order: block.order,
+      })),
+      reactionSummary: reactionSummaryMap[post.id] || {},
+      userReaction,
+      commentCount,
     };
   }
 }
