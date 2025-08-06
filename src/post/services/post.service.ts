@@ -466,17 +466,37 @@ export class PostService {
   // Public endpoints for reading user news posts
   async getUserNewsPosts(
     userId: string,
+    page = 1,
+    pageSize = 20,
     currentUserId?: string,
-    limit = 20,
-    offset = 0,
-  ): Promise<UserNewsPostListDto[]> {
+  ): Promise<{
+    data: UserNewsPostListDto[];
+    metadata: {
+      page: number;
+      pageSize: number;
+      totalCount: number;
+      totalPages: number;
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+    };
+  }> {
+    // Calculate skip value from page and pageSize
+    const skip = (page - 1) * pageSize;
+
+    // Get total count for pagination metadata
+    const totalCount = await this.userNewsPostRepo.count({
+      where: { user: { id: userId } },
+    });
+
+    // Get posts with pagination
     const posts = await this.userNewsPostRepo.find({
       where: { user: { id: userId } },
       order: { created_at: 'DESC' },
-      skip: offset,
-      take: limit,
+      skip,
+      take: pageSize,
       relations: ['user', 'category', 'tags'], // thêm 'tags'
     });
+
     const postIds = posts.map((p) => p.id);
     const userReactionMap = currentUserId
       ? await this.reactionService.getUserReactionsForPosts(
@@ -490,7 +510,8 @@ export class PostService {
     const commentCounts = await Promise.all(
       postIds.map((id) => this.commentService.getCommentCountByPost(id)),
     );
-    return posts.map((post, idx) => ({
+
+    const data = posts.map((post, idx) => ({
       id: post.id,
       title: post.title,
       summary: post.summary,
@@ -519,6 +540,23 @@ export class PostService {
       reactionSummary: reactionSummaryMap[post.id] || {},
       commentCount: commentCounts[idx],
     }));
+
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
+
+    return {
+      data,
+      metadata: {
+        page,
+        pageSize,
+        totalCount,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+      },
+    };
   }
 
   async getUserNewsSummary(
@@ -656,6 +694,7 @@ export class PostService {
     // Check if post exists and belongs to user
     const post = await this.userNewsPostRepo.findOne({
       where: { id: postId, user: { id: userId } },
+      relations: ['tags'], // Load current tags
     });
     if (!post) {
       throw new Error('Post not found or access denied');
@@ -669,6 +708,25 @@ export class PostService {
     if (dto.summary !== undefined) post.summary = dto.summary;
     if (dto.cover_image !== undefined) post.cover_image = dto.cover_image;
     if (dto.categoryId !== undefined) post.categoryId = dto.categoryId;
+
+    // Handle tags update if provided
+    if (dto.tags !== undefined) {
+      let tags: NewsTag[] = [];
+      if (dto.tags?.length) {
+        const rawTags = await Promise.all(
+          dto.tags.map((id) => this.newsTagService.findOne(id)),
+        );
+        tags = rawTags.filter(Boolean) as NewsTag[];
+      }
+
+      // Kiểm tra nếu không có tag hợp lệ thì báo lỗi (nếu tags được cung cấp)
+      if (dto.tags.length > 0 && !tags.length) {
+        throw new BadRequestException('At least one valid tag is required');
+      }
+
+      // Update tags relation
+      post.tags = tags;
+    }
 
     // Nếu title thay đổi, generate slug mới
     if (titleChanged && dto.title) {
@@ -756,9 +814,26 @@ export class PostService {
     if (categoryId) {
       qb.andWhere('post.categoryId = :categoryId', { categoryId });
     }
+
+    // Fix: Thay đổi logic filter theo tags
     if (tagIds && tagIds.length > 0) {
-      qb.andWhere('tags.id IN (:...tagIds)', { tagIds });
+      // Sử dụng subquery để đảm bảo post có tất cả các tag được chỉ định
+      qb.andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('pt.userNewsPostId')
+          .from('user_news_post_tags_news_tag', 'pt')
+          .where('pt.newsTagId IN (:...tagIds)', { tagIds })
+          .groupBy('pt.userNewsPostId')
+          .having('COUNT(DISTINCT pt.newsTagId) = :tagCount', {
+            tagCount: tagIds.length,
+          })
+          .getQuery();
+
+        return 'post.id IN ' + subQuery;
+      });
     }
+
     if (fromDate) {
       qb.andWhere('post.created_at >= :fromDate', { fromDate });
     }
@@ -810,9 +885,11 @@ export class PostService {
         interactionCount: reactionCount + commentCount,
       };
     });
+
     if (sortByInteraction) {
       data = data.sort((a, b) => b.interactionCount - a.interactionCount);
     }
+
     return {
       data,
       metadata: {

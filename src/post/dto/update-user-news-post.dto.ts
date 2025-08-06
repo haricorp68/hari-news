@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsArray, ValidateNested, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class UpdateUserNewsPostBlockDto {
@@ -47,4 +53,9 @@ export class UpdateUserNewsPostDto {
   @ValidateNested({ each: true })
   @Type(() => UpdateUserNewsPostBlockDto)
   blocks?: UpdateUserNewsPostBlockDto[];
-} 
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+}

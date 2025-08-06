@@ -61,13 +61,13 @@ export class PostController {
   @Get('self/user-feed')
   getSelfUserFeed(
     @CurrentUser() user,
-    @Query('limit') limit = 20,
-    @Query('offset') offset = 0,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
   ) {
     return this.postService.getUserFeedPosts(
       user.userId,
-      Number(limit),
-      Number(offset),
+      Number(page),
+      Number(pageSize),
     );
   }
 
@@ -77,13 +77,13 @@ export class PostController {
   @Get('user-feed/:userId')
   getUserFeedPosts(
     @Param('userId') userId: string,
-    @Query('limit') limit = 20,
-    @Query('offset') offset = 0,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
   ) {
     return this.postService.getUserFeedPosts(
       userId,
-      Number(limit),
-      Number(offset),
+      Number(page),
+      Number(pageSize),
     );
   }
 
@@ -116,13 +116,13 @@ export class PostController {
   @Get('self/user-news')
   getSelfUserNews(
     @CurrentUser() user,
-    @Query('limit') limit = 20,
-    @Query('offset') offset = 0,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
   ) {
     return this.postService.getUserSelfNewsPosts(
       user.userId,
-      Number(limit),
-      Number(offset),
+      Number(page),
+      Number(pageSize),
     );
   }
 
@@ -132,14 +132,13 @@ export class PostController {
   @Get('user-news/:userId')
   getUserNewsPosts(
     @Param('userId') userId: string,
-    @Query('limit') limit = 20,
-    @Query('offset') offset = 0,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
   ) {
     return this.postService.getUserNewsPosts(
       userId,
-      undefined,
-      Number(limit),
-      Number(offset),
+      Number(page),
+      Number(pageSize),
     );
   }
 
