@@ -9,15 +9,17 @@ export class UserFeedPostRepository extends Repository<UserFeedPost> {
     super(UserFeedPost, dataSource.createEntityManager());
   }
 
-  async getUserFeedPosts(userId: string, limit = 20, offset = 0) {
+  async getUserFeedPosts(userId: string, page = 1, pageSize = 20) {
+    const limit = pageSize;
+    const offset = (page - 1) * pageSize;
     const posts = await this.createQueryBuilder('post')
       .leftJoinAndSelect('post.user', 'user')
       .where('user.id = :userId', { userId })
-      .andWhere('post.is_deleted = false')
       .orderBy('post.created_at', 'DESC')
       .skip(offset)
       .take(limit)
       .getMany();
+
     // Lấy media cho từng post
     const postIds = posts.map((p) => p.id);
     let media: PostMedia[] = [];
@@ -49,5 +51,42 @@ export class UserFeedPostRepository extends Repository<UserFeedPost> {
       order: { order: 'ASC' },
     });
     return post;
+  }
+
+  async getFeedOfFollowedUsers(followingIds: string[], limit = 20, offset = 0) {
+    if (!followingIds.length) return [[], 0] as [UserFeedPost[], number];
+    const queryBuilder = this.createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .where('user.id IN (:...followingIds)', { followingIds })
+      .andWhere('post.is_deleted = false')
+      .orderBy('post.created_at', 'DESC')
+      .skip(offset)
+      .take(limit);
+    // Log raw SQL
+    console.log('🟡 [getFeedOfFollowedUsers] SQL:', queryBuilder.getSql());
+    const [posts, total] = await queryBuilder.getManyAndCount();
+    console.log('🔵 [getFeedOfFollowedUsers] posts:', posts);
+    const postIds = posts.map((p) => p.id);
+    console.log('🟣 [getFeedOfFollowedUsers] postIds:', postIds);
+    let media: PostMedia[] = [];
+    if (postIds.length) {
+      media = await this.manager
+        .getRepository(PostMedia)
+        .createQueryBuilder('media')
+        .where('media.post_type = :postType', { postType: 'user_feed' })
+        .andWhere('media.post_id IN (:...postIds)', { postIds })
+        .orderBy('media.order', 'ASC')
+        .getMany();
+    }
+    console.log('🟠 [getFeedOfFollowedUsers] media:', media);
+    for (const post of posts) {
+      post['media'] = media.filter((m) => m.post_id === post.id);
+      console.log(
+        `🟤 [getFeedOfFollowedUsers] postId: ${post.id}, media:`,
+        post['media'],
+      );
+    }
+    console.log('⚫ [getFeedOfFollowedUsers] Final posts with media:', posts);
+    return [posts, total];
   }
 }

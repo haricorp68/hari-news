@@ -20,4 +20,4 @@ export abstract class BasePost {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updated_at: Date;
-} 
+}

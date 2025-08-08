@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
-import { UserNewsPost } from '../entities/user_news_post.entity';
 import { PostService } from './post.service';
 import { CreateUserNewsPostDto } from '../dto/create-user-news-post.dto';
 // Giả định UserNewsPostService đã tồn tại và được import đúng

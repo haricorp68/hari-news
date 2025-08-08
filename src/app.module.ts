@@ -34,7 +34,7 @@ import { AppDataSource } from './data-source';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         throttlers: [
-          { name: 'short', limit: 20, ttl: seconds(10) },
+          { name: 'short', limit: 2000, ttl: seconds(1) },
           { name: 'medium', limit: 2000, ttl: minutes(1) },
           { name: 'long', limit: 20000, ttl: hours(1) },
         ],

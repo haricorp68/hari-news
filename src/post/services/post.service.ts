@@ -29,6 +29,8 @@ import { UserNewsPostListDto } from './../dto/user-news-post-response.dto';
 import { ReactionType } from '../../reaction/entities/reaction.entity';
 import { NewsTagService } from './news_tag.service';
 import { NewsTag } from '../entities/news_tag.entity';
+import { UserNewsPostSearchService } from './user_news_post-search.service';
+import { FollowService } from 'src/follow/follow.service';
 
 @Injectable()
 export class PostService {
@@ -42,6 +44,8 @@ export class PostService {
     private readonly userNewsPostRepo: UserNewsPostRepository,
     private readonly postBlockRepo: PostBlockRepository,
     private readonly newsTagService: NewsTagService,
+    private readonly userNewsPostSearchService: UserNewsPostSearchService,
+    private readonly followService: FollowService,
   ) {}
 
   async createUserFeedPost(userId: string, dto: CreateUserFeedPostDto) {
@@ -182,7 +186,8 @@ export class PostService {
       tags,
     });
 
-    await this.userNewsPostRepo.save(post);
+    const savedPost = await this.userNewsPostRepo.save(post);
+    await this.userNewsPostSearchService.indexPost(savedPost);
 
     // Lưu blocks nếu có
     if (dto.blocks?.length) {
@@ -205,7 +210,9 @@ export class PostService {
   }
 
   // Public endpoint for reading user feed posts by userId
-  async getUserFeedPosts(userId: string, limit = 20, offset = 0) {
+  async getUserFeedPosts(userId: string, page = 1, pageSize = 20) {
+    const limit = pageSize;
+    const offset = (page - 1) * pageSize;
     const posts = await this.userFeedPostRepo.getUserFeedPosts(
       userId,
       limit,
@@ -981,6 +988,118 @@ export class PostService {
       reactionSummary: reactionSummaryMap[post.id] || {},
       userReaction,
       commentCount,
+    };
+  }
+
+  async reindexAllUserNewsPosts() {
+    const pageSize = 5; // 5 bản mỗi lần
+    let page = 1;
+    let totalIndexed = 0;
+
+    console.log(`Starting reindex process at ${new Date().toISOString()}`);
+
+    while (true) {
+      const [posts] = await this.userNewsPostRepo.findAndCount({
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        relations: ['tags'],
+      });
+
+      if (posts.length === 0) {
+        console.log(`No more posts to index. Total indexed: ${totalIndexed}`);
+        break;
+      }
+
+      console.log(`Processing page ${page} with ${posts.length} posts...`);
+      await this.userNewsPostSearchService.bulkIndexPosts(posts);
+      totalIndexed += posts.length;
+      console.log(
+        `Indexed ${posts.length} posts on page ${page}. Total so far: ${totalIndexed}`,
+      );
+
+      if (posts.length < pageSize) {
+        console.log(
+          `Reindexing completed. Final total: ${totalIndexed} posts.`,
+        );
+        break;
+      }
+      page++;
+    }
+
+    console.log(`Reindex process finished at ${new Date().toISOString()}`);
+    return { success: true, totalIndexed };
+  }
+
+  async autocomplete(query: string) {
+    return this.userNewsPostSearchService.autocomplete(query);
+  }
+
+  async getFollowedUserFeed(userId: string, page = 1, pageSize = 20) {
+    // Lấy danh sách userId mà user này đã follow
+    const followed = await this.followService.getFollowing(userId, 1, 1000); // lấy tối đa 1000 following, có thể phân trang nếu cần
+
+    const followingIds = followed.data.map((f) => f.followingId);
+    if (!followingIds.length) {
+      return {
+        data: [],
+        metadata: { page, pageSize, total: 0, totalPages: 0 },
+      };
+    }
+
+    // Lấy feed posts của các user đã follow
+    const [posts, total] = await this.userFeedPostRepo.getFeedOfFollowedUsers(
+      followingIds,
+      pageSize,
+      (page - 1) * pageSize,
+    );
+
+    const postArray = Array.isArray(posts) ? posts : [];
+    console.log(
+      '🔍 ~ getFollowedUserFeed ~ src/post/services/post.service.ts:1063 ~ postArray:',
+      postArray,
+    );
+
+    const reactionSummaryMap = await this.reactionService.findByPosts({
+      postIds: postArray.map((p) => p.id),
+    });
+    const userReactionMap = await this.reactionService.getUserReactionsForPosts(
+      userId,
+      postArray.map((p) => p.id),
+    );
+    const commentCounts = await Promise.all(
+      postArray.map((p) => this.commentService.getCommentCountByPost(p.id)),
+    );
+
+    const data = postArray.map((post, idx) => ({
+      id: post.id,
+      caption: post.caption,
+      created_at: post.created_at,
+      updated_at: post.updated_at,
+      media: (post['media'] || []).map((m) => ({
+        url: m.url,
+        type: m.type,
+        order: m.order,
+      })),
+      user: {
+        name: post.user?.name,
+        avatar: post.user?.avatar,
+        id: post.user.id,
+      },
+      reactionSummary: reactionSummaryMap[post.id] || {},
+      userReaction: userReactionMap[post.id] as ReactionType | undefined,
+      commentCount: commentCounts[idx],
+    }));
+
+    return {
+      data,
+      metadata: {
+        page,
+        pageSize,
+        total: typeof total === 'number' ? total : 0,
+        totalPages: Math.ceil(
+          (typeof total === 'number' ? total : 0) / pageSize,
+        ),
+      },
     };
   }
 }

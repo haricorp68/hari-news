@@ -20,6 +20,9 @@ import { NewsTagController } from './controllers/news_tag.controller';
 import { ElasticModule } from 'src/elastic/elastic.module';
 import { NewscrawlService } from './services/newscrawl.service';
 import { NewscrawlController } from './controllers/newscrawl.controller';
+import { UserNewsPostSearchService } from './services/user_news_post-search.service';
+import { FollowService } from 'src/follow/follow.service';
+import { FollowModule } from 'src/follow/follow.module';
 
 @Module({
   controllers: [PostController, NewsTagController, NewscrawlController],
@@ -39,8 +42,9 @@ import { NewscrawlController } from './controllers/newscrawl.controller';
     NewsTagRepository,
     NewsTagSearchService,
     NewscrawlService,
+    UserNewsPostSearchService,
   ],
-  imports: [ReactionModule, CommentModule, ElasticModule],
+  imports: [ReactionModule, CommentModule, ElasticModule, FollowModule],
   exports: [PostService],
 })
 export class PostModule {}

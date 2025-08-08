@@ -203,64 +203,67 @@ export class ElasticService<T> {
     }
   }
 
-  async autocomplete(index: string, query: string) {
+  async autocomplete(
+    index: string,
+    query: string,
+    fields: string[] = ['name', 'name_no_accent'],
+  ) {
     try {
       const queryNoAccent = removeAccents(query).toLowerCase().trim();
       const queryWords = queryNoAccent
         .split(/\s+/)
         .filter((word) => word.length > 0);
 
-      // Tạo array should clauses
       const shouldClauses: any[] = [
         // Exact prefix match
         {
           match_phrase_prefix: {
-            name: {
+            [fields[0]]: {
               query,
               boost: 10.0,
             },
           },
         },
-        // Prefix match không dấu
+        // Prefix match without accents
         {
           match_phrase_prefix: {
-            name_no_accent: {
+            [`${fields[0]}_no_accent`]: {
               query: queryNoAccent,
               boost: 8.0,
             },
           },
         },
-        // Match thông thường
-        {
+        // Match on all specified fields
+        ...fields.map((field) => ({
           match: {
-            name_no_accent: {
+            [`${field}_no_accent`]: {
               query: queryNoAccent,
               boost: 5.0,
             },
           },
-        },
-        // Prefix cho single word
+        })),
+        // Prefix for single word
         {
           prefix: {
-            name_no_accent: {
+            [`${fields[0]}_no_accent`]: {
               value: queryNoAccent,
               boost: 4.0,
             },
           },
         },
-        // Wildcard cho partial match
+        // Wildcard for partial match
         {
           wildcard: {
-            name_no_accent: {
+            [`${fields[0]}_no_accent`]: {
               value: `*${queryNoAccent.replace(/\s+/g, '*')}*`,
               boost: 3.0,
             },
           },
         },
-        // Wildcard thông thường
+        // Wildcard general
         {
           wildcard: {
-            name_no_accent: {
+            [`${fields[0]}_no_accent`]: {
               value: `*${queryNoAccent}*`,
               boost: 2.0,
             },
@@ -268,16 +271,14 @@ export class ElasticService<T> {
         },
       ];
 
-      // Thêm bool query cho multiple words
       if (queryWords.length > 1) {
         shouldClauses.push({
           bool: {
             must: queryWords.map((word, index) => {
-              // Từ cuối cùng dùng prefix, các từ khác dùng wildcard
               if (index === queryWords.length - 1) {
                 return {
                   prefix: {
-                    name_no_accent: {
+                    [`${fields[0]}_no_accent`]: {
                       value: word,
                       boost: 1,
                     },
@@ -286,7 +287,7 @@ export class ElasticService<T> {
               } else {
                 return {
                   wildcard: {
-                    name_no_accent: {
+                    [`${fields[0]}_no_accent`]: {
                       value: `*${word}*`,
                       boost: 1,
                     },
@@ -309,7 +310,7 @@ export class ElasticService<T> {
         },
         sort: [
           { _score: { order: 'desc' } },
-          { 'name.keyword': { order: 'asc' } },
+          { [`${fields[0]}.keyword`]: { order: 'asc' } },
         ],
         size: 10,
       });

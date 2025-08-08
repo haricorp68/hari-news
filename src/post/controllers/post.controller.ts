@@ -8,6 +8,7 @@ import {
   Param,
   Put,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateUserFeedPostDto } from '../dto/create-user-feed-post.dto';
 import { CreateCommunityFeedPostDto } from '../dto/create-community-feed-post.dto';
@@ -260,5 +261,33 @@ export class PostController {
   @Delete('user-news/:userId/:id')
   deleteUserNews(@Param('userId') userId: string, @Param('id') id: string) {
     return this.postService.deleteUserNewsPost(userId, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('reindex-user-news')
+  async triggerReindexUserNews() {
+    return this.postService.reindexAllUserNewsPosts();
+  }
+
+  @Get('autocomplete-user-news')
+  async autocompleteUserNews(@Query('query') query: string) {
+    if (!query || query.trim().length === 0) {
+      throw new BadRequestException('Query parameter is required');
+    }
+    return this.postService.autocomplete(query);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('followed-user-feed')
+  async getFollowedUserFeed(
+    @CurrentUser() user,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
+  ) {
+    return this.postService.getFollowedUserFeed(
+      user.userId,
+      Number(page),
+      Number(pageSize),
+    );
   }
 }

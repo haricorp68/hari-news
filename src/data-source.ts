@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
+import * as dotenv from 'dotenv';
 import { Comment } from './comment/entities/comment.entity';
 import { User } from './user/entities/user.entity';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
@@ -24,16 +24,16 @@ import { Follow } from './follow/entities/follow.entity';
 import { Category } from './category/entities/category.entity';
 import { NewsTag } from './post/entities/news_tag.entity';
 
-// Khởi tạo ConfigService
-const configService = new ConfigService();
+// Load .env file
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: configService.get<string>('DB_HOST', 'localhost'),
-  port: configService.get<number>('DB_PORT', 5432),
-  username: configService.get<string>('DB_USERNAME', 'postgres'),
-  password: configService.get<string>('DB_PASSWORD', 'postgres'),
-  database: configService.get<string>('DB_DATABASE', 'hari_news'),
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432', 10),
+  username: process.env.DB_USERNAME || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  database: process.env.DB_DATABASE || 'hari_news',
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   entities: [
     User,
@@ -60,5 +60,5 @@ export const AppDataSource = new DataSource({
     Category,
     NewsTag,
   ],
-  synchronize: false,
+  synchronize: true,
 });
