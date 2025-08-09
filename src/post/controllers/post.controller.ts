@@ -92,9 +92,9 @@ export class PostController {
    * Lấy chi tiết post user feed theo id (có thể public hoặc cần đăng nhập tuỳ guard)
    */
   @Get('user-feed/detail/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   getUserFeedPostDetail(@Param('id') id: string, @CurrentUser() user) {
-    return this.postService.getUserFeedPostDetail(id, user.userId);
+    return this.postService.getUserFeedPostDetail(id, user?.userId || null);
   }
 
   // =========================

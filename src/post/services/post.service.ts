@@ -253,13 +253,14 @@ export class PostService {
 
   async getUserFeedPostDetail(
     postId: string,
-    userId: string,
+    userId: string | null,
   ): Promise<UserFeedPostResponseDto | null> {
     const post = await this.userFeedPostRepo.getUserFeedPostDetail(
       userId,
       postId,
     );
     if (!post) return null;
+
     const commentCount = await this.commentService.getCommentCountByPost(
       post.id,
     );
@@ -267,10 +268,9 @@ export class PostService {
     const reactionSummaryMap = await this.reactionService.findByPosts({
       postIds: [post.id],
     });
-    const userReactionMap = await this.reactionService.getUserReactionsForPosts(
-      userId,
-      [post.id],
-    );
+    const userReactionMap = userId
+      ? await this.reactionService.getUserReactionsForPosts(userId, [post.id])
+      : {};
     const reactionSummary = reactionSummaryMap[post.id] || {};
     const userReaction = userReactionMap[post.id] as ReactionType | undefined;
 
@@ -292,10 +292,9 @@ export class PostService {
       },
       commentCount,
       reactionSummary,
-      userReaction,
+      userReaction: userId ? userReaction : undefined,
     };
   }
-
   async getCommunityFeedPosts(
     communityId: number,
     limit = 20,

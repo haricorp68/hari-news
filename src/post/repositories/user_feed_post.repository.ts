@@ -38,18 +38,24 @@ export class UserFeedPostRepository extends Repository<UserFeedPost> {
     return posts;
   }
 
-  async getUserFeedPostDetail(userId: string, postId: string) {
-    const post = await this.createQueryBuilder('post')
+  async getUserFeedPostDetail(userId: string | null, postId: string) {
+    const query = this.createQueryBuilder('post')
       .leftJoinAndSelect('post.user', 'user')
       .where('post.id = :postId', { postId })
-      .andWhere('user.id = :userId', { userId })
-      .andWhere('post.is_deleted = false')
-      .getOne();
+      .andWhere('post.is_deleted = false');
+
+    if (userId) {
+      query.andWhere('user.id = :userId', { userId });
+    }
+
+    const post = await query.getOne();
     if (!post) return null;
+
     post['media'] = await this.manager.getRepository(PostMedia).find({
       where: { post_type: 'user_feed', post_id: post.id },
       order: { order: 'ASC' },
     });
+
     return post;
   }
 
