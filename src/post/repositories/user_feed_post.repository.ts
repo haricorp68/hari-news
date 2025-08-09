@@ -89,4 +89,49 @@ export class UserFeedPostRepository extends Repository<UserFeedPost> {
     console.log('⚫ [getFeedOfFollowedUsers] Final posts with media:', posts);
     return [posts, total];
   }
+  async getAllUserFeedPosts(limit = 20, offset = 0) {
+    const queryBuilder = this.createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .where('post.is_deleted = false')
+      .orderBy('post.created_at', 'DESC')
+      .skip(offset)
+      .take(limit);
+
+    // Log raw SQL để debug
+    console.log('🟡 [getAllUserFeedPosts] SQL:', queryBuilder.getSql());
+
+    const [posts, total] = await queryBuilder.getManyAndCount();
+    console.log('🔵 [getAllUserFeedPosts] posts count:', posts.length);
+
+    const postIds = posts.map((p) => p.id);
+    console.log('🟣 [getAllUserFeedPosts] postIds:', postIds);
+
+    let media: PostMedia[] = [];
+    if (postIds.length) {
+      media = await this.manager
+        .getRepository(PostMedia)
+        .createQueryBuilder('media')
+        .where('media.post_type = :postType', { postType: 'user_feed' })
+        .andWhere('media.post_id IN (:...postIds)', { postIds })
+        .orderBy('media.order', 'ASC')
+        .getMany();
+    }
+
+    console.log('🟠 [getAllUserFeedPosts] media count:', media.length);
+
+    // Gán media cho từng post
+    for (const post of posts) {
+      post['media'] = media.filter((m) => m.post_id === post.id);
+      console.log(
+        `🟤 [getAllUserFeedPosts] postId: ${post.id}, media count:`,
+        post['media'].length,
+      );
+    }
+
+    console.log(
+      '⚫ [getAllUserFeedPosts] Final posts with media:',
+      posts.length,
+    );
+    return [posts, total];
+  }
 }

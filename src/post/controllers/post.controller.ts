@@ -58,7 +58,7 @@ export class PostController {
   /**
    * Lấy danh sách user feed của chính mình (cần đăng nhập)
    */
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('self/user-feed')
   getSelfUserFeed(
     @CurrentUser() user,
@@ -277,15 +277,18 @@ export class PostController {
     return this.postService.autocomplete(query);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('followed-user-feed')
   async getFollowedUserFeed(
     @CurrentUser() user,
     @Query('page') page = 1,
     @Query('pageSize') pageSize = 20,
   ) {
+    // Kiểm tra xem user có tồn tại và có userId không
+    const userId = user && user.userId ? user.userId : null;
+
     return this.postService.getFollowedUserFeed(
-      user.userId,
+      userId,
       Number(page),
       Number(pageSize),
     );

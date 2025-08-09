@@ -1034,38 +1034,50 @@ export class PostService {
     return this.userNewsPostSearchService.autocomplete(query);
   }
 
-  async getFollowedUserFeed(userId: string, page = 1, pageSize = 20) {
-    // Lấy danh sách userId mà user này đã follow
-    const followed = await this.followService.getFollowing(userId, 1, 1000); // lấy tối đa 1000 following, có thể phân trang nếu cần
+  async getFollowedUserFeed(userId: string | null, page = 1, pageSize = 20) {
+    let followingIds: string[] = [];
 
-    const followingIds = followed.data.map((f) => f.followingId);
-    if (!followingIds.length) {
-      return {
-        data: [],
-        metadata: { page, pageSize, total: 0, totalPages: 0 },
-      };
+    // Nếu userId không null, lấy danh sách người đã follow
+    if (userId) {
+      const followed = await this.followService.getFollowing(userId, 1, 1000);
+      followingIds = followed.data.map((f) => f.followingId);
+
+      // Nếu user chưa follow ai, trả về empty (chỉ khi có userId)
+      if (!followingIds.length) {
+        return {
+          data: [],
+          metadata: { page, pageSize, total: 0, totalPages: 0 },
+        };
+      }
     }
 
-    // Lấy feed posts của các user đã follow
-    const [posts, total] = await this.userFeedPostRepo.getFeedOfFollowedUsers(
-      followingIds,
-      pageSize,
-      (page - 1) * pageSize,
-    );
+    // Lấy feed posts
+    const [posts, total] = userId
+      ? await this.userFeedPostRepo.getFeedOfFollowedUsers(
+          followingIds,
+          pageSize,
+          (page - 1) * pageSize,
+        )
+      : await this.userFeedPostRepo.getAllUserFeedPosts(
+          // Cần tạo method này
+          pageSize,
+          (page - 1) * pageSize,
+        );
 
     const postArray = Array.isArray(posts) ? posts : [];
-    console.log(
-      '🔍 ~ getFollowedUserFeed ~ src/post/services/post.service.ts:1063 ~ postArray:',
-      postArray,
-    );
 
     const reactionSummaryMap = await this.reactionService.findByPosts({
       postIds: postArray.map((p) => p.id),
     });
-    const userReactionMap = await this.reactionService.getUserReactionsForPosts(
-      userId,
-      postArray.map((p) => p.id),
-    );
+
+    // Chỉ lấy user reactions khi có userId
+    const userReactionMap = userId
+      ? await this.reactionService.getUserReactionsForPosts(
+          userId,
+          postArray.map((p) => p.id),
+        )
+      : {};
+
     const commentCounts = await Promise.all(
       postArray.map((p) => this.commentService.getCommentCountByPost(p.id)),
     );
