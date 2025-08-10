@@ -333,7 +333,6 @@ export class AuthService {
 
     // Tạo token mới
     const token = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpDigits = token.split('');
 
     try {
       // Gửi email trước
@@ -342,12 +341,7 @@ export class AuthService {
         subject: 'Xác thực email tài khoản',
         template: 'email-verification',
         context: {
-          otpCode0: otpDigits[0],
-          otpCode1: otpDigits[1],
-          otpCode2: otpDigits[2],
-          otpCode3: otpDigits[3],
-          otpCode4: otpDigits[4],
-          otpCode5: otpDigits[5],
+          otpCode: token,
           year: new Date().getFullYear(),
         },
       });

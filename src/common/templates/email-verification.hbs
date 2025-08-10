@@ -53,25 +53,26 @@
         margin: 0 0 16px;
       }
       .otp-container {
-        display: flex;
-        justify-content: center;
+        display: block;
+        text-align: center;
         margin-bottom: 24px;
       }
-      .otp-box {
+      .otp-code {
         display: inline-block;
-        width: 48px;
-        height: 48px;
-        line-height: 48px;
-        text-align: center;
-        border: 2px solid #e5e7eb;
+        padding: 12px 24px;
         font-size: 24px;
         font-weight: 700;
-        margin: 0 4px;
+        letter-spacing: 4px;
+        border: 2px dashed #e5e7eb;
         border-radius: 8px;
+        color: #0c0c0c;
+        background-color: #f8f8f8;
       }
       @media (prefers-color-scheme: dark) {
-        .otp-box {
+        .otp-code {
           border-color: #444;
+          color: #f8f8f8;
+          background-color: #1e1e1e;
         }
       }
       .footer {
@@ -95,16 +96,11 @@
       </div>
       <div>
         <p>Xin chào,</p>
-        <p>Cảm ơn bạn đã đăng ký tài khoản tại <b>Hari News</b>. Mã xác thực của bạn là:</p>
+        <p>Cảm ơn bạn đã đăng ký tài khoản tại <b>Hari Social</b>. Mã xác thực của bạn là:</p>
       </div>
       <div class="otp-container">
-  <div class="otp-box">{{otpCode0}}</div>
-  <div class="otp-box">{{otpCode1}}</div>
-  <div class="otp-box">{{otpCode2}}</div>
-  <div class="otp-box">{{otpCode3}}</div>
-  <div class="otp-box">{{otpCode4}}</div>
-  <div class="otp-box">{{otpCode5}}</div>
-</div>
+        <span class="otp-code">{{otpCode}}</span>
+      </div>
       <div>
         <p>Mã này có hiệu lực trong **10 phút**. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
         <p>Nếu bạn không yêu cầu mã này, hãy bỏ qua email này.</p>
