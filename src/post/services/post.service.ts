@@ -1036,29 +1036,20 @@ export class PostService {
   async getFollowedUserFeed(userId: string | null, page = 1, pageSize = 20) {
     let followingIds: string[] = [];
 
-    // Nếu userId không null, lấy danh sách người đã follow
+    // Nếu userId tồn tại, lấy danh sách người dùng mà họ đang theo dõi
     if (userId) {
       const followed = await this.followService.getFollowing(userId, 1, 1000);
       followingIds = followed.data.map((f) => f.followingId);
-
-      // Nếu user chưa follow ai, trả về empty (chỉ khi có userId)
-      if (!followingIds.length) {
-        return {
-          data: [],
-          metadata: { page, pageSize, total: 0, totalPages: 0 },
-        };
-      }
     }
 
-    // Lấy feed posts
-    const [posts, total] = userId
+    // Lấy feed posts. Ưu tiên bài viết của người đang follow. Nếu không có ai đang follow (hoặc người dùng là khách), lấy tất cả các bài viết.
+    const [posts, total] = followingIds.length
       ? await this.userFeedPostRepo.getFeedOfFollowedUsers(
           followingIds,
           pageSize,
           (page - 1) * pageSize,
         )
       : await this.userFeedPostRepo.getAllUserFeedPosts(
-          // Cần tạo method này
           pageSize,
           (page - 1) * pageSize,
         );
