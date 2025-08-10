@@ -60,4 +60,10 @@ export class NewsTagController {
   remove(@Param('id') id: string) {
     return this.newsTagService.remove(id);
   }
+
+  @Post('reindex')
+  async reindex() {
+    await this.newsTagService.reindexAllTags();
+    return { message: 'Reindexing all news tags has been initiated.' };
+  }
 }

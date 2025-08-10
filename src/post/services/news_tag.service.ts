@@ -57,6 +57,14 @@ export class NewsTagService implements OnModuleInit {
     return this.newsTagRepository.find();
   }
 
+  async reindexAllTags() {
+    // 1. Lấy tất cả tags từ DB
+    const allTags = await this.newsTagRepository.find();
+
+    // 2. Gọi service search để reindex
+    await this.newsTagSearchService.reindexAllTags(allTags);
+  }
+
   async findAllWithPagination(page = 1, pageSize = 10) {
     const [data, total] = await this.newsTagRepository.findAndCount({
       order: { name: 'ASC' },
