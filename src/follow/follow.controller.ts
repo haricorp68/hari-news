@@ -13,6 +13,7 @@ import { FollowResponseDto } from './dto/follow-response.dto';
 import { FollowStatsDto } from './dto/follow-stats.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { OptionalJwtAuthGuard } from 'src/common/guards/jwt-optional.guard';
 
 @Controller('follows')
 export class FollowController {
@@ -30,7 +31,7 @@ export class FollowController {
   }
 
   @Get('followers/:userId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   async getFollowers(
     @Param('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
@@ -54,7 +55,7 @@ export class FollowController {
   }
 
   @Get('following/:userId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   async getFollowing(
     @Param('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
@@ -78,7 +79,7 @@ export class FollowController {
   }
 
   @Get('stats/:userId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   async getFollowStats(@Param('userId') userId: string) {
     const stats = await this.followService.getFollowStats(userId);
     return {
